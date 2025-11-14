@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
+import Select from '../ui/Select';
 
 const RegisterForm = ({ onSuccess, onError }) => {
   const router = useRouter();
@@ -12,22 +13,43 @@ const RegisterForm = ({ onSuccess, onError }) => {
     email: '',
     password: '',
     password_confirmation: '',
-    role: '',
+    role: 'customer', // Default role
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleRoleChange = (value) => {
+    setFormData(prev => ({ ...prev, role: value }));
+    // Clear role error when user selects a role
+    if (errors.role) {
+      setErrors(prev => ({ ...prev, role: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
 
     // Validasi password match
     if (formData.password !== formData.password_confirmation) {
-      onError?.('Password and confirm password do not match');
+      setErrors({ password_confirmation: 'Password and confirm password do not match' });
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi role selection
+    if (!formData.role) {
+      setErrors({ role: 'Please select your role' });
       setIsLoading(false);
       return;
     }
@@ -44,7 +66,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
           email: formData.email,
           password: formData.password,
           password_confirmation: formData.password_confirmation,
-          role: formData.role || 'customer'
+          role: formData.role
         })
       });
 
@@ -53,8 +75,12 @@ const RegisterForm = ({ onSuccess, onError }) => {
       if (!response.ok) {
         // Handle validation errors
         if (data.errors) {
-          const errorMessages = Object.values(data.errors).flat().join(', ');
-          throw new Error(errorMessages);
+          const newErrors = {};
+          Object.keys(data.errors).forEach(key => {
+            newErrors[key] = data.errors[key][0];
+          });
+          setErrors(newErrors);
+          throw new Error('Please check the form for errors');
         }
         throw new Error(data.message || 'Registration failed');
       }
@@ -87,6 +113,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
           value={formData.name}
           onChange={handleChange}
           required
+          error={errors.name}
         />
 
         <Input
@@ -97,6 +124,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
           value={formData.password}
           onChange={handleChange}
           required
+          error={errors.password}
         />
 
         <Input
@@ -107,6 +135,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
           value={formData.email}
           onChange={handleChange}
           required
+          error={errors.email}
         />
 
         <Input
@@ -117,26 +146,24 @@ const RegisterForm = ({ onSuccess, onError }) => {
           value={formData.password_confirmation}
           onChange={handleChange}
           required
+          error={errors.password_confirmation}
         />
       </div>
 
       <div className="mb-4">
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-          Role <span className="text-red-500">*</span>
-        </label>
-        <select
-          id="role"
-          name="role"
+        <Select
+          label="Role"
           value={formData.role}
-          onChange={handleChange}
+          onChange={handleRoleChange}
+          options={[
+            { value: 'customer', label: 'Customer (Buyer)' },
+            { value: 'seller', label: 'Seller' },
+            { value: 'admin', label: 'Admin' }
+          ]}
+          placeholder="Select your role"
           required
-          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E83030] focus:border-[#E83030] transition-all duration-200"
-        >
-          <option value="" disabled>Select your role</option>
-          <option value="buyer">Buyer</option>
-          <option value="seller">Seller</option>
-          <option value="admin">Admin</option>
-        </select>
+          error={errors.role}
+        />
       </div>
 
       <Button type="submit" variant="primary" disabled={isLoading}>

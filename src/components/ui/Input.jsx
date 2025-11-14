@@ -8,7 +8,8 @@ const Input = ({
   value, 
   onChange, 
   required = true,
-  className = ''
+  className = '',
+  error = ''
 }) => {
   return (
     <div className={`mb-4 ${className}`}>
@@ -23,8 +24,16 @@ const Input = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+        className={`
+          w-full px-4 py-3 bg-white border rounded-2xl shadow-sm placeholder-gray-400 
+          focus:outline-none focus:ring-2 focus:ring-[#E83030] focus:border-[#E83030] 
+          transition-all duration-200
+          ${error ? 'border-red-500' : 'border-gray-200'}
+        `}
       />
+      {error && (
+        <p className="mt-2 text-sm text-red-600">{error}</p>
+      )}
     </div>
   );
 };
