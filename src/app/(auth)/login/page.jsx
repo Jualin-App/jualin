@@ -34,9 +34,9 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-md mx-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10">
-          <Logo size="xl" className="mb-12" />
+          <Logo size="xl" className="mb-6" />
 
-          <div className="mb-8">
+          <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               Welcome back !
             </h1>
