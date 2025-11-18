@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthProvider"
-import request from "@/utils/baseRequest"
+import { api } from "@/lib/axios"
 import Header from "@/components/common/Header"
 
 export default function EditProfilePage() {
@@ -82,7 +82,7 @@ export default function EditProfilePage() {
         fd.append("location", form.location)
         fd.append("bio", form.bio || "")
         fd.append("profilePicture", imageFile)
-        res = await request.patch("/profile/update", fd)
+        res = await api.patch("/profile/update", fd)
       } else {
         const body = {
           fullName: form.fullName,
@@ -92,7 +92,7 @@ export default function EditProfilePage() {
           bio: form.bio || "",
           profilePicture: form.profilePicture || "",
         }
-        res = await request.patch("/profile/update", body)
+        res = await api.patch("/profile/update", body)
       }
 
       const result = res?.data ?? res
@@ -119,7 +119,7 @@ export default function EditProfilePage() {
     
     setLoading(true)
     try {
-      const res = await request.patch("/profile/change-password", {
+      const res = await api.patch("/profile/change-password", {
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword
       })
