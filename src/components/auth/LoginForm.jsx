@@ -27,7 +27,6 @@ const LoginForm = ({ onSuccess, onError }) => {
     setIsLoading(true);
 
     try {
-      // Menggunakan API backend Laravel yang sebenarnya
       const response = await fetch('http://localhost:8000/api/v1/login', {
         method: 'POST',
         headers: {
@@ -43,17 +42,21 @@ const LoginForm = ({ onSuccess, onError }) => {
       console.log('Login response:', data);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        // Ambil pesan error dari backend, bisa dari data.message atau data.error
+        const errorMsg =
+          data.message ||
+          (data.errors && Object.values(data.errors).flat().join(', ')) ||
+          'Login failed';
+        throw new Error(errorMsg);
       }
 
-      // Simpan token dan user data dari response backend
       localStorage.setItem('token', data.data.access_token);
       localStorage.setItem('user', JSON.stringify({
         email: data.data.email,
         username: data.data.username,
         role: data.data.role || 'customer'
       }));
-      
+
       onSuccess?.();
       router.push('/dashboard');
     } catch (error) {
