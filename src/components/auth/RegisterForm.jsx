@@ -164,7 +164,6 @@ const RegisterForm = ({ onSuccess, onError }) => {
           options={[
             { value: 'customer', label: 'Customer (Buyer)' },
             { value: 'seller', label: 'Seller' },
-            { value: 'admin', label: 'Admin' }
           ]}
           placeholder="Select your role"
           required
