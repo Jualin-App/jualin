@@ -14,14 +14,38 @@ export const banners = [
 ];
 
 const categories = [
-  { name: "Woman Clothes", icon: "https://cdn-icons-png.flaticon.com/512/892/892458.png" },
-  { name: "Man Clothes", icon: "https://cdn-icons-png.flaticon.com/512/892/892467.png" },
-  { name: "Watches", icon: "https://cdn-icons-png.flaticon.com/512/2920/2920239.png" },
-  { name: "Kids Clothes", icon: "https://cdn-icons-png.flaticon.com/512/892/892468.png" },
-  { name: "Footwear", icon: "https://cdn-icons-png.flaticon.com/512/892/892457.png" },
-  { name: "Beauty Wellness", icon: "https://cdn-icons-png.flaticon.com/512/2920/2920212.png" },
-  { name: "Accessories", icon: "https://cdn-icons-png.flaticon.com/512/2920/2920227.png" },
-  { name: "See more", icon: "https://cdn-icons-png.flaticon.com/512/271/271228.png" }
+  {
+    name: "Woman Clothes",
+    icon: "https://cdn-icons-png.flaticon.com/512/892/892458.png",
+  },
+  {
+    name: "Man Clothes",
+    icon: "https://cdn-icons-png.flaticon.com/512/892/892467.png",
+  },
+  {
+    name: "Watches",
+    icon: "https://cdn-icons-png.flaticon.com/512/2920/2920239.png",
+  },
+  {
+    name: "Kids Clothes",
+    icon: "https://cdn-icons-png.flaticon.com/512/892/892468.png",
+  },
+  {
+    name: "Footwear",
+    icon: "https://cdn-icons-png.flaticon.com/512/892/892457.png",
+  },
+  {
+    name: "Beauty Wellness",
+    icon: "https://cdn-icons-png.flaticon.com/512/2920/2920212.png",
+  },
+  {
+    name: "Accessories",
+    icon: "https://cdn-icons-png.flaticon.com/512/2920/2920227.png",
+  },
+  {
+    name: "See more",
+    icon: "https://cdn-icons-png.flaticon.com/512/271/271228.png",
+  },
 ];
 
 const products = [
@@ -35,7 +59,7 @@ const products = [
     category: "tshirt",
   },
   {
-    slug: "galaxy-s25-5g",
+    slug: "c55-5g",
     brand: "realme",
     name: "C55 5G",
     description: "Nightography, perfect camera",
@@ -44,7 +68,7 @@ const products = [
     category: "shoes",
   },
   {
-    slug: "galaxy-s25-5g",
+    slug: "find-xt-pro-5g",
     brand: "oppo",
     name: "Find XT Pro 5G",
     description: "Nightography, perfect camera",
@@ -62,7 +86,7 @@ const products = [
     category: "tshirt",
   },
   {
-    slug: "galaxy-s25-5g",
+    slug: "c55-5g",
     brand: "realme",
     name: "C55 5G",
     description: "Nightography, perfect camera",
@@ -71,7 +95,7 @@ const products = [
     category: "shoes",
   },
   {
-    slug: "galaxy-s25-5g",
+    slug: "find-xt-pro-5g",
     brand: "oppo",
     name: "Find XT Pro 5G",
     description: "Nightography, perfect camera",
