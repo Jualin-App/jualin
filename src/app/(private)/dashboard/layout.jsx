@@ -1,12 +1,14 @@
 'use client';
 import React, { useContext } from 'react';
 import Header from './sections/header.jsx';
+import TopBar from './sections/topbar.jsx';
 import { AuthContext } from '../../../context/AuthProvider.jsx';
 
 export default function DashboardLayout({ children }) {
   const { user } = useContext(AuthContext);
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <TopBar />
       <Header user={user} />
       {children}
       <footer className="bg-white border-t mt-8 px-4 sm:px-6 py-6 text-center text-gray-600">

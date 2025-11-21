@@ -27,7 +27,7 @@ export default function RecommendedSection({ products }) {
 
   return (
     <section className="w-full my-8">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">Featured Products</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center text-black">What do you like?</h2>
       <div className="flex gap-3 justify-center mb-6 flex-wrap">
         {FILTERS.map((filter) => (
           <button
