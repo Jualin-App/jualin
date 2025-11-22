@@ -2,12 +2,12 @@
 import { createContext, useContext, useMemo, useState, useEffect } from "react"
 import baseRequest from "@/utils/baseRequest";
 
-const AuthContext = createContext({ 
-  user: null, 
-  updateUser: () => {},
+const AuthContext = createContext({
+  user: null,
+  updateUser: () => { },
   loading: true,
-  login: async () => {},
-  logout: async () => {}
+  login: async () => { },
+  logout: async () => { }
 })
 
 export function AuthProvider({ children, initialUser }) {
@@ -45,7 +45,7 @@ export function AuthProvider({ children, initialUser }) {
         setLoading(false);
       }
     }
-    
+
     if (!initialUser && token) {
       fetchUser();
     } else {
@@ -92,18 +92,18 @@ export function AuthProvider({ children, initialUser }) {
     }
   };
 
-  const value = useMemo(() => ({ 
-    user, 
-    updateUser, 
+  const value = useMemo(() => ({
+    user,
+    updateUser,
     loading,
     login,
     logout
   }), [user, loading])
-  
+
   if (!mounted) {
-    return <AuthContext.Provider value={{ user: null, updateUser: () => {}, loading: true, login: async () => ({ success: false }), logout: async () => {} }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user: null, updateUser: () => { }, loading: true, login: async () => ({ success: false }), logout: async () => { } }}>{children}</AuthContext.Provider>;
   }
-  
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
