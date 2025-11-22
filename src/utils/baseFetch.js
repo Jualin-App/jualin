@@ -15,8 +15,9 @@ import request from "./baseRequest";
  */
 export const fetch = async (data) => {
   try {
+    const method = data.method.toLowerCase();
     const payload = data.payload || {};
-    const response = await request[data.method.toLowerCase()](data.url, payload);
+    const response = method === "get" ? await request.get(data.url, payload) : await request[method](data.url, payload);
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || "Something went wrong!";
