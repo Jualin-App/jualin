@@ -11,8 +11,10 @@ export default function AppChrome({ children }) {
     || pathname.startsWith('/auth/login')
     || pathname.startsWith('/auth/register')
     || pathname.startsWith('/profile/edit');
-  const isDashboard = pathname.startsWith('/dashboard');
-  const hideNavbar = hideBoth || isDashboard;
+  // Hide navbar for dashboard and all private routes (they have their own headers)
+  const isPrivateRoute = pathname.startsWith('/dashboard') 
+    || pathname.startsWith('/profile');
+  const hideNavbar = hideBoth || isPrivateRoute;
   const hideFooter = hideBoth;
 
   return (

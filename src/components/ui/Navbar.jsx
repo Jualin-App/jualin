@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import Logo from './Logo.jsx';
 import TextButton from './TextButton.jsx';
-import { AuthContext } from '../../context/AuthProvider.jsx';
+import { AuthContext } from '../../context/AuthProvider';
 
 const Navbar = () => {
   const { user } = useContext(AuthContext);
