@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 
-const Input = ({ 
-  label, 
-  type, 
-  name, 
-  placeholder, 
-  value, 
-  onChange, 
+const Input = ({
+  label,
+  type,
+  name,
+  placeholder,
+  value,
+  onChange,
+  onKeyDown,
   required = true,
+  disabled = false,
   className = '',
+  inputClassName = '',
+  autoFocus = false,
   error = ''
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,9 +26,11 @@ const Input = ({
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+      {label && (
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <div className="relative">
         <input
           type={inputType}
@@ -32,14 +38,18 @@ const Input = ({
           name={name}
           value={value}
           onChange={onChange}
+          onKeyDown={onKeyDown}
           placeholder={placeholder}
           required={required}
+          disabled={disabled}
+          autoFocus={autoFocus}
           className={`
             w-full px-4 py-3 bg-white border rounded-2xl shadow-sm placeholder-gray-400 
             focus:outline-none focus:ring-2 focus:ring-[#E83030] focus:border-[#E83030] 
             transition-all duration-200
             ${error ? 'border-red-500' : 'border-gray-200'}
             ${isPasswordField ? 'pr-12' : ''}
+            ${inputClassName}
           `}
         />
         {isPasswordField && (
