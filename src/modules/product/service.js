@@ -1,3 +1,5 @@
+//SSR, SSG/ISR
+
 const fetchProducts = async () => {
   try {
     const res = await fetch(

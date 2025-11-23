@@ -1,26 +1,21 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { fetchProductById } from "../../../../modules/product/service.js";
+import React from "react";
 
-export default function ProductDetailSection({ id }) {
-  const [product, setProduct] = useState(null);
-
-  useEffect(() => {
-    if (id) fetchProductById(id).then(setProduct);
-  }, [id]);
-
-  if (!id) {
-    return <div className="text-center py-12">No product selected.</div>;
-  }
-
+export default function ProductDetailSection({ product }) {
   if (!product) {
-    return <div className="text-center py-12">Loading or product not found.</div>;
+    return (
+      <div className="text-center py-12">No product selected or not found.</div>
+    );
   }
 
   return (
     <div className="flex flex-col md:flex-row gap-8 items-start bg-white rounded-2xl shadow p-6">
       <img
-        src={product.img ? product.img : "https://via.placeholder.com/400x400?text=No+Image"}
+        src={
+          product.img
+            ? product.img
+            : "https://via.placeholder.com/400x400?text=No+Image"
+        }
         alt={product.name}
         className="w-full md:w-1/2 h-80 object-cover rounded-2xl shadow"
       />

@@ -1,15 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { fetchProducts } from "../../../../modules/product/service.js";
-import ProductFilterSection from "./filter.jsx";
+import React, { useState } from "react";
+import ProductFilter from "./filter.jsx";
 
-export default function RecommendedSection() {
-  const [products, setProducts] = useState([]);
+export default function RecommendedSection({ products }) {
   const [activeFilter, setActiveFilter] = useState("all");
-
-  useEffect(() => {
-    fetchProducts().then(setProducts);
-  }, []);
 
   const filteredProducts =
     activeFilter === "all"
@@ -21,7 +15,7 @@ export default function RecommendedSection() {
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
         Featured Products
       </h2>
-      <ProductFilterSection
+      <ProductFilter
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
       />

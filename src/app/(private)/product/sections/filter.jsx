@@ -10,10 +10,7 @@ const FILTERS = [
   { label: "Watches", value: "watches" },
 ];
 
-export default function ProductFilterSection({
-  activeFilter,
-  setActiveFilter,
-}) {
+export default function ProductFilter({ activeFilter, setActiveFilter }) {
   return (
     <div className="flex gap-3 justify-center mb-6 flex-wrap">
       {FILTERS.map((filter) => (
