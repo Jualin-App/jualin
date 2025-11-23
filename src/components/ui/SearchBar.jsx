@@ -1,7 +1,7 @@
-'use client';
+"use client";
 import React from "react";
 
-function SearchBarSection() {
+function SearchBar() {
   return (
     <section className="mb-8 w-full">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3">
@@ -20,4 +20,4 @@ function SearchBarSection() {
   );
 }
 
-export default SearchBarSection;
+export default SearchBar;

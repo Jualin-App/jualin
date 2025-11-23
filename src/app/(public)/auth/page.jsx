@@ -1,20 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import RegisterForm from '../../../components/auth/RegisterForm';
-import Logo from '../../../components/ui/Logo';
-import Toast from '../../../components/ui/Toast';
+import React, { useState } from "react";
+import Link from "next/link";
+import RegisterForm from "../../../../components/auth/RegisterForm";
+import Logo from "../../../../components/ui/Logo";
+import Toast from "../../../../components/ui/Toast";
 
 export default function RegisterPage() {
   const [toast, setToast] = useState(null);
 
   const handleSuccess = () => {
-    setToast({ message: 'Registration successful! Redirecting...', type: 'success' });
+    setToast({
+      message: "Registration successful! Redirecting...",
+      type: "success",
+    });
   };
 
   const handleError = (error) => {
-    setToast({ message: error, type: 'error' });
+    setToast({ message: error, type: "error" });
   };
 
   return (
@@ -47,8 +50,11 @@ export default function RegisterPage() {
           <RegisterForm onSuccess={handleSuccess} onError={handleError} />
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-[#E83030] hover:text-red-600 font-medium">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-[#E83030] hover:text-red-600 font-medium"
+            >
               Login here
             </Link>
           </p>
