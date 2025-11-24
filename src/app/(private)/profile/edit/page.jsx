@@ -1,8 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import api from '../../../lib/axios';
-import Input from '../../../components/ui/Input.jsx';
-import Button from '../../../components/ui/Button.jsx';
+// Import user store dari index module
+import { useUserStore } from '../../../../modules/user';
 
 export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);

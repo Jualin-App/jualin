@@ -5,7 +5,7 @@ import TextButton from './TextButton.jsx';
 import { AuthContext } from '../../context/AuthProvider.jsx';
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, demoLogin } = useContext(AuthContext);
 
   return (
     <header className="bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between">
@@ -22,14 +22,14 @@ const Navbar = () => {
       <div className="flex items-center gap-3 sm:gap-4">
         {user ? (
           <>
-            <a href={`/profile/${user.username || user.id}`} className="flex items-center gap-2">
+            <a href="/profile/edit" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors">
               <img
                 src={user.avatar || 'https://i.pravatar.cc/32'}
                 alt="avatar"
                 className="w-8 h-8 rounded-full"
               />
               <span className="font-semibold text-gray-800">
-                Hi, {user.name || user.username || 'User'}
+                Profile
               </span>
             </a>
             <a href="/jual" className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow">
@@ -38,6 +38,12 @@ const Navbar = () => {
           </>
         ) : (
           <>
+            <button 
+              onClick={demoLogin} 
+              className="px-3 py-2 rounded-2xl bg-blue-500 text-white text-sm font-semibold shadow hover:bg-blue-600"
+            >
+              Demo Login
+            </button>
             <a href="/login" className="px-4 py-2 rounded-2xl border border-gray-300 font-semibold">
               Login
             </a>

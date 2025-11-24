@@ -15,12 +15,22 @@ import request from "./baseRequest";
  */
 export const fetch = async (data) => {
   try {
+    console.log(`Making ${data.method} request to ${data.url}`, data);
     const payload = data.payload || {};
     const response = await request[data.method.toLowerCase()](data.url, payload);
+    console.log(`Response from ${data.url}:`, response.data);
     return response.data;
   } catch (error) {
-    const errorMessage = error.response?.data?.message || "Something went wrong!";
-    const statusCode = error.response?.status;
+    console.error(`Error in fetch for ${data.url}:`, error);
+    
+    // Safe error handling with proper null checks
+    const errorResponse = error.response;
+    const errorData = errorResponse?.data;
+    const errorMessage = errorData?.message || error.message || "Something went wrong!";
+    const statusCode = errorResponse?.status;
+    
+    console.error('Error response:', errorData);
+    console.error('Error status:', statusCode);
 
     if (
       data.options &&
@@ -33,9 +43,15 @@ export const fetch = async (data) => {
     }
 
     if (data.options && data.options.returnDataWhenError && data.options.returnDataWhenError.includes(statusCode)) {
-      return error.response?.data;
+      return errorResponse?.data;
     }
 
-    throw new Error(errorMessage);
+    // Return error object instead of throwing for better error handling upstream
+    return {
+      error: true,
+      message: errorMessage,
+      status: statusCode,
+      data: error.response?.data
+    };
   }
 };

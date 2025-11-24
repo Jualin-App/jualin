@@ -53,7 +53,7 @@ request.interceptors.response.use(
         window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
-    } else if (error.response.status === 403) {
+    } else if (error.response && error.response.status === 403) {
       throw Object.assign(new Error("Unauthorized Access"), { statusCode: 403 });
     }
     return Promise.reject(error);
