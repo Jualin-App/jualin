@@ -45,4 +45,70 @@ const fetchProductById = async (id) => {
   }
 };
 
-export { fetchProducts, fetchProductById };
+const createProduct = async (payload) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+    const data = await res.json();
+    const p = data.data;
+    return {
+      ...p,
+      img: p.image,
+      id: p.id,
+      category: p.category?.toLowerCase() || "",
+      brand: p.brand || "",
+      price: p.price,
+      name: p.name,
+      description: p.description,
+    };
+  } catch (err) {
+    return null;
+  }
+};
+
+const updateProduct = async (id, payload) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+    const data = await res.json();
+    const p = data.data;
+    return {
+      ...p,
+      img: p.image,
+      id: p.id,
+      category: p.category?.toLowerCase() || "",
+      brand: p.brand || "",
+      price: p.price,
+      name: p.name,
+      description: p.description,
+    };
+  } catch (err) {
+    return null;
+  }
+};
+
+const deleteProduct = async (id) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${id}`,
+      { method: "DELETE" }
+    );
+    return res.ok;
+  } catch (err) {
+    return false;
+  }
+};
+
+export { fetchProducts, fetchProductById, createProduct, updateProduct, deleteProduct };
