@@ -56,7 +56,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
 
     try {
       // Menggunakan API backend Laravel yang sebenarnya
-      const response = await fetch('http://localhost:8000/api/v1/register', {
+      const response = await fetch('/api/v1/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,11 +70,17 @@ const RegisterForm = ({ onSuccess, onError }) => {
         })
       });
 
-      const data = await response.json();
+      let data;
+      const ct = response.headers.get('content-type') || '';
+      if (ct.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        data = { message: text };
+      }
 
       if (!response.ok) {
-        // Handle validation errors
-        if (data.errors) {
+        if (data && data.errors) {
           const newErrors = {};
           Object.keys(data.errors).forEach(key => {
             newErrors[key] = data.errors[key][0];
@@ -82,7 +88,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
           setErrors(newErrors);
           throw new Error('Please check the form for errors');
         }
-        throw new Error(data.message || 'Registration failed');
+        throw new Error((data && data.message) || 'Registration failed');
       }
 
       // Simpan token dan user data dari response backend
@@ -158,7 +164,6 @@ const RegisterForm = ({ onSuccess, onError }) => {
           options={[
             { value: 'customer', label: 'Customer (Buyer)' },
             { value: 'seller', label: 'Seller' },
-            { value: 'admin', label: 'Admin' }
           ]}
           placeholder="Select your role"
           required
