@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import RegisterForm from '../../../components/auth/RegisterForm';
-import Logo from '../../../components/ui/Logo';
-import Toast from '../../../components/ui/Toast';
+import RegisterForm from '../../../../components/auth/RegisterForm';
+import Logo from '../../../../components/ui/Logo';
+import Toast from '../../../../components/ui/Toast';
 
 export default function RegisterPage() {
   const [toast, setToast] = useState(null);
