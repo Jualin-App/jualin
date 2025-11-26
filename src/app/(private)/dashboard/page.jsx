@@ -17,7 +17,6 @@ export default async function DashboardPage() {
       <SearchBar />
       <BannerSection banners={banners} />
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <CategorySection categories={categories} />
         <RecommendedSection products={products} />
       </div>
     </main>

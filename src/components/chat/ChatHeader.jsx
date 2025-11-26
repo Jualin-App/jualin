@@ -25,7 +25,6 @@ export function ChatHeader({ chat }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-base font-bold text-gray-900 truncate">{chat.name}</h2>
-            <CheckCircle2 className="h-4 w-4 text-blue-500 fill-blue-500 shrink-0" />
           </div>
           <p className="text-sm text-gray-500 truncate mb-1">
             {chat.handle || `@${chat.name.toLowerCase().replace(/\s+/g, '')}`}
