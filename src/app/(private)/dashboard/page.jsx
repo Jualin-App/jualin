@@ -10,12 +10,13 @@ import { fetchProducts } from "../../../modules/product/service.js";
 export default async function DashboardPage() {
   const products = await fetchProducts();
 
+  console.log(products);
+
   return (
     <main className="bg-[#fafafa]">
       <SearchBar />
       <BannerSection banners={banners} />
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <CategorySection categories={categories} />
         <RecommendedSection products={products} />
       </div>
     </main>

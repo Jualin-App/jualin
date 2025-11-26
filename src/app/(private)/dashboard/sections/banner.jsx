@@ -31,7 +31,7 @@ function BannerSection({ banners }) {
   return (
     <section className="w-full my-6 px-0">
       <div
-        className="w-full overflow-hidden relative h-[220px] sm:h-[340px] flex items-center justify-start bg-gray-100"
+        className="w-full overflow-hidden relative h-[340px] sm:h-[520px] flex items-center justify-start bg-gray-100"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -53,7 +53,7 @@ function BannerSection({ banners }) {
         </div>
         <div className="relative z-20 text-white px-4 sm:px-10 py-8 max-w-xl text-left">
           <h2 className="text-2xl sm:text-4xl font-bold mb-4 leading-tight">
-            Warm Love <br /> Family <span className="text-white">♥</span> Love.
+            Jualin <br /> Jual Apapun Dengan <span className="text-white">♥</span> Love.
           </h2>
           <p className="mb-6 text-base sm:text-lg">
             Style that feels like home-warm, effortless, and made for every moment. Dress your family in comfort without compromising on cool.
