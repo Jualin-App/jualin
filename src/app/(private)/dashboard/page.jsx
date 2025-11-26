@@ -19,4 +19,5 @@ export default async function DashboardPage() {
         <RecommendedSection products={products} />
       </div>
     </main>
-)}
+  );
+}

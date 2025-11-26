@@ -11,8 +11,10 @@ import {
 export default async function ProductPage({ searchParams }) {
   const params = await searchParams;
   const id = params?.id;
-  const product = id ? await fetchProductById(id) : null;
-  const products = await fetchProducts();
+  const [product, products] = await Promise.all([
+    id ? fetchProductById(id) : null,
+    fetchProducts(),
+  ]);
 
   return (
     <main className="bg-[#fafafa]">
