@@ -6,7 +6,7 @@ const fetchProducts = async () => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products`
     );
     const data = await res.json();
-    const arr = Array.isArray(data.data?.data) ? data.data.data : [];
+    const arr = Array.isArray(data.data) ? data.data : [];
     return arr.map((p) => ({
       ...p,
       img: p.image,
@@ -32,6 +32,7 @@ const fetchProductById = async (id) => {
     const p = data.data;
     return {
       ...p,
+      seller_id: p.seller_id,
       img: p.image,
       id: p.id,
       category: p.category?.toLowerCase() || "",
