@@ -9,7 +9,7 @@ export default function RecommendedSection({ products }) {
     activeFilter === "all"
       ? products
       : products.filter((p) => p.category === activeFilter);
-
+  console.log(products.map((p) => p.category));
   return (
     <section className="w-full my-8">
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
