@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Input from '../ui/Input';
-import Button from '../ui/Button';
-import Select from '../ui/Select';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
+import Select from "../ui/Select";
 
 const RegisterForm = ({ onSuccess, onError }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    role: 'customer', // Default role
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    role: "customer", // Default role
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleRoleChange = (value) => {
-    setFormData(prev => ({ ...prev, role: value }));
+    setFormData((prev) => ({ ...prev, role: value }));
     // Clear role error when user selects a role
     if (errors.role) {
-      setErrors(prev => ({ ...prev, role: '' }));
+      setErrors((prev) => ({ ...prev, role: "" }));
     }
   };
 
@@ -42,32 +42,34 @@ const RegisterForm = ({ onSuccess, onError }) => {
 
     // Validasi password match
     if (formData.password !== formData.password_confirmation) {
-      setErrors({ password_confirmation: 'Password and confirm password do not match' });
+      setErrors({
+        password_confirmation: "Password and confirm password do not match",
+      });
       setIsLoading(false);
       return;
     }
 
     // Validasi role selection
     if (!formData.role) {
-      setErrors({ role: 'Please select your role' });
+      setErrors({ role: "Please select your role" });
       setIsLoading(false);
       return;
     }
 
     try {
       // Menggunakan API backend Laravel yang sebenarnya
-      const response = await fetch('http://localhost:8000/api/v1/register', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/api/v1/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: formData.name.toLowerCase().replace(/\s+/g, ''),
+          username: formData.name.toLowerCase().replace(/\s+/g, ""),
           email: formData.email,
           password: formData.password,
           password_confirmation: formData.password_confirmation,
-          role: formData.role
-        })
+          role: formData.role,
+        }),
       });
 
       const data = await response.json();
@@ -76,27 +78,30 @@ const RegisterForm = ({ onSuccess, onError }) => {
         // Handle validation errors
         if (data.errors) {
           const newErrors = {};
-          Object.keys(data.errors).forEach(key => {
+          Object.keys(data.errors).forEach((key) => {
             newErrors[key] = data.errors[key][0];
           });
           setErrors(newErrors);
-          throw new Error('Please check the form for errors');
+          throw new Error("Please check the form for errors");
         }
-        throw new Error(data.message || 'Registration failed');
+        throw new Error(data.message || "Registration failed");
       }
 
       // Simpan token dan user data dari response backend
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify({
-        email: data.user.email,
-        username: data.user.username,
-        role: data.user.role
-      }));
-      
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          email: data.user.email,
+          username: data.user.username,
+          role: data.user.role,
+        })
+      );
+
       onSuccess?.();
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (error) {
-      onError?.(error.message || 'Registration failed - please try again');
+      onError?.(error.message || "Registration failed - please try again");
     } finally {
       setIsLoading(false);
     }
@@ -156,9 +161,8 @@ const RegisterForm = ({ onSuccess, onError }) => {
           value={formData.role}
           onChange={handleRoleChange}
           options={[
-            { value: 'customer', label: 'Customer (Buyer)' },
-            { value: 'seller', label: 'Seller' },
-            { value: 'admin', label: 'Admin' }
+            { value: "customer", label: "Customer (Buyer)" },
+            { value: "seller", label: "Seller" },
           ]}
           placeholder="Select your role"
           required
@@ -167,7 +171,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
       </div>
 
       <Button type="submit" variant="primary" disabled={isLoading}>
-        {isLoading ? 'Creating Account...' : 'Register'}
+        {isLoading ? "Creating Account..." : "Register"}
       </Button>
     </form>
   );
