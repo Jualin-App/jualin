@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Logo = ({ size = 'xl', className = '' }) => {
   const sizeClasses = {
@@ -11,7 +12,7 @@ const Logo = ({ size = 'xl', className = '' }) => {
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <div className="relative">
+      <Link href="/dashboard" aria-label="Go to Dashboard" className="relative cursor-pointer">
         <Image
           src="/Logo.png?v=2"
           alt="Jualin"
@@ -20,7 +21,7 @@ const Logo = ({ size = 'xl', className = '' }) => {
           className="object-contain"
           priority
         />
-      </div>
+      </Link>
     </div>
   );
 };

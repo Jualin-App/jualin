@@ -1,14 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import ProductFilter from "./filter.jsx";
 
 export default function RecommendedSection({ products }) {
   const [activeFilter, setActiveFilter] = useState("all");
+  const searchParams = useSearchParams();
+  const q = (searchParams.get("q") || "").trim().toLowerCase();
 
-  const filteredProducts =
-    activeFilter === "all"
-      ? products
-      : products.filter((p) => p.category === activeFilter);
+  const filteredProducts = useMemo(() => {
+    const base =
+      activeFilter === "all"
+        ? products
+        : products.filter((p) => p.category === activeFilter);
+    if (!q) return base;
+    return base.filter((p) => {
+      const name = (p.name || "").toLowerCase();
+      const brand = (p.brand || "").toLowerCase();
+      const desc = (p.description || "").toLowerCase();
+      return (
+        name.includes(q) || brand.includes(q) || desc.includes(q)
+      );
+    });
+  }, [products, activeFilter, q]);
 
   return (
     <section className="w-full my-8">
