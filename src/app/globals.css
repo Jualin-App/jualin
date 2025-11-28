@@ -38,6 +38,18 @@ body {
   }
 }
 
+/* Smooth fade-in upward */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -55,6 +67,10 @@ body {
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
 }
 
 .animate-blob {
@@ -89,3 +105,11 @@ body {
 .focus\:ring-brand-red:focus {
   --tw-ring-color: #E83030;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in,
+  .animate-fade-in {
+    animation: none !important;
+  }
+}
+

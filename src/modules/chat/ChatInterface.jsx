@@ -55,7 +55,7 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
+    <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-white overflow-hidden shadow-lg border border-gray-100">
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
