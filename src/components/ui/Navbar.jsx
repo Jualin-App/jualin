@@ -1,63 +1,67 @@
 "use client";
 import React, { useContext } from "react";
+import { usePathname } from "next/navigation";
 import Logo from "./Logo.jsx";
 import TextButton from "./TextButton.jsx";
 import { AuthContext } from "../../context/AuthProvider.jsx";
+import SearchBar from "./SearchBar.jsx";
 
 const Navbar = () => {
   const { user } = useContext(AuthContext);
+  const pathname = usePathname() || "";
+  const showSearch = pathname.startsWith("/dashboard") || pathname.startsWith("/product");
 
   return (
-    <header className="bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between">
-      <div className="flex items-center gap-4 sm:gap-6 min-w-0">
-        <Logo />
-        <nav className="flex gap-3 sm:gap-6 text-gray-800 font-semibold flex-wrap">
-          <TextButton href="/">Home</TextButton>
-          <TextButton href="/kategori/elektronik">Elektronik</TextButton>
-          <TextButton href="/kategori/fashion">Fashion</TextButton>
-          <TextButton href="/kategori/daily">Daily</TextButton>
-          <TextButton href="/kategori/skincare">Skincare</TextButton>
-        </nav>
-      </div>
-      <div className="flex items-center gap-3 sm:gap-4">
-        {user ? (
-          <>
-            <a
-              href={`/profile/${user.username || user.id}`}
-              className="flex items-center gap-2"
-            >
-              <img
-                src={user?.avatar || "/ProfilePhoto.png"}
-                alt="avatar"
-                className="w-8 h-8 rounded-full"
-              />
-              <span className="font-semibold text-gray-800">
-                Hi, {user.name || user.username || "User"}
-              </span>
-            </a>
-            <a
-              href="/jual"
-              className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow"
-            >
-              Jual
-            </a>
-          </>
-        ) : (
-          <>
-            <a
-              href="/login"
-              className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow"
-            >
-              Login
-            </a>
-            <a
-              href="/register"
-              className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow"
-            >
-              Register
-            </a>
-          </>
+    <header className="bg-white">
+      <div className="w-full px-2 sm:px-4 py-3 flex items-center gap-4 transition-shadow duration-200">
+        <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+          <Logo />
+        </div>
+        {showSearch && (
+          <div className="flex-1">
+            <SearchBar inline />
+          </div>
         )}
+        <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+          {user ? (
+            <>
+              <a
+                href={`/profile/${user.username || user.id}`}
+                className="flex items-center gap-2"
+              >
+                <img
+                  src={user?.avatar || "/ProfilePhoto.png"}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full transition-transform duration-200 hover:scale-105"
+                />
+                <span className="font-semibold text-gray-800">
+                  Hi, {user.name || user.username || "User"}
+                </span>
+              </a>
+              <a
+                href="/jual"
+                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
+              >
+                Jual
+              </a>
+            </>
+          ) : (
+            <>
+              <a
+                href="/login"
+                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
+              >
+                Login
+              </a>
+              <a
+                href="/register"
+                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
+              >
+                Register
+              </a>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
