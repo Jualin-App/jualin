@@ -10,14 +10,14 @@ function BannerSection({ banners }) {
     if (animating) return;
     setAnimating(true);
     setActive((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
-    setTimeout(() => setAnimating(false), 500);
+    setTimeout(() => setAnimating(false), 300);
   };
 
   const handleNext = () => {
     if (animating) return;
     setAnimating(true);
     setActive((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
-    setTimeout(() => setAnimating(false), 500);
+    setTimeout(() => setAnimating(false), 300);
   };
 
   useEffect(() => {
@@ -29,9 +29,9 @@ function BannerSection({ banners }) {
   }, [paused, animating, banners.length]);
 
   return (
-    <section className="w-full my-6 px-0">
+    <section className="w-full mt-4 sm:mt-8 mb-6 px-2 sm:px-4">
       <div
-        className="w-full overflow-hidden relative h-[340px] sm:h-[520px] flex items-center justify-start bg-gray-100"
+        className="w-full max-w-7xl mx-auto overflow-hidden relative h-[400px] sm:h-[560px] flex items-center justify-start bg-gray-100 rounded-2xl"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -51,17 +51,14 @@ function BannerSection({ banners }) {
             />
           ))}
         </div>
+        <div className="absolute bottom-0 inset-x-0 h-12 sm:h-16 bg-gradient-to-b from-transparent via-white/30 to-white/90 z-10 pointer-events-none" />
         <div className="relative z-20 text-white px-4 sm:px-10 py-8 max-w-xl text-left">
           <h2 className="text-2xl sm:text-4xl font-bold mb-4 leading-tight">
-            Jualin <br /> Jual Apapun Dengan <span className="text-white">♥</span> Love.
+            Jualin <br /> Jual Apapun Dengan <span className="text-white">♥</span>
           </h2>
           <p className="mb-6 text-base sm:text-lg">
-            Style that feels like home-warm, effortless, and made for every moment. Dress your family in comfort without compromising on cool.
+            Temukan barang terbaik untuk setiap kebutuhanmu. Simpel, nyaman, dan selalu siap menemani setiap momen.
           </p>
-          <div className="flex gap-4 flex-wrap">
-            <button className="bg-red-500 text-white px-5 py-2 rounded-full font-semibold shadow">Snap {`{ Together }`}</button>
-            <button className="bg-white text-gray-900 px-5 py-2 rounded-full font-semibold shadow">Explore Exclusive Collection</button>
-          </div>
         </div>
         {/* Carousel indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-30">

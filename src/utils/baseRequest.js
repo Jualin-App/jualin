@@ -36,7 +36,7 @@ request.interceptors.response.use(
       try {
         const refreshToken = Cookies.get("refreshToken");
         const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/auth/refresh-token`,
+          `/api/v1/refresh-token`,
           { token: refreshToken },
           {
             headers: { "X-Client-Type": "web" },
