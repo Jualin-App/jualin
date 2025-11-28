@@ -27,7 +27,7 @@ const Navbar = () => {
               className="flex items-center gap-2"
             >
               <img
-                src={user.avatar || "https://i.pravatar.cc/32"}
+                src={user?.avatar || "/ProfilePhoto.png"}
                 alt="avatar"
                 className="w-8 h-8 rounded-full"
               />

@@ -1,64 +1,59 @@
 'use client';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function BannerSection({ banners }) {
   const [active, setActive] = useState(0);
   const [animating, setAnimating] = useState(false);
-  const [direction, setDirection] = useState("right");
+  const [paused, setPaused] = useState(false);
 
   const handlePrev = () => {
     if (animating) return;
-    setDirection("left");
     setAnimating(true);
-    setTimeout(() => {
-      setActive((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
-      setAnimating(false);
-    }, 400);
+    setActive((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
+    setTimeout(() => setAnimating(false), 500);
   };
 
   const handleNext = () => {
     if (animating) return;
-    setDirection("right");
     setAnimating(true);
-    setTimeout(() => {
-      setActive((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
-      setAnimating(false);
-    }, 400);
+    setActive((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
+    setTimeout(() => setAnimating(false), 500);
   };
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => {
+      handleNext();
+    }, 5000);
+    return () => clearInterval(id);
+  }, [paused, animating, banners.length]);
 
   return (
     <section className="w-full my-6 px-0">
-      <div className="w-full overflow-hidden relative h-[220px] sm:h-[340px] flex items-center justify-start bg-gray-100">
-        {banners.map((banner, idx) => {
-          let show = idx === active;
-          let slideOut = animating && (
-            (direction === "right" && idx === active) ||
-            (direction === "left" && idx === active)
-          );
-          let slideIn =
-            animating &&
-            ((direction === "right" && idx === (active + 1) % banners.length) ||
-              (direction === "left" && idx === (active - 1 + banners.length) % banners.length));
-
-          return (
+      <div
+        className="w-full overflow-hidden relative h-[340px] sm:h-[520px] flex items-center justify-start bg-gray-100"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div
+          className="absolute inset-0 h-full w-full flex"
+          style={{
+            transform: `translateX(-${active * 100}%)`,
+            transition: "transform 500ms ease-in-out",
+          }}
+        >
+          {banners.map((banner, idx) => (
             <img
               key={idx}
               src={banner.src}
               alt={banner.alt}
-              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500
-                ${show && !animating ? "opacity-100 translate-x-0 z-10" : "opacity-0 z-0"}
-                ${slideOut && direction === "right" ? "-translate-x-full opacity-0 z-0" : ""}
-                ${slideOut && direction === "left" ? "translate-x-full opacity-0 z-0" : ""}
-                ${slideIn && direction === "right" ? "translate-x-0 opacity-100 z-10" : ""}
-                ${slideIn && direction === "left" ? "translate-x-0 opacity-100 z-10" : ""}
-              `}
-              style={{ pointerEvents: show ? "auto" : "none" }}
+              className="min-w-full h-full object-cover"
             />
-          );
-        })}
+          ))}
+        </div>
         <div className="relative z-20 text-white px-4 sm:px-10 py-8 max-w-xl text-left">
           <h2 className="text-2xl sm:text-4xl font-bold mb-4 leading-tight">
-            Warm Love <br /> Family <span className="text-white">♥</span> Love.
+            Jualin <br /> Jual Apapun Dengan <span className="text-white">♥</span> Love.
           </h2>
           <p className="mb-6 text-base sm:text-lg">
             Style that feels like home-warm, effortless, and made for every moment. Dress your family in comfort without compromising on cool.
@@ -68,22 +63,6 @@ function BannerSection({ banners }) {
             <button className="bg-white text-gray-900 px-5 py-2 rounded-full font-semibold shadow">Explore Exclusive Collection</button>
           </div>
         </div>
-        {/* Arrow left */}
-        <button
-          className="absolute left-4 top-1/2 -translate-y-1/2 border-white text-white rounded-full w-10 h-10 flex items-center justify-center z-30"
-          onClick={handlePrev}
-          aria-label="Previous banner"
-        >
-          &#60;
-        </button>
-        {/* Arrow right */}
-        <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 border-white text-white rounded-full w-10 h-10 flex items-center justify-center z-30"
-          onClick={handleNext}
-          aria-label="Next banner"
-        >
-          &#62;
-        </button>
         {/* Carousel indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-30">
           {banners.map((_, idx) => (
