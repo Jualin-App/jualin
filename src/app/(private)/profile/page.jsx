@@ -15,7 +15,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between py-6">
             <h1 className="text-2xl font-semibold">Profile</h1>
             <button 
-              onClick={() => router.push("/profile/edit")}
+              onClick={() => router.push(`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`)}
               className="px-4 py-2 rounded-md bg-red-600 text-white"
             >
               Edit Profile

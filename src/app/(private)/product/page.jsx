@@ -1,5 +1,3 @@
-export const revalidate = 60;
-
 import SearchBar from "../../../components/ui/SearchBar.jsx";
 import ProductDetailSection from "./sections/detail.jsx";
 import RecommendedSection from "./sections/recommended.jsx";

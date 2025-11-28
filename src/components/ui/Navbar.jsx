@@ -23,7 +23,7 @@ const Navbar = () => {
         {user ? (
           <>
             <a
-              href={`/profile/${user.username || user.id}`}
+              href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`}
               className="flex items-center gap-2"
             >
               <img
