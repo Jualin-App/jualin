@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-function SearchBar() {
+function SearchBar({ inline = false, className = "" }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -35,24 +35,31 @@ function SearchBar() {
     return () => clearTimeout(handler);
   }, [q, pathname, router, searchParams]);
 
+  const inputEl = (
+    <input
+      type="text"
+      value={q}
+      onChange={(e) => setQ(e.target.value)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      placeholder="Cari produk, merek, atau deskripsi"
+      className={`w-full px-4 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-2xl shadow-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${className}`}
+      aria-label="Search products"
+    />
+  );
+
+  if (inline) {
+    return (
+      <div className="w-full pl-4 sm:pl-8">
+        <div className="max-w-7xl mx-auto">{inputEl}</div>
+      </div>
+    );
+  }
+
   return (
-    <section className="mb-8 w-full">
+    <section className="mt-4 sm:mt-6 mb-8 w-full">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3">
-        <div className="w-full px-12 flex justify-center">
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            placeholder="Cari produk, merek, atau deskripsi"
-            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-2xl shadow-sm
-              text-gray-800 placeholder-gray-400
-              focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500
-              transition-all duration-200"
-            aria-label="Search products"
-          />
-        </div>
+        <div className="w-full px-12 flex justify-center">{inputEl}</div>
       </div>
     </section>
   );
