@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useState, useEffect } from "react";
 import baseRequest from "../utils/baseRequest";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
@@ -43,12 +44,16 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    Cookies.set("role", String(userData?.role || "customer").toLowerCase(), { sameSite: "lax" });
+    Cookies.set("token", token, { sameSite: "lax" });
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    Cookies.remove("role");
+    Cookies.remove("token");
   };
 
   return (
