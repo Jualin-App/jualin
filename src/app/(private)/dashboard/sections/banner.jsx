@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 
 function BannerSection({ banners }) {
@@ -28,6 +28,8 @@ function BannerSection({ banners }) {
     return () => clearInterval(id);
   }, [paused, animating, banners.length]);
 
+  const onMouseMove = null;
+
   return (
     <section className="w-full mt-4 sm:mt-8 mb-6 px-2 sm:px-4">
       <div
@@ -43,12 +45,14 @@ function BannerSection({ banners }) {
           }}
         >
           {banners.map((banner, idx) => (
-            <img
-              key={idx}
-              src={banner.src}
-              alt={banner.alt}
-              className="min-w-full h-full object-cover"
-            />
+            <div key={idx} className="min-w-full h-full relative">
+              <img
+                src={banner.src}
+                alt={banner.alt}
+                className={`absolute inset-0 w-full h-full object-cover rounded-2xl ${idx === active ? "animate-kenburns will-change-transform" : ""}`}
+                style={idx === active ? undefined : { transform: "scale(0.995)" }}
+              />
+            </div>
           ))}
         </div>
         <div className="absolute bottom-0 inset-x-0 h-12 sm:h-16 bg-gradient-to-b from-transparent via-white/30 to-white/90 z-10 pointer-events-none" />
