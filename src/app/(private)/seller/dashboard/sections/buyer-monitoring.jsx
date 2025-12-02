@@ -58,7 +58,7 @@ const BuyerMonitoringSection = ({ orders = [] }) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / perPage));
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-6">
+    <div className="bg-white rounded-xl shadow-sm p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Monitoring Buyer</h2>
 
       {/* Search & Filter */}
