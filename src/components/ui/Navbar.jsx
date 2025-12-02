@@ -47,13 +47,13 @@ const Navbar = () => {
           ) : (
             <>
               <a
-                href="/login"
+                href="/auth/login"
                 className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
               >
                 Login
               </a>
               <a
-                href="/register"
+                href="/auth/register"
                 className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
               >
                 Register
