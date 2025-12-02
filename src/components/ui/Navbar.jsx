@@ -2,7 +2,6 @@
 import React, { useContext } from "react";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo.jsx";
-import TextButton from "./TextButton.jsx";
 import { AuthContext } from "../../context/AuthProvider.jsx";
 import SearchBar from "./SearchBar.jsx";
 

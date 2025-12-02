@@ -43,12 +43,8 @@ export default function RecommendedSection({ products }) {
             tabIndex={0}
           >
             <img
-              src={
-                product.img
-                  ? product.img
-                  : "https://via.placeholder.com/400x400?text=No+Image"
-              }
-              alt={product.name}
+              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=No+Image"}
+              alt={product.name || "Product image"}
               className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
             />
             <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
