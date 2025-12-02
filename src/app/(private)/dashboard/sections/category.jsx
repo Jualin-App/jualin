@@ -1,54 +1,65 @@
 'use client';
-import React, { useRef } from "react";
-import useHorizontalScroll from "../hooks/useHorizontalScroll.jsx";
+import React, { useState, useEffect } from "react";
 
 function CategorySection({ categories }) {
-  const scrollRef = useRef(null);
-  const [showLeft, setShowLeft] = React.useState(false);
-  const { handleScrollRight, handleScrollLeft } = useHorizontalScroll(scrollRef, setShowLeft);
+  const [visibleCount, setVisibleCount] = useState(8);
+
+  useEffect(() => {
+    function updateCount() {
+      if (window.innerWidth < 640) setVisibleCount(6);
+      else if (window.innerWidth < 1024) setVisibleCount(6);
+      else setVisibleCount(8);
+    }
+    updateCount();
+    window.addEventListener("resize", updateCount);
+    return () => window.removeEventListener("resize", updateCount);
+  }, []);
+
+  const allCategories = [
+    ...categories.slice(0, visibleCount - 1),
+    {
+      name: "More",
+      icon: null,
+      isMore: true,
+    },
+  ];
+
+  const buttonClass =
+    "flex flex-col items-center min-w-[80px] sm:min-w-[100px] md:min-w-[110px] lg:min-w-[120px] cursor-pointer bg-transparent border-none outline-none p-0 text-center transition hover:opacity-80";
 
   return (
     <section className="mb-8 w-full">
-      <div className="max-w-6xl mx-auto px-2 sm:px-4">
-        <h2 className="font-bold text-2xl mb-6 text-gray-800 text-left">Explore Jualin</h2>
-        <div className="relative flex items-center">
-          {showLeft && (
+      <div className="max-w-6xl mx-auto">
+        <div
+          className={`flex gap-6 justify-start flex-nowrap w-full
+            ${visibleCount < 8 ? "overflow-x-auto scrollbar-hide" : ""}
+          `}
+          style={{
+            WebkitOverflowScrolling: "touch",
+            paddingLeft: visibleCount < 8 ? "0.5rem" : "0",
+            paddingRight: visibleCount < 8 ? "0.5rem" : "0",
+          }}
+        >
+          {allCategories.map(cat => (
             <button
+              key={cat.name}
               type="button"
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl text-gray-700 cursor-pointer border-none outline-none transition hover:bg-gray-300 z-10"
+              className={buttonClass}
               tabIndex={0}
-              onClick={handleScrollLeft}
-              aria-label="Scroll left"
+              onClick={cat.isMore ? () => {} : undefined}
             >
-              &#60;
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 shadow">
+                {cat.isMore ? (
+                  <span className="text-2xl text-gray-400">&#62;</span>
+                ) : (
+                  <img src={cat.icon} alt={cat.name} className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain" />
+                )}
+              </div>
+              <div className={`text-xs sm:text-sm md:text-base font-medium ${cat.isMore ? "text-gray-400" : "text-gray-800"}`}>
+                {cat.name}
+              </div>
             </button>
-          )}
-          <div
-            ref={scrollRef}
-            className="flex gap-6 md:gap-10 w-full overflow-x-hidden scrollbar-hide px-12"
-            style={{ scrollBehavior: "smooth" }}
-          >
-            {categories.map(cat => (
-              <button
-                key={cat.name}
-                type="button"
-                className="flex flex-col items-center min-w-[120px] md:min-w-[140px] cursor-pointer bg-transparent border-none outline-none p-0 text-center transition hover:opacity-80"
-                tabIndex={0}
-              >
-                <div className="text-4xl mb-2">{cat.icon}</div>
-                <div className="text-base text-gray-800 font-medium">{cat.name}</div>
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl text-gray-700 cursor-pointer border-none outline-none transition hover:bg-gray-300 z-10"
-            tabIndex={0}
-            onClick={handleScrollRight}
-            aria-label="Scroll right"
-          >
-            &#62;
-          </button>
+          ))}
         </div>
       </div>
     </section>

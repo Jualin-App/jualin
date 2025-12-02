@@ -1,25 +1,22 @@
-'use client';
-import React, { useContext } from "react";
-import { AuthContext } from "../../../context/AuthProvider.jsx";
-import SearchBarSection from "./sections/searchbar.jsx";
+export const revalidate = 60;
+
 import BannerSection from "./sections/banner.jsx";
 import CategorySection from "./sections/category.jsx";
 import RecommendedSection from "./sections/recommended.jsx";
-import { banners, categories, products } from "./dummydata.jsx";
+import { banners, categories } from "../../dummydata.jsx";
+import SearchBar from "../../../components/ui/SearchBar.jsx";
+import { fetchProducts } from "../../../modules/product/service.js";
 
-function DashboardPage() {
-  const { user } = useContext(AuthContext);
+export default async function DashboardPage() {
+  const products = await fetchProducts();
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      <SearchBarSection />
-      <main className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <BannerSection banners={banners}/>
+    <main className="bg-[#fafafa]">
+      <SearchBar />
+      <BannerSection banners={banners} />
+      <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <CategorySection categories={categories} />
-        <RecommendedSection products={products}/>
-      </main>
-    </div>
-  );
-}
-
-export default DashboardPage;
+        <RecommendedSection products={products} />
+      </div>
+    </main>
+)}

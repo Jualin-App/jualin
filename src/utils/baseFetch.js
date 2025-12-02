@@ -15,10 +15,14 @@ import request from "./baseRequest";
  */
 export const fetch = async (data) => {
   try {
-    console.log(`Making ${data.method} request to ${data.url}`, data);
+    const method = (data.method || "get").toLowerCase();
     const payload = data.payload || {};
-    const response = await request[data.method.toLowerCase()](data.url, payload);
-    console.log(`Response from ${data.url}:`, response.data);
+    let response;
+    if (method === "get") {
+      response = await request.get(data.url, { params: payload });
+    } else {
+      response = await request[method](data.url, payload);
+    }
     return response.data;
   } catch (error) {
     console.error(`Error in fetch for ${data.url}:`, error);

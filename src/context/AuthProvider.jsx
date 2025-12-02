@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { createContext, useState, useEffect } from "react";
 import baseRequest from "../utils/baseRequest";
 
@@ -9,7 +9,8 @@ const API_URL = process.env.API_URL || "http://localhost:8000/api/v1";
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   useEffect(() => {
     async function fetchUser() {
