@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const axiosBaseConfig = {
-  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}`,
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`,
   headers: {
     "X-Client-Type": "web",
   },
@@ -36,7 +36,7 @@ request.interceptors.response.use(
       try {
         const refreshToken = Cookies.get("refreshToken");
         const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/auth/refresh-token`,
+          `/api/v1/refresh-token`,
           { token: refreshToken },
           {
             headers: { "X-Client-Type": "web" },
@@ -44,7 +44,10 @@ request.interceptors.response.use(
           }
         );
         const newAccessToken = res.data.data.accessToken;
-        Cookies.set("accessToken", newAccessToken, { secure: true, sameSite: "strict" });
+        Cookies.set("accessToken", newAccessToken, {
+          secure: true,
+          sameSite: "strict",
+        });
         request.defaults.headers["Authorization"] = `Bearer ${newAccessToken}`;
         return request(originalRequest);
       } catch (refreshError) {
@@ -53,8 +56,10 @@ request.interceptors.response.use(
         window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
-    } else if (error.response && error.response.status === 403) {
-      throw Object.assign(new Error("Unauthorized Access"), { statusCode: 403 });
+    } else if (error.response.status === 403) {
+      throw Object.assign(new Error("Unauthorized Access"), {
+        statusCode: 403,
+      });
     }
     return Promise.reject(error);
   }

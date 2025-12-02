@@ -1,10 +1,14 @@
 "use client";
 import React, { createContext, useState, useEffect } from "react";
 import baseRequest from "../utils/baseRequest";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
-const API_URL = process.env.API_URL || "http://localhost:8000/api/v1";
+const API_URL =
+ process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
+    : "http://localhost:8000/api/v1";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -63,12 +67,16 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    Cookies.set("role", String(userData?.role || "customer").toLowerCase(), { sameSite: "lax" });
+    Cookies.set("token", token, { sameSite: "lax" });
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    Cookies.remove("role");
+    Cookies.remove("token");
   };
 
   // Demo login untuk testing

@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import SearchBar from "../../../components/ui/SearchBar.jsx";
 import ProductDetailSection from "./sections/detail.jsx";
 import RecommendedSection from "./sections/recommended.jsx";
 import {
@@ -11,15 +10,16 @@ import {
 export default async function ProductPage({ searchParams }) {
   const params = await searchParams;
   const id = params?.id;
-  const product = id ? await fetchProductById(id) : null;
-  const products = await fetchProducts();
+  const [product, products] = await Promise.all([
+    id ? fetchProductById(id) : null,
+    fetchProducts(),
+  ]);
 
   return (
     <main className="bg-[#fafafa]">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <SearchBar />
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 pt-8">
         <ProductDetailSection product={product} />
-        <RecommendedSection products={products} />
+        <RecommendedSection products={products} initialFilter={product?.category || "all"} />
       </div>
     </main>
   );

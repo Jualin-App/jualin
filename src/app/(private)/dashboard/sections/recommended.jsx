@@ -1,19 +1,33 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import ProductFilter from "./filter.jsx";
 
 export default function RecommendedSection({ products }) {
   const [activeFilter, setActiveFilter] = useState("all");
+  const searchParams = useSearchParams();
+  const q = (searchParams.get("q") || "").trim().toLowerCase();
 
-  const filteredProducts =
-    activeFilter === "all"
-      ? products
-      : products.filter((p) => p.category === activeFilter);
+  const filteredProducts = useMemo(() => {
+    const base =
+      activeFilter === "all"
+        ? products
+        : products.filter((p) => p.category === activeFilter);
+    if (!q) return base;
+    return base.filter((p) => {
+      const name = (p.name || "").toLowerCase();
+      const brand = (p.brand || "").toLowerCase();
+      const desc = (p.description || "").toLowerCase();
+      return (
+        name.includes(q) || brand.includes(q) || desc.includes(q)
+      );
+    });
+  }, [products, activeFilter, q]);
 
   return (
-    <section className="w-full my-8">
+    <section className="w-full my-8 animate-fade-in">
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Featured Products
+        Produk yang mungkin kamu suka
       </h2>
       <ProductFilter
         activeFilter={activeFilter}
@@ -24,18 +38,14 @@ export default function RecommendedSection({ products }) {
           <a
             key={product.id}
             href={`/product?id=${product.id}`}
-            className="bg-white rounded-2xl shadow p-6 flex flex-col items-start transition hover:shadow-lg hover:-translate-y-1 active:scale-95 focus:outline-none"
+            className="group bg-white rounded-2xl shadow p-6 flex flex-col items-start transition-all duration-200 ease-out hover:shadow-xl hover:-translate-y-1 active:scale-95 focus:outline-none"
             style={{ cursor: "pointer" }}
             tabIndex={0}
           >
             <img
-              src={
-                product.img
-                  ? product.img
-                  : "https://via.placeholder.com/400x400?text=No+Image"
-              }
-              alt={product.name}
-              className="w-full h-60 object-cover rounded-xl mb-4"
+              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=No+Image"}
+              alt={product.name || "Product image"}
+              className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
             />
             <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
               {product.brand || product.category}
