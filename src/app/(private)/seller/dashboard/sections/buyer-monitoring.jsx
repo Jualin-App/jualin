@@ -58,7 +58,7 @@ const BuyerMonitoringSection = ({ orders = [] }) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / perPage));
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-6">
+    <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-200 p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Monitoring Buyer</h2>
 
       {/* Search & Filter */}
@@ -99,7 +99,7 @@ const BuyerMonitoringSection = ({ orders = [] }) => {
           </thead>
           <tbody>
             {filtered.map((activity, index) => (
-              <tr key={activity.id} className={`${index % 2 === 0 ? "bg-red-50" : "bg-white"}`}>
+              <tr key={activity.id} className="hover:bg-gray-50 transition-colors duration-200">
                 <td className="py-3 px-2">
                   <img src="/colorful-sneaker-shoe-product.jpg" alt="Product" className="w-12 h-12 rounded-lg object-cover" />
                 </td>
