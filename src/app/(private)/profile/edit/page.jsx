@@ -1,13 +1,18 @@
 "use client"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useContext } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/context/AuthProvider"
+import { AuthContext } from "@/context/AuthProvider"
 import { api } from "@/lib/axios"
-import Header from "@/components/common/Header"
+import Navbar from "@/components/ui/Navbar"
 
 export default function EditProfilePage() {
   const router = useRouter()
-  const { user, updateUser } = useAuth()
+  const { user, setUser } = useContext(AuthContext)
+  
+  const updateUser = (userData) => {
+    setUser(userData)
+    localStorage.setItem("user", JSON.stringify(userData))
+  }
   const initial = useMemo(
     () => ({
       fullName: user?.fullName || "",
@@ -145,7 +150,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Navbar />
       
       <div className="flex">
         {/* Sidebar */}
