@@ -37,7 +37,7 @@ export default function RecommendedSection({ products }) {
         {filteredProducts.map((product, idx) => (
           <a
             key={product.id}
-            href={`/product?id=${product.id}`}
+            href={`/product/${product.id}`}
             className="group bg-white rounded-2xl shadow p-6 flex flex-col items-start transition-all duration-200 ease-out hover:shadow-xl hover:-translate-y-1 active:scale-95 focus:outline-none"
             style={{ cursor: "pointer" }}
             tabIndex={0}
