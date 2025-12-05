@@ -2,7 +2,6 @@
 import React, { useContext } from "react";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo.jsx";
-import TextButton from "./TextButton.jsx";
 import { AuthContext } from "../../context/AuthProvider.jsx";
 import SearchBar from "./SearchBar.jsx";
 
@@ -26,8 +25,8 @@ const Navbar = () => {
           {user ? (
             <>
               <a
-                href={`/profile/${user.username || user.id}`}
-                className="flex items-center gap-2"
+              href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`}
+              className="flex items-center gap-2"
               >
                 <img
                   src={user?.avatar || "/ProfilePhoto.png"}
@@ -48,13 +47,13 @@ const Navbar = () => {
           ) : (
             <>
               <a
-                href="/login"
+                href="/auth/login"
                 className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
               >
                 Login
               </a>
               <a
-                href="/register"
+                href="/auth/register"
                 className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
               >
                 Register

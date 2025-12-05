@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect } from "react";
 import baseRequest from "../utils/baseRequest";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 const API_URL = process.env.NEXT_PUBLIC_API_URL
@@ -67,25 +68,20 @@ export function AuthProvider({ children }) {
     fetchUser();
   }, [token]);
 
-  const login = async (userData, token) => {
-    try {
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-
-      await syncUserToFirestore(userData);
-    } catch (err) {
-      console.error("Error logging in:", err);
-      setUser(null);
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-    }
+  const login = (userData, token) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+    Cookies.set("role", String(userData?.role || "customer").toLowerCase(), { sameSite: "lax" });
+    Cookies.set("token", token, { sameSite: "lax" });
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    Cookies.remove("role");
+    Cookies.remove("token");
   };
 
   return (
