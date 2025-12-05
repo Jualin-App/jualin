@@ -33,46 +33,58 @@ export async function getOrCreateChatRoom(
   sellerInfo,
   productId = null
 ) {
+  // Convert ke string untuk konsistensi
+  const customerIdStr = customerId.toString();
+  const sellerIdStr = sellerId.toString();
+
   // Cek apakah chat room sudah ada
+  // PERBAIKAN: Query yang lebih reliable
   const chatsRef = collection(db, "chats");
   const q = query(
     chatsRef,
-    where("participants", "in", [
-      [customerId, sellerId],
-      [sellerId, customerId],
-    ])
+    where("participants", "array-contains", customerIdStr)
   );
 
   const snapshot = await getDocs(q);
   
-  if (!snapshot.empty) {
-    // Chat room sudah ada
-    const existingChat = snapshot.docs[0];
+  // Cari chat room yang memiliki kedua participant
+  const existingChat = snapshot.docs.find((doc) => {
+    const participants = doc.data().participants;
+    return participants.includes(customerIdStr) && participants.includes(sellerIdStr);
+  });
+
+  if (existingChat) {
+    console.log('✅ Chat room already exists:', existingChat.id);
     return existingChat.id;
   }
 
   // Buat chat room baru
   const chatData = {
-    participants: [customerId, sellerId],
+    participants: [customerIdStr, sellerIdStr].sort(), // Sort untuk konsistensi
     participantDetails: {
-      [customerId]: {
+      [customerIdStr]: {
         name: customerInfo.name,
         avatar: customerInfo.avatar || null,
         role: "customer",
       },
-      [sellerId]: {
+      [sellerIdStr]: {
         name: sellerInfo.name,
         avatar: sellerInfo.avatar || null,
         role: "seller",
       },
     },
-    productId: productId,
+    productId: productId || null,
     lastMessage: null,
+    unreadCount: {
+      [customerIdStr]: 0,
+      [sellerIdStr]: 0,
+    },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
 
   const docRef = await addDoc(chatsRef, chatData);
+  console.log('✅ New chat room created:', docRef.id);
   return docRef.id;
 }
 
@@ -83,14 +95,15 @@ export async function getOrCreateChatRoom(
  * @param {string} senderName - Nama pengirim
  * @param {string} text - Isi pesan
  */
-export async function sendMessage(chatId, senderId, senderName, text) {
+export async function sendMessage(chatId, senderId, senderName, text, senderAvatar = null) {
   const messagesRef = collection(db, "chats", chatId, "messages");
   
   // Tambah pesan
   const messageData = {
     text: text,
-    senderId: senderId,
+    senderId: senderId.toString(),
     senderName: senderName,
+    senderAvatar: senderAvatar,
     timestamp: serverTimestamp(),
     read: false,
   };
@@ -103,10 +116,12 @@ export async function sendMessage(chatId, senderId, senderName, text) {
     lastMessage: {
       text: text,
       timestamp: serverTimestamp(),
-      senderId: senderId,
+      senderId: senderId.toString(),
     },
     updatedAt: serverTimestamp(),
   });
+
+  console.log('✅ Message sent successfully');
 }
 
 /**
@@ -119,17 +134,25 @@ export function getUserChatRooms(userId, callback) {
   const chatsRef = collection(db, "chats");
   const q = query(
     chatsRef,
-    where("participants", "array-contains", userId),
+    where("participants", "array-contains", userId.toString()),
     orderBy("updatedAt", "desc")
   );
 
-  return onSnapshot(q, (snapshot) => {
-    const chats = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    callback(chats);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const chats = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log('📩 Chat rooms updated:', chats.length, 'chats');
+      callback(chats);
+    },
+    (error) => {
+      console.error('❌ Error fetching chat rooms:', error);
+      callback([]);
+    }
+  );
 }
 
 /**
@@ -142,13 +165,21 @@ export function getChatMessages(chatId, callback) {
   const messagesRef = collection(db, "chats", chatId, "messages");
   const q = query(messagesRef, orderBy("timestamp", "asc"));
 
-  return onSnapshot(q, (snapshot) => {
-    const messages = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    callback(messages);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const messages = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log('💬 Messages updated:', messages.length, 'messages');
+      callback(messages);
+    },
+    (error) => {
+      console.error('❌ Error fetching messages:', error);
+      callback([]);
+    }
+  );
 }
 
 /**
@@ -180,4 +211,25 @@ export async function getChatRoomInfo(chatId) {
     };
   }
   return null;
+}
+
+export async function incrementUnreadCount(chatId, receiverId) {
+  const chatRef = doc(db, "chats", chatId);
+  const chatSnap = await getDoc(chatRef);
+  
+  if (chatSnap.exists()) {
+    const currentUnread = chatSnap.data().unreadCount || {};
+    const newCount = (currentUnread[receiverId.toString()] || 0) + 1;
+    
+    await updateDoc(chatRef, {
+      [`unreadCount.${receiverId.toString()}`]: newCount,
+    });
+  }
+}
+
+export async function resetUnreadCount(chatId, userId) {
+  const chatRef = doc(db, "chats", chatId);
+  await updateDoc(chatRef, {
+    [`unreadCount.${userId.toString()}`]: 0,
+  });
 }

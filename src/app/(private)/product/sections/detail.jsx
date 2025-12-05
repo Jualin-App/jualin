@@ -1,17 +1,105 @@
 "use client";
-import React from "react";
+import React, { useContext, useState } from "react";
+import { useRouter } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 import Toast from "../../../../components/ui/Toast";
 import useMidtransPayment from "../hooks/useMidtransPayment";
+import { ChatContext } from "@/context/ChatProvider";
+import { AuthContext } from "@/context/AuthProvider";
 
-export default function ProductDetailSection({ product }) {
+export default function ProductDetailSection({ product, seller }) {
+  const router = useRouter();
+  const { user } = useContext(AuthContext);
+  const { startChat } = useContext(ChatContext);
   const { pay, loading, toast, setToast } = useMidtransPayment();
+  const [isStartingChat, setIsStartingChat] = useState(false);
 
-  if (!product)
+  const handleChatSeller = async () => {
+    // Check if user is logged in
+    if (!user) {
+      setToast({
+        message: "Please login first to chat with seller",
+        type: "error",
+      });
+      setTimeout(() => router.push("/login"), 2000);
+      return;
+    }
+
+    // Ensure seller exists and handle error-shaped responses
+    if (!seller || !seller.id) {
+      // API mungkin mengembalikan objek error: { success: false, status_code: 401, message: "Unauthenticated." }
+      if (seller && seller.success === false) {
+        if (seller.status_code === 401) {
+          setToast({
+            message: "Session expired. Please login to continue.",
+            type: "error",
+          });
+          setTimeout(() => router.push("/auth/login"), 1500);
+          return;
+        }
+        setToast({
+          message: seller.message || "Seller information is not available",
+          type: "error",
+        });
+        return;
+      }
+
+      setToast({
+        message: "Seller information is not available",
+        type: "error",
+      });
+      return;
+    }
+
+    // Check if user is the seller (tidak bisa chat dengan diri sendiri)
+    if (user?.id && seller?.id && user.id === seller.id) {
+      setToast({
+        message: "You cannot chat with yourself",
+        type: "error",
+      });
+      return;
+    }
+
+    setIsStartingChat(true);
+
+    try {
+      // Prepare seller info
+      const sellerInfo = {
+        name: seller?.username || seller?.email || "Seller",
+        avatar: seller?.avatar || seller?.profile_picture || null,
+      };
+
+      console.log("🚀 Starting chat with seller:", sellerInfo);
+
+      // Start chat dengan seller
+      await startChat(
+        seller.id,
+        sellerInfo,
+        product.id // productId
+      );
+
+      console.log("✅ Chat created successfully");
+
+      // Redirect ke halaman chat
+      router.push("/chat");
+    } catch (error) {
+      console.error("❌ Error starting chat:", error);
+      setToast({
+        message: "Failed to start chat. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setIsStartingChat(false);
+    }
+  };
+
+  if (!product) {
     return (
       <div className="text-center py-12 text-gray-300">
         Stok produk kosong atau telah dihapus
       </div>
     );
+  }
 
   return (
     <>
@@ -25,7 +113,7 @@ export default function ProductDetailSection({ product }) {
       <div className="flex flex-col md:flex-row gap-8 items-start bg-white rounded-2xl shadow p-6">
         <img
           src={
-            product.img || "https://via.placeholder.com/400x400?text=No+Image"
+            product.image || "https://via.placeholder.com/400x400?text=No+Image"
           }
           alt={product.name}
           className="w-full md:w-1/2 h-80 object-cover rounded-2xl shadow"
@@ -49,13 +137,14 @@ export default function ProductDetailSection({ product }) {
             >
               {loading ? "Processing..." : "Buy Now"}
             </button>
-            <a
-              href="/chat"
+            <button
+              onClick={handleChatSeller}
               className="px-6 py-2 rounded-full font-semibold border border-gray-300 text-gray-800 bg-white hover:bg-gray-100 transition shadow"
               aria-label="Open chat"
+              disabled={isStartingChat}
             >
-              Chat
-            </a>
+              {isStartingChat ? "Starting chat..." : "Chat"}
+            </button>
           </div>
         </div>
       </div>
