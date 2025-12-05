@@ -1,89 +1,115 @@
 // Seller Dashboard API Services
+// Menggunakan instance axios `api` agar otomatis menyertakan baseURL + Authorization header
+import api from "@/lib/axios";
 
-const fetchSellerStats = async (sellerId, period = 'daily') => {
+// Sementara: hitung statistik income di FE dari list transaksi seller
+const fetchSellerStats = async (sellerId, period = "daily") => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/seller/${sellerId}/stats?period=${period}`
+    const orders = await fetchSellerOrders(sellerId, "all", 100);
+
+    const totalIncome = orders.reduce(
+      (sum, trx) => sum + (Number(trx.total_amount) || 0),
+      0
     );
-    const data = await res.json();
-    return data.data;
+
+    return {
+      period,
+      totalIncome,
+    };
   } catch (err) {
-    console.error('Error fetching seller stats:', err);
+    console.error("Error computing seller stats:", err);
     return null;
   }
 };
 
-const fetchSellerOrders = async (sellerId, status = 'all', limit = 10) => {
+// Ambil transaksi yang terkait dengan user yang sedang login (seller/customer)
+const fetchSellerOrders = async (_sellerId, _status = "all", limit = 10) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/seller/${sellerId}/orders?status=${status}&limit=${limit}`
-    );
-    const data = await res.json();
-    return Array.isArray(data.data) ? data.data : [];
+    const response = await api.get("/api/v1/transactions", {
+      params: {
+        per_page: limit,
+      },
+    });
+
+    const payload = response.data?.data;
+
+    // Laravel paginator: { data: [...], current_page, ... }
+    if (payload && Array.isArray(payload.data)) {
+      return payload.data;
+    }
+
+    // Fallback jika backend mengembalikan array langsung
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+
+    return [];
   } catch (err) {
-    console.error('Error fetching seller orders:', err);
+    console.error("Error fetching seller orders:", err);
     return [];
   }
 };
 
+// Ambil produk milik seller (backend akan kita lengkapi dengan filter seller_id)
 const fetchSellerProducts = async (sellerId, limit = 6) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/seller/${sellerId}/products?limit=${limit}`
-    );
-    const data = await res.json();
-    return Array.isArray(data.data) ? data.data : [];
+    const response = await api.get("/api/v1/products", {
+      params: {
+        seller_id: sellerId,
+        per_page: limit,
+        sort_by: "created_at",
+        sort_dir: "desc",
+      },
+    });
+
+    const payload = response.data?.data;
+
+    if (payload && Array.isArray(payload.data)) {
+      return payload.data;
+    }
+
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+
+    return [];
   } catch (err) {
-    console.error('Error fetching seller products:', err);
+    console.error("Error fetching seller products:", err);
     return [];
   }
 };
 
-const verifyOrder = async (orderId, sellerId) => {
+const verifyOrder = async (orderId) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/seller/${sellerId}/orders/${orderId}/verify`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'verified' })
-      }
-    );
-    const data = await res.json();
-    return data.success || false;
+    // Catatan: backend belum punya endpoint khusus verifikasi,
+    // endpoint ini disiapkan untuk ketika fitur tersedia.
+    const response = await api.post(`/api/v1/transactions/${orderId}`, {
+      status: "verified",
+    });
+
+    return !!response.data?.success;
   } catch (err) {
-    console.error('Error verifying order:', err);
+    console.error("Error verifying order:", err);
     return false;
   }
 };
 
-const updateProduct = async (productId, sellerId, payload) => {
+const updateProduct = async (productId, _sellerId, payload) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/seller/${sellerId}/products/${productId}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }
-    );
-    const data = await res.json();
-    return data.data || null;
+    const response = await api.put(`/api/v1/products/${productId}`, payload);
+    return response.data?.data ?? null;
   } catch (err) {
-    console.error('Error updating product:', err);
+    console.error("Error updating product:", err);
     return null;
   }
 };
 
-const deleteProduct = async (productId, sellerId) => {
+const deleteProduct = async (productId, _sellerId) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/seller/${sellerId}/products/${productId}`,
-      { method: 'DELETE' }
-    );
-    return res.ok;
+    const response = await api.delete(`/api/v1/products/${productId}`);
+    return response.status === 200 || response.status === 204;
   } catch (err) {
-    console.error('Error deleting product:', err);
+    console.error("Error deleting product:", err);
     return false;
   }
 };
@@ -94,5 +120,5 @@ export {
   fetchSellerProducts,
   verifyOrder,
   updateProduct,
-  deleteProduct
+  deleteProduct,
 };
