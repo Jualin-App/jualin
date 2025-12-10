@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect } from "react";
 import baseRequest from "../utils/baseRequest";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { api } from "@/lib/axios";
 import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
@@ -76,12 +77,35 @@ export function AuthProvider({ children }) {
     Cookies.set("token", token, { sameSite: "lax" });
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    Cookies.remove("role");
-    Cookies.remove("token");
+  const logout = async () => {
+    const accessToken =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    try {
+      await api.post(
+        "/api/v1/logout",
+        null,
+        accessToken
+          ? {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          : undefined
+      );
+    } catch (error) {
+      console.error("Error logging out:", error);
+      // Tetap lanjut bersihkan token di client agar user benar-benar keluar
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");
+      setUser(null);
+      Cookies.remove("role");
+      Cookies.remove("token");
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+    }
   };
 
   return (
