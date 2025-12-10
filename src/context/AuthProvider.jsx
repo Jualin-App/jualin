@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
           email: userData.email,
           avatar: userData.avatar || userData.profile_picture || null,
           role: userData.role || "buyer",
-          updatedAt: new Date(),
+          updatedAt: new Date(),  
         },
         { merge: true }
       ); // merge: true = update tanpa hapus field lain
