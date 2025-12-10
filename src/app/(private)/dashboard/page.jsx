@@ -6,9 +6,6 @@ import { fetchProducts } from "../../../modules/product/service.js";
 
 export default async function DashboardPage() {
   const products = await fetchProducts();
-
-  console.log(products);
-
   return (
     <main className="bg-white">
       <BannerSection banners={banners} />
