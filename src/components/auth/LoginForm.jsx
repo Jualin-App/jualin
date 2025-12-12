@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
+import Cookies from 'js-cookie';
 
 const LoginForm = ({ onSuccess, onError }) => {
   const router = useRouter();
@@ -51,14 +52,17 @@ const LoginForm = ({ onSuccess, onError }) => {
       }
 
       localStorage.setItem('token', data.data.access_token);
+      const role = String(data.data.role || 'customer').toLowerCase();
       localStorage.setItem('user', JSON.stringify({
         email: data.data.email,
         username: data.data.username,
-        role: data.data.role || 'customer'
+        role
       }));
+      Cookies.set('role', role, { sameSite: 'lax' });
+      Cookies.set('token', data.data.access_token, { sameSite: 'lax' });
 
       onSuccess?.();
-      router.push('/dashboard');
+      router.push(role === 'seller' ? '/seller/dashboard' : '/dashboard');
     } catch (error) {
       onError?.(error.message || 'Login failed - please check your credentials');
     } finally {

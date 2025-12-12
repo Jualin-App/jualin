@@ -14,13 +14,16 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  /* Tetap gunakan tema terang untuk aplikasi,
+     walaupun sistem memakai dark mode */
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
   }
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: 'Inter', Arial, Helvetica, sans-serif;
@@ -35,6 +38,18 @@ body {
   to {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+/* Smooth fade-in upward */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -55,6 +70,10 @@ body {
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
 }
 
 .animate-blob {
@@ -88,4 +107,30 @@ body {
 
 .focus\:ring-brand-red:focus {
   --tw-ring-color: #E83030;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in,
+  .animate-fade-in {
+    animation: none !important;
+  }
+  .animate-kenburns {
+    animation: none !important;
+  }
+}
+
+@keyframes kenburns {
+  0% {
+    transform: scale(1.03) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate(10px, -10px);
+  }
+  100% {
+    transform: scale(1.03) translate(0, 0);
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns 16s ease-in-out infinite;
 }

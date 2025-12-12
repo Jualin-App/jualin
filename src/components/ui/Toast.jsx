@@ -16,7 +16,7 @@ const Toast = ({ message, type, onClose }) => {
   };
 
   return (
-    <div className={`fixed top-4 right-4 ${types[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in`}>
+    <div className={`fixed top-4 right-4 ${types[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in transition-shadow duration-200 hover:shadow-xl`}>
       <div className="flex items-center">
         <span className="mr-2"></span>
         {message}

@@ -8,6 +8,15 @@ const nextConfig = {
       },
     ];
   },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: '/:path((?!dashboard).*)', 
+  //       destination: '/dashboard',
+  //       permanent: false,
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;

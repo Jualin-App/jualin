@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import Select from "../ui/Select";
+import Cookies from "js-cookie";
 
 const RegisterForm = ({ onSuccess, onError }) => {
   const router = useRouter();
@@ -89,17 +90,20 @@ const RegisterForm = ({ onSuccess, onError }) => {
 
       // Simpan token dan user data dari response backend
       localStorage.setItem("token", data.access_token);
+      const role = String(data?.user?.role || formData.role || "customer").toLowerCase();
       localStorage.setItem(
         "user",
         JSON.stringify({
           email: data.user.email,
           username: data.user.username,
-          role: data.user.role,
+          role,
         })
       );
+      Cookies.set("role", role, { sameSite: "lax" });
+      Cookies.set("token", data.access_token, { sameSite: "lax" });
 
       onSuccess?.();
-      router.push("/dashboard");
+      router.push(role === "seller" ? "/seller/dashboard" : "/dashboard");
     } catch (error) {
       onError?.(error.message || "Registration failed - please try again");
     } finally {

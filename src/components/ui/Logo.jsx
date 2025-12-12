@@ -12,7 +12,7 @@ const Logo = ({ size = 'xl', className = '' }) => {
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <Link href="/dashboard" aria-label="Go to Dashboard" className="relative cursor-pointer">
+      <Link href="/dashboard" aria-label="Go to Dashboard" className="relative cursor-pointer hover:opacity-80 transition-opacity duration-200 hover:scale-105 transform">
         <Image
           src="/Logo.png?v=2"
           alt="Jualin"
