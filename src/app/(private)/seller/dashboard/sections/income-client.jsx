@@ -15,7 +15,7 @@ const IncomeSectionClient = ({ sellerId }) => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get("/api/v1/transactions/income/statistics", {
+      const response = await api.get("/api/v1/transactions", {
         params: { period },
       });
 
