@@ -86,7 +86,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                       trigger={<MoreHorizontal className="h-4 w-4" />}
                       items={[
                         { label: "Edit Produk", onClick: () => handleEdit(product.id) },
-                        { label: "Lihat Produk", onClick: () => handleView(product.id) },
                         { label: "Hapus Produk", onClick: () => handleDelete(product.id), variant: "danger" }
                       ]}
                     />
