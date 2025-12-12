@@ -17,6 +17,7 @@ const IncomeSectionClient = ({ sellerId }) => {
       setError(null);
       const response = await api.get("/api/v1/transactions/income/statistics", {
         params: { period },
+        timeout: 30000, // 30 seconds timeout for this request
       });
 
       const data = response.data?.data;
@@ -33,7 +34,11 @@ const IncomeSectionClient = ({ sellerId }) => {
       }
     } catch (err) {
       console.error("Error fetching income data:", err);
-      setError("Failed to load income data");
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        setError("Request timed out. Please try again or contact support if the issue persists.");
+      } else {
+        setError("Failed to load income data");
+      }
       setChartData([]);
       setBalance(0);
       setTransferred(0);
