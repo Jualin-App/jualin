@@ -1,12 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import { TOP_BAR_MESSAGES } from "@/constants/messages";
+import { CAROUSEL_CONFIG } from "@/constants/animations";
 
-const TEXTS = [
-  "Yuk hemat bareng! Jual atau beli barang bekas berkualitas dengan aman dan cepat.",
-  "Dapatkan produk terbaru dengan harga terbaik setiap hari!",
-  "Tetap waspada! Jangan lakukan pembayaran di luar platform untuk menghindari penipuan.",
-  "Pastikan selalu cek identitas penjual & gunakan fitur chat resmi untuk transaksi aman.",
-];
+const SLIDE_INTERVAL = 3000;
+const ANIMATION_DURATION = CAROUSEL_CONFIG.ANIMATION_DURATION;
 
 function TopBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,14 +16,14 @@ function TopBar() {
       // Mulai slide out (ke atas) - cepat
       setIsSlidingOut(true);
       setJustChanged(false);
-      
+
       // Setelah slide out selesai, ganti teks dan slide in dari bawah
       setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % TEXTS.length);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % TOP_BAR_MESSAGES.length);
         setJustChanged(true);
         setIsSlidingOut(false);
-      }, 300); // Durasi animasi cepat (300ms)
-    }, 3000); // Jeda 3 detik per teks
+      }, ANIMATION_DURATION);
+    }, SLIDE_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);
@@ -42,7 +40,7 @@ function TopBar() {
         }`}
         key={currentIndex}
       >
-        Most News: {TEXTS[currentIndex]}
+        Most News: {TOP_BAR_MESSAGES[currentIndex]}
       </div>
     </div>
   );

@@ -4,19 +4,12 @@ import { useEffect, useState } from "react";
 import IncomeSection from "./sections/income.jsx";
 import RecentlyAddedSection from "./sections/recently-added.jsx";
 import BuyerMonitoringSection from "./sections/buyer-monitoring.jsx";
-import {
-  fetchSellerProducts,
-  fetchSellerOrders,
-} from "@/modules/seller/service.js";
+import { useSellerDashboard } from "@/hooks/seller/useSellerDashboard";
 
 export default function SellerDashboardPage() {
   const [sellerId, setSellerId] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   useEffect(() => {
-    // Ambil sellerId dari localStorage user (fallback ke 1 jika belum ada)
     const storedUser =
       typeof window !== "undefined"
         ? JSON.parse(localStorage.getItem("user") || "null")
@@ -24,32 +17,16 @@ export default function SellerDashboardPage() {
 
     const id = storedUser?.id || 1;
     setSellerId(id);
-
-    const load = async () => {
-      setIsLoadingProducts(true);
-      try {
-        const [p, o] = await Promise.all([
-          fetchSellerProducts(id),
-          fetchSellerOrders(id, "all", 4),
-        ]);
-        setProducts(Array.isArray(p) ? p : []);
-        setOrders(Array.isArray(o) ? o : []);
-      } catch (err) {
-        console.error("Failed to load seller dashboard data:", err);
-      } finally {
-        setIsLoadingProducts(false);
-      }
-    };
-
-    load();
   }, []);
+
+  const { products, orders, isLoading } = useSellerDashboard(sellerId);
 
   return (
     <main className="bg-white min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-8">
         <IncomeSection sellerId={sellerId || 1} />
-        <RecentlyAddedSection products={products} isLoading={isLoadingProducts} />
-        <BuyerMonitoringSection orders={orders} isLoading={isLoadingProducts} />
+        <RecentlyAddedSection products={products} isLoading={isLoading} />
+        <BuyerMonitoringSection orders={orders} isLoading={isLoading} />
       </div>
     </main>
   );

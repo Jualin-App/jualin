@@ -1,47 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ProductDetailSection from "../sections/detail.jsx";
 import RecommendedSection from "../sections/recommended.jsx";
+import { useProductDetail } from "@/hooks/product/useProductDetail";
+import { useSellerInfo } from "@/hooks/product/useSellerInfo";
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const [product, setProduct] = useState(null);
-  const [seller, setSeller] = useState(null);
-  const [recommendedProducts, setRecommendedProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const productId = Number(params.id);
 
-  useEffect(() => {
-    const fetchProductAndSeller = async () => {
-      try {
-        // Fetch product detail
-        const productRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${params.id}`
-        );
-        const productData = await productRes.json();
-        console.log("productData", productData);
+  const { product, isLoading: productLoading } = useProductDetail(productId);
+  const { seller, isLoading: sellerLoading } = useSellerInfo(product?.seller_id || null);
 
-        // ✅ Fix: productData.data (bukan productData.data.data)
-        setProduct(productData.data);
-
-        // ✅ Fix: seller_id ada di productData.data
-        if (productData.data.seller_id) {
-          const sellerRes = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${productData.data.seller_id}`
-          );
-          const sellerData = await sellerRes.json();
-          console.log("sellerData", sellerData);
-          setSeller(sellerData.data);
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProductAndSeller();
-  }, [params.id]);
+  const loading = productLoading || sellerLoading;
 
   return (
     <main className="bg-[#fafafa]">

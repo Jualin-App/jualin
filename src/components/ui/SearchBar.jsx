@@ -1,45 +1,15 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React from "react";
+import { useSearchParamSync } from "@/hooks/common/useSearchParamSync";
 
 function SearchBar({ inline = false, className = "" }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const initialQ = useMemo(() => searchParams.get("q") || "", [searchParams]);
-  const [q, setQ] = useState(initialQ);
-  const [isFocused, setIsFocused] = useState(false);
-
-  useEffect(() => {
-    if (!isFocused) {
-      setQ(initialQ);
-    }
-  }, [initialQ, isFocused]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      const nextQ = q.trim();
-      const currentQ = params.get("q") || "";
-      if (nextQ) {
-        params.set("q", nextQ);
-      } else {
-        params.delete("q");
-      }
-      const qs = params.toString();
-      const url = qs ? `${pathname}?${qs}` : pathname;
-      if (nextQ !== currentQ) {
-        router.replace(url);
-      }
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [q, pathname, router, searchParams]);
+  const { value, setValue, isFocused, setIsFocused } = useSearchParamSync();
 
   const inputEl = (
     <input
       type="text"
-      value={q}
-      onChange={(e) => setQ(e.target.value)}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
       placeholder="Cari produk, merek, atau deskripsi"

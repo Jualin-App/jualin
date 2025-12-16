@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo.jsx";
 import { AuthContext } from "../../context/AuthProvider.jsx";
@@ -18,7 +18,9 @@ const Navbar = () => {
         </div>
         {showSearch && (
           <div className="flex-1">
-            <SearchBar inline />
+            <Suspense fallback={<div className="w-full px-4 py-2.5 bg-gray-100 rounded-2xl animate-pulse"></div>}>
+              <SearchBar inline />
+            </Suspense>
           </div>
         )}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
