@@ -40,10 +40,8 @@ const LoginForm = ({ onSuccess, onError }) => {
       });
 
       const data = await response.json();
-      console.log('Login response:', data);
 
       if (!response.ok) {
-        // Ambil pesan error dari backend, bisa dari data.message atau data.error
         const errorMsg =
           data.message ||
           (data.errors && Object.values(data.errors).flat().join(', ')) ||

@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import baseRequest from "../utils/baseRequest";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -7,6 +7,14 @@ import { api } from "@/lib/axios";
 import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
   : "http://localhost:8000/api/v1";
@@ -29,15 +37,12 @@ export function AuthProvider({ children }) {
           email: userData.email,
           avatar: userData.avatar || userData.profile_picture || null,
           role: userData.role || "buyer",
-          updatedAt: new Date(),
+          updatedAt: new Date(),  
         },
         { merge: true }
-      ); // merge: true = update tanpa hapus field lain
-
-      console.log("✅ User synced to Firestore:", userData.id);
+      ); 
     } catch (error) {
       console.error("❌ Error syncing user to Firestore:", error);
-      // Tidak throw error, karena sync adalah optional
     }
   };
 

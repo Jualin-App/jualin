@@ -32,14 +32,11 @@ export function ChatProvider({ children }) {
       return;
     }
 
-    console.log("🔥 Subscribe ke chatrooms untuk user:", user.id);
-
     const unsubscribe = getUserChatRooms(user.id, (chatsData) => {
       setChats(chatsData);
     });
 
     return () => {
-      console.log("🔴 Unsubscribe dari chatrooms");
       unsubscribe();
     };
   }, [user?.id]);
@@ -49,8 +46,6 @@ export function ChatProvider({ children }) {
       setMessages([]);
       return;
     }
-
-    console.log("🔥 Subscribe ke messages untuk chat:", currentChat.id);
 
     const unsubscribe = getChatMessages(currentChat.id, (messagesData) => {
       setMessages(messagesData);
@@ -63,7 +58,6 @@ export function ChatProvider({ children }) {
     }
 
     return () => {
-      console.log("🔴 Unsubscribe dari messages");
       unsubscribe();
     };
   }, [currentChat?.id, user?.id]);
@@ -118,8 +112,6 @@ export function ChatProvider({ children }) {
           text.trim(),
           user.avatar || user.profile_picture || null
         );
-
-        console.log("✅ Message sent successfully");
       } catch (error) {
         console.error("❌ Error sending message:", error);
         throw error;
