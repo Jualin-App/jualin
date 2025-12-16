@@ -1,14 +1,14 @@
 export const banners = [
   {
-    src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+    src: "/Banner_1.png",
     alt: "Warm Love Family Banner 1",
   },
   {
-    src: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1200&q=80",
+    src: "/Banner_2.png",
     alt: "Warm Love Family Banner 2",
   },
   {
-    src: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1200&q=80",
+    src: "/Banner_3.png",
     alt: "Warm Love Family Banner 3",
   },
 ];

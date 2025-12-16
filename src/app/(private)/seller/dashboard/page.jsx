@@ -49,7 +49,7 @@ export default function SellerDashboardPage() {
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-8">
         <IncomeSection sellerId={sellerId || 1} />
         <RecentlyAddedSection products={products} isLoading={isLoadingProducts} />
-        <BuyerMonitoringSection orders={orders} />
+        <BuyerMonitoringSection orders={orders} isLoading={isLoadingProducts} />
       </div>
     </main>
   );
