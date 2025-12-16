@@ -4,7 +4,6 @@ export default function useMidtransPayment() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // Load Snap JS sekali saja
   useEffect(() => {
     if (!document.getElementById("midtrans-snap-script")) {
       const script = document.createElement("script");

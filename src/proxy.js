@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// Daftar route yang valid
 const validRoutes = [
   '/',
   '/dashboard',
@@ -11,26 +10,20 @@ const validRoutes = [
   '/auth/register',
   '/chat',
   '/404_not_found',
-  '/jual', // tambahkan route jual jika ada
 ];
 
-// Route yang diizinkan dengan query parameters
 const allowedRoutesWithParams = [
   '/profile/edit',
   '/product',
 ];
 
-// Fungsi untuk check apakah path valid
 function isValidRoute(pathname) {
-  // Hapus query parameters untuk pengecekan
   const pathWithoutQuery = pathname.split('?')[0];
-  
-  // Check exact match
+
   if (validRoutes.includes(pathWithoutQuery)) {
     return true;
   }
 
-  // Check jika path dimulai dengan route yang diizinkan dengan params
   for (const route of allowedRoutesWithParams) {
     if (pathWithoutQuery.startsWith(route)) {
       return true;
@@ -46,20 +39,18 @@ function isValidRoute(pathname) {
   return false;
 }
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
-  // Skip untuk static files dan API routes
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/static') ||
-    /\.(ico|png|jpg|jpeg|gif|svg|css|js|json|woff|woff2|ttf|eot)$/.test(pathname) // file extensions
+    /\.(ico|png|jpg|jpeg|gif|svg|css|js|json|woff|woff2|ttf|eot)$/.test(pathname) 
   ) {
     return NextResponse.next();
   }
 
-  // Jika route tidak valid, redirect ke 404
   if (!isValidRoute(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = '/404_not_found';

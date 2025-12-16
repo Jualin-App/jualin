@@ -25,9 +25,7 @@ export default function ProductDetailSection({ product, seller }) {
       return;
     }
 
-    // Ensure seller exists and handle error-shaped responses
     if (!seller || !seller.id) {
-      // API mungkin mengembalikan objek error: { success: false, status_code: 401, message: "Unauthenticated." }
       if (seller && seller.success === false) {
         if (seller.status_code === 401) {
           setToast({
@@ -51,7 +49,6 @@ export default function ProductDetailSection({ product, seller }) {
       return;
     }
 
-    // Check if user is the seller (tidak bisa chat dengan diri sendiri)
     if (user?.id && seller?.id && user.id === seller.id) {
       setToast({
         message: "You cannot chat with yourself",
@@ -63,24 +60,17 @@ export default function ProductDetailSection({ product, seller }) {
     setIsStartingChat(true);
 
     try {
-      // Prepare seller info
       const sellerInfo = {
         name: seller?.username || seller?.email || "Seller",
         avatar: seller?.avatar || seller?.profile_picture || null,
       };
 
-      console.log("🚀 Starting chat with seller:", sellerInfo);
-
-      // Start chat dengan seller
       await startChat(
         seller.id,
         sellerInfo,
-        product.id // productId
+        product.id 
       );
 
-      console.log("✅ Chat created successfully");
-
-      // Redirect ke halaman chat
       router.push("/chat");
     } catch (error) {
       console.error("❌ Error starting chat:", error);

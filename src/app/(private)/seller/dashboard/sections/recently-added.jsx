@@ -17,7 +17,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
 
   const handleDelete = (productId) => {
     if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
-      // Handle delete logic here
       console.log("Delete product:", productId);
     }
   };
@@ -50,7 +49,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
       <div className="grid grid-cols-5 gap-4">
         {isLoading ? (
           <>
-            {/* Loading skeleton untuk 4 produk */}
             {[...Array(4)].map((_, index) => (
               <div key={index} className="bg-white rounded-2xl p-4 shadow-lg animate-pulse">
                 <div className="relative">
@@ -66,7 +64,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                 </div>
               </div>
             ))}
-            {/* Add New Product Card - selalu di posisi ke-5 */}
             <div className="border-2 border-dashed rounded-2xl p-4 min-h-[180px] flex items-center justify-center">
               <button
                 onClick={() => router.push('/seller/products/new')}
