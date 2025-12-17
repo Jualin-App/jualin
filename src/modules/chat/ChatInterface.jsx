@@ -34,9 +34,7 @@ export function ChatInterface() {
     if (!text.trim()) return;
     try {
       await sendMessage(text.trim());
-      console.log("✅ Message sent successfully");
     } catch (error) {
-      console.error("❌ Failed to send message:", error);
       alert("Failed to send message. Please try again.");
     }
   };

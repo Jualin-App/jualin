@@ -1,20 +1,20 @@
-export const revalidate = 60
+"use client";
+import { Suspense } from "react";
 import BannerSection from "./sections/banner.jsx";
-import CategorySection from "./sections/category.jsx";
 import RecommendedSection from "./sections/recommended.jsx";
-import { banners, categories } from "../../dummydata.jsx";
-import { fetchProducts } from "../../../modules/product/service.js";
+import { banners } from "../../dummydata.jsx";
+import { useProducts } from "@/hooks/dashboard/useProducts";
 
-export default async function DashboardPage() {
-  const products = await fetchProducts();
-
-  console.log(products);
+export default function DashboardPage() {
+  const { products, isLoading } = useProducts();
 
   return (
     <main className="bg-white">
-      <BannerSection banners={banners} />
+      <BannerSection banners={banners} isLoading={isLoading} />
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <RecommendedSection products={products} />
+        <Suspense fallback={<div className="w-full my-8 text-center">Loading...</div>}>
+          <RecommendedSection products={products} isLoading={isLoading} />
+        </Suspense>
       </div>
     </main>
   );
