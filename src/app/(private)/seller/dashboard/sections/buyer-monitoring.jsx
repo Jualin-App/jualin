@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 import { Search, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { ChatContext } from "@/context/ChatProvider";
+import { getProfilePictureUrl, getProductImageUrl } from "@/utils/imageHelper";
 
 const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
   const router = useRouter();
@@ -17,12 +18,12 @@ const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
     buyerId: order.customer?.id,
     buyerName: order.customer?.username || "Unknown Buyer",
     productName: order.items?.[0]?.product?.name || "Product",
-    productImage: order.items?.[0]?.product?.image || "/colorful-sneaker-shoe-product.jpg",
+    productImage: getProductImageUrl(order.items?.[0]?.product?.image),
     category: order.items?.[0]?.product?.category || "General",
     amount: order.total_amount || 0,
     status: order.status || "pending",
     time: order.created_at ? new Date(order.created_at).toLocaleString('id-ID') : "Recently",
-    avatar: order.customer?.avatar || "/ProfilePhoto.png"
+    avatar: getProfilePictureUrl(order.customer?.profile_picture)
   })) : [];
 
   const handleVerifyOrder = (orderId) => router.push(`/seller/orders/${orderId}/verify`);

@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductFilter from "./filter.jsx";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 export default function RecommendedSection({ products, isLoading = false }) {
   const router = useRouter();
@@ -95,9 +96,12 @@ export default function RecommendedSection({ products, isLoading = false }) {
             tabIndex={0}
           >
             <img
-              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=No+Image"}
+              src={getProductImageUrl(product.image)}
               alt={product.name || "Product image"}
               className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+              }}
             />
             <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
               {product.brand || product.category}

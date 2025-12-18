@@ -6,6 +6,7 @@ import Toast from "../../../../components/ui/Toast";
 import useMidtransPayment from "../hooks/useMidtransPayment";
 import { ChatContext } from "@/context/ChatProvider";
 import { AuthContext } from "@/context/AuthProvider";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 export default function ProductDetailSection({ product, seller }) {
   const router = useRouter();
@@ -102,11 +103,12 @@ export default function ProductDetailSection({ product, seller }) {
       )}
       <div className="flex flex-col md:flex-row gap-8 items-start bg-white rounded-2xl shadow p-6">
         <img
-          src={
-            product.image || "https://via.placeholder.com/400x400?text=No+Image"
-          }
+          src={getProductImageUrl(product.image)}
           alt={product.name}
           className="w-full md:w-1/2 h-80 object-cover rounded-2xl shadow"
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+          }}
         />
         <div className="flex-1">
           <h1 className="text-3xl font-bold mb-2 text-blue-700">

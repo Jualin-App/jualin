@@ -58,17 +58,17 @@ export function ProfileFormSection({
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-[#1F1F1F]">Personal Info</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Full Name</label>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Username</label>
             <input
               type="text"
-              value={form.fullName}
-              onChange={e => onFieldChange("fullName", e.target.value)}
-              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.fullName ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Your name"
+              value={form.username}
+              onChange={e => onFieldChange("username", e.target.value)}
+              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.username ? "shadow-red-300 focus:shadow-red-400" : ""}`}
+              placeholder="Your username"
             />
-            {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
+            {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Email</label>
@@ -81,16 +81,27 @@ export function ProfileFormSection({
             />
             {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
           </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Phone</label>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Gender</label>
+            <select
+              value={form.gender}
+              onChange={e => onFieldChange("gender", e.target.value)}
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl"
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Birthday</label>
             <input
-              type="tel"
-              value={form.phone}
-              onChange={e => onFieldChange("phone", e.target.value)}
-              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.phone ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="(+62) 8123456789"
+              type="date"
+              value={form.birthday}
+              onChange={e => onFieldChange("birthday", e.target.value)}
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl"
             />
-            {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
           </div>
         </div>
       </div>
@@ -100,23 +111,43 @@ export function ProfileFormSection({
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-[#1F1F1F]">Location</h2>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Location</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-              </svg>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Region</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={form.region}
+                onChange={e => onFieldChange("region", e.target.value)}
+                className={`w-full pl-10 pr-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.region ? "shadow-red-300 focus:shadow-red-400" : ""}`}
+                placeholder="Your region"
+              />
             </div>
-            <input
-              type="text"
-              value={form.location}
-              onChange={e => onFieldChange("location", e.target.value)}
-              className={`w-full pl-10 pr-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.location ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Your location"
-            />
+            {errors.region && <p className="mt-1 text-sm text-red-600">{errors.region}</p>}
           </div>
-          {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
+          <div>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">City</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={form.city}
+                onChange={e => onFieldChange("city", e.target.value)}
+                className={`w-full pl-10 pr-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.city ? "shadow-red-300 focus:shadow-red-400" : ""}`}
+                placeholder="Your city"
+              />
+            </div>
+            {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
+          </div>
         </div>
       </div>
 
