@@ -102,7 +102,7 @@ export default function EditProfilePage() {
                       disabled={profileUpdate.isLoading}
                       className="px-6 py-2 bg-[#E53935] hover:bg-[#D32F2F] text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg focus:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md outline-none"
                     >
-                      {profileUpdate.isLoading ? "Saving..." : "Save changes"}
+                      {profileUpdate.isLoading ? "Saving..." : "Simpan Perubahan"}
                     </button>
                   </div>
                 </div>
@@ -110,11 +110,10 @@ export default function EditProfilePage() {
                 {/* Toast */}
                 {toast && (
                   <div
-                    className={`mb-6 rounded-lg p-4 shadow-md ${
-                      toast.type === "success"
-                        ? "bg-green-50 text-green-700 shadow-green-200"
-                        : "bg-red-50 text-red-700 shadow-red-200"
-                    }`}
+                    className={`mb-6 rounded-lg p-4 shadow-md ${toast.type === "success"
+                      ? "bg-green-50 text-green-700 shadow-green-200"
+                      : "bg-red-50 text-red-700 shadow-red-200"
+                      }`}
                   >
                     {toast.message}
                   </div>

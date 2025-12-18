@@ -10,7 +10,7 @@ export default function RegisterPage() {
   const [toast, setToast] = useState(null);
 
   const handleSuccess = () => {
-    setToast({ message: 'Registration successful! Redirecting...', type: 'success' });
+    setToast({ message: 'Pendaftaran berhasil! Tunggu Sebentar...', type: 'success' });
   };
 
   const handleError = (error) => {
@@ -37,19 +37,19 @@ export default function RegisterPage() {
 
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Create your account
+              Daftar Akun
             </h1>
             <p className="text-gray-600 text-sm md:text-base">
-              Start selling or buying today!
+              Mulai Jual atau Beli Sekarang!
             </p>
           </div>
 
           <RegisterForm onSuccess={handleSuccess} onError={handleError} />
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{' '}
+            Sudah Punya Akun?{' '}
             <Link href="/auth/login" className="text-[#E83030] hover:text-red-600 font-medium">
-              Login here
+              Masuk disini
             </Link>
           </p>
         </div>

@@ -1,14 +1,22 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductFilter from "./filter.jsx";
+import { smoothScrollTo } from "@/utils/scroll";
 
 export default function RecommendedSection({ products, isLoading = false }) {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState("all");
   const searchParams = useSearchParams();
   const q = (searchParams.get("q") || "").trim().toLowerCase();
+  const sectionRef = useRef(null);
   const VISIBLE_LIMIT = 6;
+
+  useEffect(() => {
+    if (q && sectionRef.current) {
+      smoothScrollTo(sectionRef.current, 500, 100);
+    }
+  }, [q]);
 
   const filteredProducts = useMemo(() => {
     const base =
@@ -42,7 +50,10 @@ export default function RecommendedSection({ products, isLoading = false }) {
 
   if (isLoading) {
     return (
-      <section className="w-full my-8 animate-fade-in">
+      <section
+        className="w-full my-8 animate-fade-in scroll-mt-24"
+        ref={sectionRef}
+      >
         <div className="h-8 bg-gray-200 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
         <div className="flex justify-center gap-4 mb-6">
           {[...Array(4)].map((_, idx) => (
@@ -68,7 +79,10 @@ export default function RecommendedSection({ products, isLoading = false }) {
   }
 
   return (
-    <section className="w-full my-8 animate-fade-in">
+    <section
+      className="w-full my-8 animate-fade-in scroll-mt-24"
+      ref={sectionRef}
+    >
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
         Produk yang mungkin kamu suka
       </h2>
@@ -95,8 +109,8 @@ export default function RecommendedSection({ products, isLoading = false }) {
             tabIndex={0}
           >
             <img
-              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=No+Image"}
-              alt={product.name || "Product image"}
+              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=Tidak+Ada+Gambar"}
+              alt={product.name || "Gambar produk"}
               className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
             />
             <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
