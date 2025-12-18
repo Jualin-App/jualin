@@ -1,12 +1,14 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProductFilter from "./filter.jsx";
 
 export default function RecommendedSection({ products, isLoading = false }) {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState("all");
   const searchParams = useSearchParams();
   const q = (searchParams.get("q") || "").trim().toLowerCase();
+  const VISIBLE_LIMIT = 6;
 
   const filteredProducts = useMemo(() => {
     const base =
@@ -23,6 +25,20 @@ export default function RecommendedSection({ products, isLoading = false }) {
       );
     });
   }, [products, activeFilter, q]);
+
+  const visibleProducts = useMemo(
+    () => filteredProducts.slice(0, VISIBLE_LIMIT),
+    [filteredProducts]
+  );
+
+  const handleSeeAll = () => {
+    const params = new URLSearchParams();
+    if (activeFilter && activeFilter !== "all") {
+      params.set("category", activeFilter);
+    }
+    const query = params.toString();
+    router.push(query ? `/products?${query}` : "/products");
+  };
 
   if (isLoading) {
     return (
@@ -60,8 +76,17 @@ export default function RecommendedSection({ products, isLoading = false }) {
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
       />
+      <div className="w-full flex justify-center sm:justify-end mb-4">
+        <button
+          type="button"
+          onClick={handleSeeAll}
+          className="text-sm text-brand-red font-semibold hover:text-red-600 hover:opacity-90 hover:drop-shadow-sm transform hover:scale-105 transition-all duration-150"
+        >
+          Lihat semua
+        </button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {filteredProducts.map((product, idx) => (
+        {visibleProducts.map((product, idx) => (
           <a
             key={product.id}
             href={`/product/${product.id}`}
