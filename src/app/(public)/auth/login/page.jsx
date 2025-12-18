@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import LoginForm from '../../../../components/auth/LoginForm';
 import Logo from '../../../../components/ui/Logo';
-import Button from '../../../../components/ui/Button';
 import Toast from '../../../../components/ui/Toast';
 
 export default function LoginPage() {
@@ -47,22 +46,9 @@ export default function LoginPage() {
 
           <LoginForm onSuccess={handleSuccess} onError={handleError} />
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or, Login with</span>
-            </div>
-          </div>
-
-          <Button variant="google">
-            Sign up with Google
-          </Button>
-
           <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link href="/auth" className="text-[#E83030] hover:text-red-600 font-medium">
+            <Link href="/auth/register" className="text-[#E83030] hover:text-red-600 font-medium">
               Register here
             </Link>
           </p>

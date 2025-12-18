@@ -15,7 +15,7 @@ export function ProfileFormSection({
   return (
     <>
       {/* Profile Photo and Upload */}
-      <div className="bg-white border border-gray-200 rounded-xl p-8 mb-8">
+      <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center gap-8">
           <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-gray-200">
             {imagePreview ? (
@@ -31,7 +31,7 @@ export function ProfileFormSection({
           <div className="flex-1">
             <button
               onClick={() => document.getElementById('profilePicture').click()}
-              className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-[#1F1F1F] rounded-lg transition-colors text-sm font-medium"
+              className="px-6 py-2 bg-white hover:bg-white text-[#1F1F1F] rounded-lg transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg focus:shadow-xl outline-none"
             >
               Upload new photo
             </button>
@@ -54,7 +54,7 @@ export function ProfileFormSection({
       </div>
 
       {/* Personal Info Card */}
-      <div className="bg-white border border-gray-200 rounded-xl p-8 mb-8">
+      <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-[#1F1F1F]">Personal Info</h2>
         </div>
@@ -65,7 +65,7 @@ export function ProfileFormSection({
               type="text"
               value={form.fullName}
               onChange={e => onFieldChange("fullName", e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] outline-none transition-colors text-black ${errors.fullName ? "border-red-500" : "border-gray-200"}`}
+              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.fullName ? "shadow-red-300 focus:shadow-red-400" : ""}`}
               placeholder="Your name"
             />
             {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
@@ -76,7 +76,7 @@ export function ProfileFormSection({
               type="email"
               value={form.email}
               onChange={e => onFieldChange("email", e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] outline-none transition-colors text-black ${errors.email ? "border-red-500" : "border-gray-200"}`}
+              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.email ? "shadow-red-300 focus:shadow-red-400" : ""}`}
               placeholder="name@example.com"
             />
             {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -87,7 +87,7 @@ export function ProfileFormSection({
               type="tel"
               value={form.phone}
               onChange={e => onFieldChange("phone", e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] outline-none transition-colors text-black ${errors.phone ? "border-red-500" : "border-gray-200"}`}
+              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.phone ? "shadow-red-300 focus:shadow-red-400" : ""}`}
               placeholder="(+62) 8123456789"
             />
             {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
@@ -96,7 +96,7 @@ export function ProfileFormSection({
       </div>
 
       {/* Location Card */}
-      <div className="bg-white border border-gray-200 rounded-xl p-8 mb-8">
+      <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-[#1F1F1F]">Location</h2>
         </div>
@@ -112,7 +112,7 @@ export function ProfileFormSection({
               type="text"
               value={form.location}
               onChange={e => onFieldChange("location", e.target.value)}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] outline-none transition-colors text-black ${errors.location ? "border-red-500" : "border-gray-200"}`}
+              className={`w-full pl-10 pr-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.location ? "shadow-red-300 focus:shadow-red-400" : ""}`}
               placeholder="Your location"
             />
           </div>
@@ -121,7 +121,7 @@ export function ProfileFormSection({
       </div>
 
       {/* Bio Card */}
-      <div className="bg-white border border-gray-200 rounded-xl p-8 mb-8">
+      <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-[#1F1F1F]">Bio</h2>
         </div>
@@ -130,7 +130,7 @@ export function ProfileFormSection({
             value={form.bio}
             onChange={e => onFieldChange("bio", e.target.value)}
             rows={6}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] outline-none transition-colors resize-none text-black ${errors.bio ? "border-red-500" : "border-gray-200"}`}
+            className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl resize-none ${errors.bio ? "shadow-red-300 focus:shadow-red-400" : ""}`}
             placeholder="Tell us about yourself"
           />
           {errors.bio && <p className="mt-1 text-sm text-red-600">{errors.bio}</p>}
