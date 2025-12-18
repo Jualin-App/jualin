@@ -33,9 +33,9 @@ export function ProfileFormSection({
               onClick={() => document.getElementById('profilePicture').click()}
               className="px-6 py-2 bg-white hover:bg-white text-[#1F1F1F] rounded-lg transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg focus:shadow-xl outline-none"
             >
-              Upload new photo
+              Unggah Foto Baru
             </button>
-            <p className="text-xs text-[#9CA3AF] mt-2">At least 800×800 px recommended. JPG or PNG is allowed</p>
+            <p className="text-xs text-[#9CA3AF] mt-2">Disarankan minimal 800×800 px. JPG atau PNG diperbolehkan</p>
             <input
               id="profilePicture"
               type="file"
@@ -56,17 +56,17 @@ export function ProfileFormSection({
       {/* Personal Info Card */}
       <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-[#1F1F1F]">Personal Info</h2>
+          <h2 className="text-lg font-semibold text-[#1F1F1F]">Informasi Pribadi</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Full Name</label>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Nama Lengkap</label>
             <input
               type="text"
               value={form.fullName}
               onChange={e => onFieldChange("fullName", e.target.value)}
               className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.fullName ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Your name"
+              placeholder="Nama Anda"
             />
             {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
           </div>
@@ -82,7 +82,7 @@ export function ProfileFormSection({
             {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Phone</label>
+            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Nomor Telepon</label>
             <input
               type="tel"
               value={form.phone}
@@ -98,10 +98,10 @@ export function ProfileFormSection({
       {/* Location Card */}
       <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-[#1F1F1F]">Location</h2>
+          <h2 className="text-lg font-semibold text-[#1F1F1F]">Lokasi</h2>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Location</label>
+          <label className="block text-sm font-medium text-[#9CA3AF] mb-2">Lokasi</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="h-5 w-5 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 20 20">
@@ -113,7 +113,7 @@ export function ProfileFormSection({
               value={form.location}
               onChange={e => onFieldChange("location", e.target.value)}
               className={`w-full pl-10 pr-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.location ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Your location"
+              placeholder="Lokasi Anda"
             />
           </div>
           {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
@@ -131,10 +131,10 @@ export function ProfileFormSection({
             onChange={e => onFieldChange("bio", e.target.value)}
             rows={6}
             className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl resize-none ${errors.bio ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-            placeholder="Tell us about yourself"
+            placeholder="Ceritakan tentang diri Anda"
           />
           {errors.bio && <p className="mt-1 text-sm text-red-600">{errors.bio}</p>}
-          <p className="mt-2 text-sm text-[#9CA3AF]">{form.bio.length}/500 characters</p>
+          <p className="mt-2 text-sm text-[#9CA3AF]">{form.bio.length}/500 karakter</p>
         </div>
       </div>
     </>

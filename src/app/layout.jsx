@@ -17,9 +17,6 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Jualin",
   description: "Jualin - Your trusted marketplace",
-  icons: {
-    icon: "/Logo.png",
-  },
 };
 
 export default function RootLayout({ children }) {

@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useState, useContext } from "react";
+import { ChatSkeleton } from "@/components/chat/ChatSkeleton";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import { ChatWindow } from "@/components/chat/chat-window";
-import {
-  Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { AuthContext } from "@/context/AuthProvider";
 import { ChatContext } from "@/context/ChatProvider";
 
 export function ChatInterface() {
-  const { user, loading: authLoading } = useContext(AuthContext); // ✅ Gunakan useContext
+  const { user, loading: authLoading } = useContext(AuthContext);
   const { chats, currentChat, messages, selectChat, sendMessage, loading } =
-    useContext(ChatContext); // ✅ Gunakan ChatProvider
+    useContext(ChatContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -39,17 +39,9 @@ export function ChatInterface() {
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-white overflow-hidden shadow-lg border border-gray-100">
-        <div className="flex items-center justify-center w-full h-full">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-red-500 border-r-transparent mb-4"></div>
-            <p className="text-gray-500">Loading chats...</p>
-          </div>
-        </div>
-      </div>
-    );
+  // Show Skeleton if Auth is loading OR Chat data is loading (initial fetch)
+  if (authLoading || (loading && !chats.length)) {
+    return <ChatSkeleton />;
   }
 
   if (!user) {
@@ -87,7 +79,7 @@ export function ChatInterface() {
     );
   }
 
-  return(
+  return (
     <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-white overflow-hidden shadow-lg border border-gray-100">
       {/* Mobile sidebar toggle */}
       <button
@@ -100,9 +92,8 @@ export function ChatInterface() {
 
       {/* Sidebar - 30% width */}
       <div
-        className={`${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 absolute md:relative top-0 left-0 bottom-0 md:inset-y-0 z-30 md:z-auto w-80 md:w-[30%] bg-white transition-transform duration-300 ease-in-out`}
+        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 absolute md:relative top-0 left-0 bottom-0 md:inset-y-0 z-30 md:z-auto w-80 md:w-[30%] bg-white transition-transform duration-300 ease-in-out`}
       >
         <ChatSidebar
           chats={chats}

@@ -109,12 +109,12 @@ export default function ProductDetailSection({ product, seller }) {
           className="w-full md:w-1/2 h-80 object-cover rounded-2xl shadow"
         />
         <div className="flex-1">
-          <h1 className="text-3xl font-bold mb-2 text-blue-700">
-            {product.brand || product.category}
-          </h1>
-          <h2 className="text-2xl font-semibold mb-4 text-black">
+          <h2 className="text-3xl font-semibold mb-1 text-black">
             {product.name}
           </h2>
+          <h1 className="text-2xl font-bold mb-6 text-blue-700">
+            {product.brand || product.category}
+          </h1>
           <p className="text-gray-600 mb-6">{product.description}</p>
           <span className="block font-bold text-xl text-black mb-6">
             Rp {product.price}

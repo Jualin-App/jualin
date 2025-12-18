@@ -26,7 +26,7 @@ export function PasswordChangeSection({
     <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-all duration-200">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-[#1F1F1F]">
-          Change Password
+          Ubah Kata Sandi
         </h2>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -88,15 +88,14 @@ export function PasswordChangeSection({
               {[1, 2, 3, 4].map((level) => (
                 <div
                   key={level}
-                  className={`h-1 flex-1 rounded ${
-                    form.newPassword.length >= level * 2
+                  className={`h-1 flex-1 rounded ${form.newPassword.length >= level * 2
                       ? level <= 2
                         ? "bg-red-500"
                         : level === 3
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
+                          ? "bg-yellow-500"
+                          : "bg-green-500"
                       : "bg-gray-200"
-                  }`}
+                    }`}
                 />
               ))}
             </div>

@@ -44,7 +44,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
     // Validasi password match
     if (formData.password !== formData.password_confirmation) {
       setErrors({
-        password_confirmation: "Password and confirm password do not match",
+        password_confirmation: "password tidak sesuai",
       });
       setIsLoading(false);
       return;
@@ -52,7 +52,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
 
     // Validasi role selection
     if (!formData.role) {
-      setErrors({ role: "Please select your role" });
+      setErrors({ role: "role tidak boleh kosong" });
       setIsLoading(false);
       return;
     }
@@ -83,9 +83,9 @@ const RegisterForm = ({ onSuccess, onError }) => {
             newErrors[key] = data.errors[key][0];
           });
           setErrors(newErrors);
-          throw new Error("Please check the form for errors");
+          throw new Error("terjadi kesalahan");
         }
-        throw new Error(data.message || "Registration failed");
+        throw new Error(data.message || "terjadi kesalahan");
       }
 
       // Simpan token dan user data dari response backend
@@ -105,7 +105,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
       onSuccess?.();
       router.push(role === "seller" ? "/seller/dashboard" : "/dashboard");
     } catch (error) {
-      onError?.(error.message || "Registration failed - please try again");
+      onError?.(error.message || "terjadi kesalahan");
     } finally {
       setIsLoading(false);
     }
@@ -115,10 +115,10 @@ const RegisterForm = ({ onSuccess, onError }) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
-          label="Full Name"
+          label="Nama Lengkap"
           type="text"
           name="name"
-          placeholder="Enter your full name"
+          placeholder="Masukkan Nama Lengkap"
           value={formData.name}
           onChange={handleChange}
           required
@@ -126,10 +126,10 @@ const RegisterForm = ({ onSuccess, onError }) => {
         />
 
         <Input
-          label="Password"
+          label="Kata Sandi"
           type="password"
           name="password"
-          placeholder="Create Password"
+          placeholder="Buat Kata Sandi"
           value={formData.password}
           onChange={handleChange}
           required
@@ -140,7 +140,7 @@ const RegisterForm = ({ onSuccess, onError }) => {
           label="Email"
           type="email"
           name="email"
-          placeholder="Enter your mail address"
+          placeholder="Masukkan Alamat Email"
           value={formData.email}
           onChange={handleChange}
           required
@@ -148,10 +148,10 @@ const RegisterForm = ({ onSuccess, onError }) => {
         />
 
         <Input
-          label="Confirm Password"
+          label="Konfirmasi Kata Sandi"
           type="password"
           name="password_confirmation"
-          placeholder="Confirm Password"
+          placeholder="Konfirmasi Kata Sandi"
           value={formData.password_confirmation}
           onChange={handleChange}
           required
@@ -168,14 +168,14 @@ const RegisterForm = ({ onSuccess, onError }) => {
             { value: "customer", label: "Customer (Buyer)" },
             { value: "seller", label: "Seller" },
           ]}
-          placeholder="Select your role"
+          placeholder="Pilih Role"
           required
           error={errors.role}
         />
       </div>
 
       <Button type="submit" variant="primary" disabled={isLoading}>
-        {isLoading ? "Creating Account..." : "Register"}
+        {isLoading ? "Mendaftar..." : "Daftar"}
       </Button>
     </form>
   );
