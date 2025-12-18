@@ -2,12 +2,12 @@
 import React from "react";
 
 const FILTERS = [
-  { label: "All", value: "all" },
-  { label: "Electronics", value: "electronics" },
+  { label: "Semua", value: "all" },
+  { label: "Elektronik", value: "electronics" },
   { label: "Hoodie", value: "hoodie" },
-  { label: "T-shirt", value: "tshirt" },
-  { label: "Beauty Product", value: "beauty" },
-  { label: "Watches", value: "watches" },
+  { label: "Kaos", value: "tshirt" },
+  { label: "Produk Kecantikan", value: "beauty" },
+  { label: "Jam Tangan", value: "watches" },
 ];
 
 export default function ProductFilter({ activeFilter, setActiveFilter }) {
@@ -17,10 +17,9 @@ export default function ProductFilter({ activeFilter, setActiveFilter }) {
         <button
           key={filter.value}
           className={`rounded-full px-4 py-1 font-semibold border transition-all duration-200 shadow hover:shadow-lg hover:-translate-y-0.5 active:scale-95
-            ${
-              activeFilter === filter.value
-                ? "bg-red-500 text-white border-red-500 shadow-md hover:shadow-lg"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 shadow-sm"
+            ${activeFilter === filter.value
+              ? "bg-red-500 text-white border-red-500 shadow-md hover:shadow-lg"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 shadow-sm"
             }
           `}
           onClick={() => setActiveFilter(filter.value)}

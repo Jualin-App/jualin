@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useProducts } from "@/hooks/dashboard/useProducts";
 import { useFilteredProducts } from "@/hooks/dashboard/useFilteredProducts";
 import ProductFilter from "../(private)/dashboard/sections/filter.jsx";
+import { smoothScrollTo } from "@/utils/scroll";
 
 const formatRupiah = (price) =>
   new Intl.NumberFormat("id-ID", {
@@ -17,6 +18,7 @@ export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { products, isLoading } = useProducts();
+  const productsRef = useRef(null);
 
   const categoryFromQuery =
     (searchParams.get("category") || "all").toLowerCase();
@@ -28,7 +30,12 @@ export default function ProductsPage() {
 
   useEffect(() => {
     setActiveFilter(categoryFromQuery);
-    setSearchQuery((searchParams.get("q") || "").trim());
+    const newQuery = (searchParams.get("q") || "").trim();
+    setSearchQuery(newQuery);
+
+    if (newQuery && productsRef.current) {
+      smoothScrollTo(productsRef.current, 500, 100);
+    }
   }, [categoryFromQuery, searchParams]);
 
   const { filteredProducts } = useFilteredProducts({
@@ -49,13 +56,13 @@ export default function ProductsPage() {
             <h1 className="text-2xl font-bold text-gray-900">
               Semua Produk
             </h1>
-            <p className="text-sm text-gray-600">
-              Jelajahi semua produk yang tersedia sesuai kategori pilihanmu.
-            </p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div
+          className="flex flex-col gap-4 scroll-mt-24"
+          ref={productsRef}
+        >
           <ProductFilter
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
@@ -108,5 +115,6 @@ export default function ProductsPage() {
     </main>
   );
 }
+
 
 

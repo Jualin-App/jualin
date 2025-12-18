@@ -21,6 +21,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -37,10 +38,10 @@ export function AuthProvider({ children }) {
           email: userData.email,
           avatar: userData.avatar || userData.profile_picture || null,
           role: userData.role || "buyer",
-          updatedAt: new Date(),  
+          updatedAt: new Date(),
         },
         { merge: true }
-      ); 
+      );
     } catch (error) {
       console.error("❌ Error syncing user to Firestore:", error);
     }
@@ -50,6 +51,7 @@ export function AuthProvider({ children }) {
     async function fetchUser() {
       if (!token) {
         setUser(null);
+        setLoading(false);
         return;
       }
       try {
@@ -68,6 +70,8 @@ export function AuthProvider({ children }) {
         setUser(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -92,10 +96,10 @@ export function AuthProvider({ children }) {
         null,
         accessToken
           ? {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
           : undefined
       );
     } catch (error) {
@@ -114,7 +118,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
