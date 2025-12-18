@@ -68,7 +68,7 @@ export default function ProductDetailSection({ product, seller }) {
       await startChat(
         seller.id,
         sellerInfo,
-        product.id 
+        product.id
       );
 
       router.push("/chat");
