@@ -14,7 +14,7 @@ export const handleApiError = (error) => {
 
   if (statusCode === 401) {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    window.location.href = '/auth/login';
   }
 
   console.error('API Error:', {

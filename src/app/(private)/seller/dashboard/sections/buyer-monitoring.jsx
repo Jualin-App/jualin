@@ -1,27 +1,49 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import { useRouter } from "next/navigation";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 import { Search, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChatContext } from "@/context/ChatProvider";
 
 const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
   const router = useRouter();
+  const { openChatWithUser } = useContext(ChatContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(8);
 
   const buyerActivities = orders.length > 0 ? orders.map(order => ({
     id: order.id,
-    buyerName: order.buyer?.name || "Unknown Buyer",
+    buyerId: order.customer?.id,
+    buyerName: order.customer?.username || "Unknown Buyer",
     productName: order.items?.[0]?.product?.name || "Product",
+    productImage: order.items?.[0]?.product?.image || "/colorful-sneaker-shoe-product.jpg",
+    category: order.items?.[0]?.product?.category || "General",
     amount: order.total_amount || 0,
     status: order.status || "pending",
     time: order.created_at ? new Date(order.created_at).toLocaleString('id-ID') : "Recently",
-    avatar: order.buyer?.avatar || "/ProfilePhoto.png"
+    avatar: order.customer?.avatar || "/ProfilePhoto.png"
   })) : [];
 
   const handleVerifyOrder = (orderId) => router.push(`/seller/orders/${orderId}/verify`);
-  const handleChatBuyer = (buyerId) => router.push(`/chat?user=${buyerId}`);
+
+  const handleChatBuyer = async (buyerId) => {
+    console.log("🔵 handleChatBuyer called with buyerId:", buyerId, "type:", typeof buyerId);
+
+    if (!buyerId) {
+      alert("Buyer ID tidak tersedia");
+      return;
+    }
+
+    try {
+      await openChatWithUser(buyerId);
+      router.push("/chat");
+    } catch (error) {
+      console.error("Failed to open chat:", error);
+      alert("Cannot open chat with this buyer. No existing conversation found.");
+    }
+  };
+
   const handleViewDetails = (orderId) => router.push(`/seller/orders/${orderId}`);
 
   const getStatusBadge = (status) => {
@@ -130,9 +152,9 @@ const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
               filtered.map((activity, index) => (
                 <tr key={activity.id} className="hover:bg-gray-50 transition-colors duration-200">
                   <td className="py-3 px-2">
-                    <img src="/colorful-sneaker-shoe-product.jpg" alt="Product" className="w-12 h-12 rounded-lg object-cover" />
+                    <img src={activity.productImage} alt={activity.productName} className="w-12 h-12 rounded-lg object-cover" />
                   </td>
-                  <td className="py-3 px-2"><span className="font-medium text-gray-900">Shoe</span></td>
+                  <td className="py-3 px-2"><span className="font-medium text-gray-900">{activity.category}</span></td>
                   <td className="py-3 px-2 text-gray-600">{activity.time.split(',')[0]}</td>
                   <td className="py-3 px-2 text-gray-600">{activity.time.split(',')[1]}</td>
                   <td className="py-3 px-2">
@@ -153,7 +175,7 @@ const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
                         ...(activity.status === 'pending' ? [
                           { label: "Verifikasi Order", onClick: () => handleVerifyOrder(activity.id) }
                         ] : []),
-                        { label: "Chat Pembeli", onClick: () => handleChatBuyer(activity.buyerName) },
+                        { label: "Chat Pembeli", onClick: () => handleChatBuyer(activity.buyerId) },
                         { label: "Lihat Detail", onClick: () => handleViewDetails(activity.id) }
                       ]}
                     />
