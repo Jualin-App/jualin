@@ -3,9 +3,11 @@ import React, { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import Toast from "../../../../components/ui/Toast";
+import Spinner from "../../../../components/ui/Spinner";
 import useMidtransPayment from "../hooks/useMidtransPayment";
 import { ChatContext } from "@/context/ChatProvider";
 import { AuthContext } from "@/context/AuthProvider";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 export default function ProductDetailSection({ product, seller }) {
   const router = useRouter();
@@ -102,11 +104,12 @@ export default function ProductDetailSection({ product, seller }) {
       )}
       <div className="flex flex-col md:flex-row gap-8 items-start bg-white rounded-2xl shadow p-6">
         <img
-          src={
-            product.image || "https://via.placeholder.com/400x400?text=No+Image"
-          }
+          src={getProductImageUrl(product.image)}
           alt={product.name}
           className="w-full md:w-1/2 h-80 object-cover rounded-2xl shadow"
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+          }}
         />
         <div className="flex-1">
           <h2 className="text-3xl font-semibold mb-1 text-black">
@@ -121,18 +124,20 @@ export default function ProductDetailSection({ product, seller }) {
           </span>
           <div className="flex items-center gap-3">
             <button
-              className="bg-red-500 text-white px-6 py-2 rounded-full font-semibold shadow hover:bg-red-600 transition"
+              className="bg-red-500 text-white px-6 py-2 rounded-full font-semibold shadow hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
               onClick={() => pay(product)}
               disabled={loading}
             >
+              {loading && <Spinner size="sm" color="white" />}
               {loading ? "Processing..." : "Buy Now"}
             </button>
             <button
               onClick={handleChatSeller}
-              className="px-6 py-2 rounded-full font-semibold border border-gray-300 text-gray-800 bg-white hover:bg-gray-100 transition shadow"
+              className="px-6 py-2 rounded-full font-semibold border border-gray-300 text-gray-800 bg-white hover:bg-gray-100 transition shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
               aria-label="Open chat"
               disabled={isStartingChat}
             >
+              {isStartingChat && <Spinner size="sm" color="gray" />}
               {isStartingChat ? "Starting chat..." : "Chat"}
             </button>
           </div>

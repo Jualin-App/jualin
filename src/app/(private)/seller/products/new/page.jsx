@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createProduct } from "@/modules/product/service.js";
+import { productService } from "@/services/product/productService";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -11,8 +11,13 @@ export default function NewProductPage() {
     name: "",
     price: "",
     description: "",
-    image: "",
+    stock_quantity: "",
+    category: "",
+    condition: "new",
+    status: "active",
   });
+
+  const [imageFile, setImageFile] = useState(null);
 
   const [imagePreview, setImagePreview] = useState("");
   const [saving, setSaving] = useState(false);
@@ -39,14 +44,9 @@ export default function NewProductPage() {
     // Create preview
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
-    
-    // For now, we'll store the file object
-    // In production, you'd want to upload it to a storage service first
-    // and then store the URL in formData.image
-    setFormData((prev) => ({
-      ...prev,
-      imageFile: file,
-    }));
+
+    // Store the file object
+    setImageFile(file);
     setError("");
   };
 
@@ -71,39 +71,36 @@ export default function NewProductPage() {
       setError("Deskripsi produk wajib diisi");
       return;
     }
+    if (!formData.stock_quantity || parseInt(formData.stock_quantity) < 0) {
+      setError("Stok produk wajib diisi dan tidak boleh negatif");
+      return;
+    }
 
     try {
       setSaving(true);
-      
-      // Get user from localStorage
-      const storedUser =
-        typeof window !== "undefined"
-          ? JSON.parse(localStorage.getItem("user") || "null")
-          : null;
 
-      const sellerId = storedUser?.id || 1;
-
-      // Prepare payload
-      const payload = {
-        seller_id: sellerId,
+      // Prepare product data
+      const productData = {
         name: formData.name.trim(),
-        price: parseFloat(formData.price),
         description: formData.description.trim(),
-        image: formData.image || imagePreview, // Use preview URL
-        stock_quantity: 0, // Default stock
-        status: "active", // Default status
+        price: parseFloat(formData.price),
+        stock_quantity: parseInt(formData.stock_quantity),
+        category: formData.category.trim() || '',
+        condition: formData.condition,
+        status: formData.status,
       };
 
-      const newProduct = await createProduct(payload);
-      
-      if (newProduct) {
+      // Call service with product data and image file
+      const result = await productService.create(productData, imageFile);
+
+      if (result) {
         router.push("/seller/products");
       } else {
         setError("Gagal menambahkan produk");
       }
     } catch (err) {
       console.error("Failed to create product:", err);
-      setError("Gagal menambahkan produk");
+      setError(err.message || "Gagal menambahkan produk");
     } finally {
       setSaving(false);
     }
@@ -224,6 +221,87 @@ export default function NewProductPage() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent hover:border-brand-red hover:shadow-md outline-none shadow-sm transition-all duration-300 ease-in-out"
                   required
                 />
+              </div>
+
+              {/* Stock Quantity */}
+              <div>
+                <label
+                  htmlFor="stock_quantity"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Stok Produk <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="stock_quantity"
+                  name="stock_quantity"
+                  value={formData.stock_quantity}
+                  onChange={handleInputChange}
+                  placeholder="Enter stock quantity"
+                  min="0"
+                  step="1"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent hover:border-brand-red hover:shadow-md outline-none shadow-sm transition-all duration-300 ease-in-out"
+                  required
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Kategori
+                </label>
+                <input
+                  type="text"
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Electronics, Fashion, etc."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent hover:border-brand-red hover:shadow-md outline-none shadow-sm transition-all duration-300 ease-in-out"
+                />
+              </div>
+
+              {/* Condition */}
+              <div>
+                <label
+                  htmlFor="condition"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Kondisi
+                </label>
+                <select
+                  id="condition"
+                  name="condition"
+                  value={formData.condition}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent hover:border-brand-red hover:shadow-md outline-none shadow-sm transition-all duration-300 ease-in-out"
+                >
+                  <option value="new">Baru</option>
+                  <option value="used">Bekas</option>
+                </select>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Status
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent hover:border-brand-red hover:shadow-md outline-none shadow-sm transition-all duration-300 ease-in-out"
+                >
+                  <option value="active">Aktif</option>
+                  <option value="inactive">Tidak Aktif</option>
+                </select>
               </div>
             </div>
 

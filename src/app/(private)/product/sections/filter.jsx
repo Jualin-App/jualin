@@ -16,7 +16,7 @@ export default function ProductFilter({ activeFilter, setActiveFilter }) {
       {FILTERS.map((filter) => (
         <button
           key={filter.value}
-          className={`rounded-full px-4 py-1 font-semibold border transition-all duration-200 shadow hover:shadow-lg hover:-translate-y-0.5 active:scale-95
+          className={`rounded-full px-4 py-1 font-semibold border transition-all duration-200 shadow hover:shadow-lg hover:-translate-y-0.5 active:scale-95 cursor-pointer
             ${
               activeFilter === filter.value
                 ? "bg-red-500 text-white border-red-500 shadow-md hover:shadow-lg"
