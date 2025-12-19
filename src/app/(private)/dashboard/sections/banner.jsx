@@ -91,9 +91,8 @@ function BannerSection({ banners, isLoading = false }) {
           {banners.map((_, idx) => (
             <span
               key={idx}
-              className={`w-3 h-3 rounded-full bg-white transition-opacity ${
-                active === idx ? "opacity-80" : "opacity-40"
-              }`}
+              className={`w-3 h-3 rounded-full bg-white transition-opacity ${active === idx ? "opacity-80" : "opacity-40"
+                }`}
               onClick={() => !animating && setActive(idx)}
               style={{ cursor: "pointer" }}
             />

@@ -10,14 +10,13 @@ export function ChatBubble({ message }) {
         <span className="text-xs text-gray-400 mb-1.5 px-1">
           {message.time}
         </span>
-        
+
         {/* Message Bubble */}
         <div
-          className={`px-5 py-3 rounded-3xl text-sm leading-relaxed ${
-            isMe
+          className={`px-5 py-3 rounded-3xl text-sm leading-relaxed ${isMe
               ? 'bg-red-500 text-white rounded-br-md shadow-md'
               : 'bg-gray-100 text-gray-900 rounded-bl-md shadow-sm'
-          }`}
+            }`}
         >
           <p className="break-words whitespace-pre-wrap">{message.content}</p>
         </div>
