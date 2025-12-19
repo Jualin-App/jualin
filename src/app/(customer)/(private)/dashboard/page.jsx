@@ -2,7 +2,11 @@ import BannerSection from "./sections/banner.jsx";
 import CategorySection from "./sections/category.jsx";
 import RecommendedSection from "./sections/recommended.jsx";
 import { banners, categories } from "../../dummydata.jsx";
-import { fetchProducts } from "../../../modules/product/service.js";
+import { fetchProducts } from "../../../../modules/product/service.js";
+
+import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   const products = await fetchProducts();
@@ -13,7 +17,9 @@ export default async function DashboardPage() {
     <main className="bg-white">
       <BannerSection banners={banners} />
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <RecommendedSection products={products} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <RecommendedSection products={products} />
+        </Suspense>
       </div>
     </main>
   );

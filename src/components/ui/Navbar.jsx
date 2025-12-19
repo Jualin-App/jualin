@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo.jsx";
 import { AuthContext } from "../../context/AuthProvider.jsx";
@@ -18,15 +18,17 @@ const Navbar = () => {
         </div>
         {showSearch && (
           <div className="flex-1">
-            <SearchBar inline />
+            <Suspense fallback={<div className="h-10 w-full bg-gray-100 rounded-2xl animate-pulse" />}>
+              <SearchBar inline />
+            </Suspense>
           </div>
         )}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
           {user ? (
             <>
               <a
-              href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`}
-              className="flex items-center gap-2"
+                href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`}
+                className="flex items-center gap-2"
               >
                 <img
                   src={user?.avatar || "/ProfilePhoto.png"}

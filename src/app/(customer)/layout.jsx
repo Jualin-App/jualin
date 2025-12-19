@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "../context/AuthProvider";
-import AppChrome from "../components/ui/AppChrome.jsx";
+import { AuthProvider } from "../../context/AuthProvider";
+import AppChrome from "../../components/ui/AppChrome.jsx";
 import { ChatProvider } from "@/context/ChatProvider";
 
 const geistSans = Geist({

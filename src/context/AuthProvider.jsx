@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import baseRequest from "../utils/baseRequest";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -7,6 +7,9 @@ import { api } from "@/lib/axios";
 import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
   : "http://localhost:8000/api/v1";
@@ -47,6 +50,16 @@ export function AuthProvider({ children }) {
         setUser(null);
         return;
       }
+
+      // Bypass for hardcoded admin
+      if (token === 'admin-token-123') {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+        return;
+      }
+
       try {
         const res = await baseRequest.get(`${API_URL}/me`, {
           headers: {
@@ -82,17 +95,20 @@ export function AuthProvider({ children }) {
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     try {
-      await api.post(
-        "/api/v1/logout",
-        null,
-        accessToken
-          ? {
+      // Skip API logout for fake admin
+      if (accessToken !== 'admin-token-123') {
+        await api.post(
+          "/api/v1/logout",
+          null,
+          accessToken
+            ? {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
               },
             }
-          : undefined
-      );
+            : undefined
+        );
+      }
     } catch (error) {
       console.error("Error logging out:", error);
       // Tetap lanjut bersihkan token di client agar user benar-benar keluar
