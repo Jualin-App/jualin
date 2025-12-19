@@ -1,7 +1,9 @@
 "use client";
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import ProductFilter from "./filter.jsx";
+import ProductFilter from "@/components/product/ProductFilter";
+import { ProductCardSkeleton } from "@/components/ui/skeleton";
+import { getProductImageUrl } from "@/utils/imageHelper";
 import { smoothScrollTo } from "@/utils/scroll";
 
 export default function RecommendedSection({ products, isLoading = false }) {
@@ -54,24 +56,15 @@ export default function RecommendedSection({ products, isLoading = false }) {
         className="w-full my-8 animate-fade-in scroll-mt-24"
         ref={sectionRef}
       >
-        <div className="h-8 bg-gray-200 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
+        <div className="h-8 bg-[var(--color-neutral-200)] rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
         <div className="flex justify-center gap-4 mb-6">
           {[...Array(4)].map((_, idx) => (
-            <div key={idx} className="h-10 w-20 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div key={idx} className="h-10 w-20 bg-[var(--color-neutral-200)] rounded-lg animate-pulse"></div>
           ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {[...Array(6)].map((_, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-2xl shadow p-6 flex flex-col items-start"
-            >
-              <div className="w-full h-60 bg-gray-200 rounded-xl mb-4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-24 mb-2 animate-pulse"></div>
-              <div className="h-6 bg-gray-200 rounded w-full mb-1 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-              <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
-            </div>
+            <ProductCardSkeleton key={idx} />
           ))}
         </div>
       </section>
@@ -94,7 +87,7 @@ export default function RecommendedSection({ products, isLoading = false }) {
         <button
           type="button"
           onClick={handleSeeAll}
-          className="text-sm text-brand-red font-semibold hover:text-red-600 hover:opacity-90 hover:drop-shadow-sm transform hover:scale-105 transition-all duration-150"
+          className="text-sm text-brand-red font-semibold hover:text-red-600 hover:opacity-90 hover:drop-shadow-sm transform hover:scale-105 transition-all duration-150 cursor-pointer"
         >
           Lihat semua
         </button>
@@ -109,9 +102,12 @@ export default function RecommendedSection({ products, isLoading = false }) {
             tabIndex={0}
           >
             <img
-              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=Tidak+Ada+Gambar"}
-              alt={product.name || "Gambar produk"}
+              src={getProductImageUrl(product.image)}
+              alt={product.name || "Foto Produk"}
               className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+              }}
             />
             <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
               {product.brand || product.category}

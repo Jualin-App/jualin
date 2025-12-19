@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchSellerProducts } from "@/modules/seller/service.js";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 export default function SellerProductsPage() {
   const router = useRouter();
@@ -14,14 +15,19 @@ export default function SellerProductsPage() {
         ? JSON.parse(localStorage.getItem("user") || "null")
         : null;
 
-    const sellerId = storedUser?.id || 1;
+    console.log('🔍 Stored user for products:', storedUser);
+
+    const sellerId = storedUser?.id || storedUser?.user_id || storedUser?.userId || 1;
+
+    console.log('🔍 Using seller ID:', sellerId);
 
     const load = async () => {
       try {
         const list = await fetchSellerProducts(sellerId, 100);
+        console.log('✅ Fetched products:', list);
         setProducts(Array.isArray(list) ? list : []);
       } catch (err) {
-        console.error("Failed to load seller products:", err);
+        console.error("❌ Failed to load seller products:", err);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -77,16 +83,22 @@ export default function SellerProductsPage() {
               >
                 <div className="flex justify-center mb-4">
                   <img
-                    src={p.img || p.image || "/ProfilePhoto.png"}
+                    src={getProductImageUrl(p.image)}
                     alt={p.name}
                     className="h-48 w-full object-contain"
+                    onError={(e) => {
+                      e.target.src = "/ProfilePhoto.png";
+                    }}
                   />
                 </div>
                 <h3 className="font-semibold text-gray-900 text-base text-center mb-2">
                   {p.name}
                 </h3>
-                <p className="text-sm text-gray-600 text-center mb-4">
-                  {p.size || p.brand || p.category || "Tidak ada informasi ukuran / brand"}
+                <p className="text-sm text-gray-600 text-center mb-2">
+                  {p.category || "Tidak ada kategori"}
+                </p>
+                <p className="text-xs text-gray-500 text-center mb-4">
+                  Stok: {p.stock_quantity || 0} | Kondisi: {p.condition === 'new' ? 'Baru' : 'Bekas'}
                 </p>
                 <div className="flex justify-center gap-3">
                   <button

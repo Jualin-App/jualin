@@ -3,6 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 import { MoreHorizontal, Plus } from "lucide-react";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 const RecentlyAddedSection = ({ products, isLoading = false }) => {
   const router = useRouter();
@@ -88,7 +89,14 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                     />
                   </div>
                   <div className="flex justify-center mb-3">
-                    <img src={product.img || product.image || "/ProfilePhoto.png"} alt={product.name} className="h-20 object-contain" />
+                    <img
+                      src={getProductImageUrl(product.image)}
+                      alt={product.name}
+                      className="h-20 object-contain"
+                      onError={(e) => {
+                        e.target.src = "/ProfilePhoto.png";
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="text-center">

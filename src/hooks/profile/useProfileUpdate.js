@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { profileService } from '@/services';
 import { useAuth } from '@/context/AuthProvider';
+import { getProfilePictureUrl } from '@/utils/imageHelper';
 
 /**
  * Hook to manage profile update form and submission
@@ -12,26 +13,31 @@ export const useProfileUpdate = () => {
   // Initialize form state from user context
   const initialForm = useMemo(
     () => ({
-      fullName: user?.fullName || '',
+      username: user?.username || '',
       email: user?.email || '',
-      phone: user?.phone || '',
-      location: user?.location || '',
+      gender: user?.gender || 'male',
+      birthday: user?.birthday || '',
+      region: user?.region || '',
+      city: user?.city || '',
       bio: user?.bio || '',
-      profilePicture: user?.profilePicture || '',
+      profile_picture: user?.profile_picture || user?.profilePicture || '',
     }),
     [user]
   );
 
   const [form, setForm] = useState(initialForm);
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(initialForm.profilePicture || '');
+  const [imagePreview, setImagePreview] = useState(
+    getProfilePictureUrl(initialForm.profile_picture)
+  );
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   // Update form when user changes
   useEffect(() => {
     setForm(initialForm);
-    setImagePreview(initialForm.profilePicture || '');
+    // Convert relative path to full URL for image preview
+    setImagePreview(getProfilePictureUrl(initialForm.profile_picture));
   }, [initialForm]);
 
   /**
@@ -67,10 +73,8 @@ export const useProfileUpdate = () => {
    */
   const validate = () => {
     const e = {};
-    if (!form.fullName?.trim()) e.fullName = 'Full name required';
+    if (!form.username?.trim()) e.username = 'Username required';
     if (!form.email?.trim() || !/.+@.+\..+/.test(form.email)) e.email = 'Valid email required';
-    if (form.phone && !/^\+?\d{7,15}$/.test(form.phone)) e.phone = 'Phone must be 7-15 digits';
-    if (!form.location?.trim()) e.location = 'Location required';
     if (form.bio?.length > 500) e.bio = 'Bio max 500 chars';
     setErrors(e);
     return Object.keys(e).length === 0;

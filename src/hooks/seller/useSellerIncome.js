@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '@/services/api/client';
 import { formatCurrency } from '@/utils/formatters/currency';
+import { transformIncomeData } from '@/utils/helpers/incomeHelper';
 
 /**
  * Hook to fetch and manage seller income data with chart
@@ -17,41 +18,84 @@ export const useSellerIncome = (sellerId) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!sellerId) return;
+    if (!sellerId) {
+      setIsLoading(false);
+      return;
+    }
 
     const fetchIncomeData = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
+        console.log('Fetching income data for seller:', sellerId, 'period:', selectedPeriod);
+
         const response = await apiClient.get('/api/v1/transactions', {
-          params: { period: selectedPeriod },
+          params: {
+            period: selectedPeriod,
+            seller_id: sellerId
+          },
           timeout: 30000,
         });
 
-        const data = response.data?.data;
+        console.log('Income API Response:', response.data);
 
-        if (data) {
-          const formattedChartData = (data.chart_data || []).map((item) => ({
+        const rawTransactions = response.data?.data;
+
+        if (Array.isArray(rawTransactions)) {
+          // Transform raw transactions to income data
+          const transformedData = transformIncomeData(rawTransactions, selectedPeriod);
+
+          console.log('Transformed Income Data:', transformedData);
+
+          setIncomeData(transformedData);
+        } else if (rawTransactions && rawTransactions.chart_data) {
+          // Fallback: API already returns aggregated data (future API update)
+          const formattedChartData = (rawTransactions.chart_data || []).map((item) => ({
             label: item.label,
             income: item.income,
           }));
 
           setIncomeData({
-            balance: data.balance || 0,
-            transferred: data.transferred || 0,
+            balance: rawTransactions.balance || 0,
+            transferred: rawTransactions.transferred || 0,
             chartData: formattedChartData,
+          });
+        } else {
+          console.warn('Unexpected data format:', rawTransactions);
+          setIncomeData({
+            balance: 0,
+            transferred: 0,
+            chartData: [],
           });
         }
       } catch (err) {
         console.error('Error fetching income data:', err);
+        console.error('Error details:', {
+          message: err.message,
+          response: err.response?.data,
+          status: err.response?.status,
+        });
+
+        let errorMessage = 'Failed to load income data';
 
         if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
-          setError('Request timed out. Please try again.');
-        } else {
-          setError('Failed to load income data');
+          errorMessage = 'Request timed out. Please try again.';
+        } else if (err.response?.status === 401) {
+          errorMessage = 'Session expired. Please login again.';
+        } else if (err.response?.status === 403) {
+          errorMessage = 'Access denied. You do not have permission to view this data.';
+        } else if (err.response?.status === 404) {
+          errorMessage = 'Income data not found for this seller.';
+        } else if (err.response?.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else if (err.message) {
+          errorMessage = err.message;
         }
 
+        setError(errorMessage);
+
+        // Set empty data on error
         setIncomeData({
           balance: 0,
           transferred: 0,

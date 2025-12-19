@@ -2,10 +2,12 @@
 
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useProducts } from "@/hooks/dashboard/useProducts";
+import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import { useFilteredProducts } from "@/hooks/dashboard/useFilteredProducts";
-import ProductFilter from "../(private)/dashboard/sections/filter.jsx";
+import ProductFilter from "@/components/product/ProductFilter";
+import { ProductCardSkeleton } from "@/components/ui/skeleton";
 import { smoothScrollTo } from "@/utils/scroll";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 const formatRupiah = (price) =>
   new Intl.NumberFormat("id-ID", {
@@ -17,7 +19,7 @@ const formatRupiah = (price) =>
 export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { products, isLoading } = useProducts();
+  const { products, isLoading } = useProductsQuery();
   const productsRef = useRef(null);
 
   const categoryFromQuery =
@@ -69,8 +71,10 @@ export default function ProductsPage() {
           />
 
           {isLoading ? (
-            <div className="text-center text-gray-500 py-10">
-              Memuat produk...
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, idx) => (
+                <ProductCardSkeleton key={idx} />
+              ))}
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="border-2 border-dashed rounded-2xl p-8 text-center text-gray-500">
@@ -90,16 +94,19 @@ export default function ProductsPage() {
                 >
                   <div className="flex justify-center mb-4">
                     <img
-                      src={p.img || p.image || "/ProfilePhoto.png"}
+                      src={getProductImageUrl(p.image)}
                       alt={p.name}
                       className="h-48 w-full object-contain rounded-xl group-hover:scale-[1.02] transition-transform duration-200"
+                      onError={(e) => {
+                        e.target.src = "/ProfilePhoto.png";
+                      }}
                     />
                   </div>
                   <h3 className="font-semibold text-gray-900 text-base text-center mb-2 line-clamp-2">
                     {p.name}
                   </h3>
                   <p className="text-sm text-gray-600 text-center mb-4 line-clamp-2">
-                    {p.size || p.brand || p.category || "Tidak ada informasi"}
+                    {p.category || p.description || "Tidak ada informasi"}
                   </p>
                   <div className="flex justify-center">
                     <span className="px-4 py-2 bg-brand-red text-white rounded-full text-sm font-medium">
