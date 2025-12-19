@@ -1,27 +1,32 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceDot } from "recharts";
-import { useSellerIncome } from "@/hooks/seller/useSellerIncome";
+import { useSellerIncomeQuery } from "@/hooks/seller/useSellerIncomeQuery";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const IncomeSectionClient = ({ sellerId }) => {
+const IncomeSectionClientCached = ({ sellerId }) => {
+  const [selectedPeriod, setSelectedPeriod] = useState("Month");
+
   const {
     balance,
     transferred,
     chartData,
-    selectedPeriod,
-    setSelectedPeriod,
     isLoading,
     error,
     formatCurrency,
     getYAxisDomain,
     getYAxisTicks,
     getMinDataPoint,
-  } = useSellerIncome(sellerId);
+    refetch,
+  } = useSellerIncomeQuery(sellerId, selectedPeriod);
 
   const [yMin, yMax] = getYAxisDomain();
   const yTicks = getYAxisTicks();
   const minDataPoint = getMinDataPoint();
+
+  const handlePeriodChange = (period) => {
+    setSelectedPeriod(period);
+  };
 
   return (
     <section>
@@ -49,9 +54,9 @@ const IncomeSectionClient = ({ sellerId }) => {
 
           {error && (
             <div className="mb-4 p-3 bg-[var(--color-error-light)] border border-[var(--color-error)] rounded-lg text-[var(--color-error)] text-sm">
-              {error}
+              {error.message || 'Failed to load income data'}
               <button
-                onClick={() => setSelectedPeriod(selectedPeriod)}
+                onClick={() => refetch()}
                 className="ml-2 underline hover:no-underline"
               >
                 Retry
@@ -130,7 +135,7 @@ const IncomeSectionClient = ({ sellerId }) => {
             {["Year", "Month", "Week"].map((p) => (
               <button
                 key={p}
-                onClick={() => setSelectedPeriod(p)}
+                onClick={() => handlePeriodChange(p)}
                 disabled={isLoading}
                 className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                   selectedPeriod === p
@@ -148,4 +153,4 @@ const IncomeSectionClient = ({ sellerId }) => {
   );
 };
 
-export default IncomeSectionClient;
+export default IncomeSectionClientCached;

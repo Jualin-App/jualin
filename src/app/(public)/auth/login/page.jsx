@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [toast, setToast] = useState(null);
 
   const handleSuccess = () => {
-    setToast({ message: 'Login successful! Redirecting...', type: 'success' });
+    setToast({ message: 'Masuk berhasil! Tunggu Sebentar...', type: 'success' });
   };
 
   const handleError = (error) => {
@@ -36,20 +36,20 @@ export default function LoginPage() {
           <Logo size="xl" className="mb-6" />
 
           <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Welcome back !
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+              Selamat Datang Kembali !
             </h1>
-            <p className="text-gray-600 text-sm md:text-base">
-              Enter to get second best price!
+            <p className="text-gray-600 text-xs md:text-base">
+              Masuk untuk mendapatkan harga terbaik!
             </p>
           </div>
 
           <LoginForm onSuccess={handleSuccess} onError={handleError} />
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            Belum Punya Akun?{' '}
             <Link href="/auth/register" className="text-[#E83030] hover:text-red-600 font-medium">
-              Register here
+              Daftar disini
             </Link>
           </p>
         </div>

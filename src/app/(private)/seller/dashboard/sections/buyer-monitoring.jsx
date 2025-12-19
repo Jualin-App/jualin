@@ -54,7 +54,7 @@ const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
       processing: { text: "Processing", class: "bg-blue-100 text-blue-700 border border-blue-200" },
       completed: { text: "Completed", class: "bg-gray-100 text-gray-700 border border-gray-200" },
     };
-    return badges[status] || badges.processing;
+    return badges[status] || badges.completed;
   };
 
   const filtered = useMemo(() => {
