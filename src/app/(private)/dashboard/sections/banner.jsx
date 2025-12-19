@@ -71,20 +71,11 @@ function BannerSection({ banners, isLoading = false }) {
               <img
                 src={banner.src}
                 alt={banner.alt}
-                className={`absolute inset-0 w-full h-full object-cover rounded-2xl ${idx === active ? "animate-kenburns will-change-transform" : ""}`}
+                className={`absolute inset-0 w-full h-full object-cover rounded-2xl ${idx === active ? "" : ""}`}
                 style={idx === active ? undefined : { transform: "scale(0.995)" }}
               />
             </div>
           ))}
-        </div>
-        <div className="absolute bottom-0 inset-x-0 h-12 sm:h-16 bg-gradient-to-b from-transparent via-white/30 to-white/90 z-10 pointer-events-none" />
-        <div className="relative z-20 text-white px-4 sm:px-10 py-8 max-w-xl text-left">
-          <h2 className="text-2xl sm:text-4xl font-bold mb-4 leading-tight">
-            Jualin <br /> Jual Apapun Dengan <span className="text-white">♥</span>
-          </h2>
-          <p className="mb-6 text-base sm:text-lg">
-            Temukan barang terbaik untuk setiap kebutuhanmu. Simpel, nyaman, dan selalu siap menemani setiap momen.
-          </p>
         </div>
         {/* Carousel indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-30">
