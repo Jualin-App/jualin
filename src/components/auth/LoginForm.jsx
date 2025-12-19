@@ -79,17 +79,17 @@ const LoginForm = ({ onSuccess, onError }) => {
         label="Email"
         type="email"
         name="email"
-        placeholder="Enter your mail address"
+        placeholder="Masukkan Alamat Email"
         value={formData.email}
         onChange={handleChange}
         required
       />
 
       <Input
-        label="Password"
+        label="Kata Sandi"
         type="password"
         name="password"
-        placeholder="Enter Password"
+        placeholder="Masukkan Kata Sandi"
         value={formData.password}
         onChange={handleChange}
         required
@@ -109,7 +109,7 @@ const LoginForm = ({ onSuccess, onError }) => {
             htmlFor="remember-me"
             className="ml-2 block text-sm text-gray-700"
           >
-            Remember me
+            Ingat Saya
           </label>
         </div>
 
@@ -117,12 +117,12 @@ const LoginForm = ({ onSuccess, onError }) => {
           href="/auth/forgot-password"
           className="text-sm text-[#E83030] hover:text-red-600 font-medium"
         >
-          Forgot your password?
+          Lupa Kata Sandi?
         </a>
       </div>
 
-      <Button type="submit" variant="primary" disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Log In"}
+      <Button type="submit" variant="primary" loading={isLoading}>
+        {isLoading ? "Masuk..." : "Masuk"}
       </Button>
     </form>
   );

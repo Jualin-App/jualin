@@ -1,112 +1,46 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceDot } from "recharts";
-import api from "@/lib/axios";
+import { useSellerIncome } from "@/hooks/seller/useSellerIncome";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const IncomeSectionClient = ({ sellerId }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState("Month");
-  const [balance, setBalance] = useState(0);
-  const [transferred, setTransferred] = useState(0);
-  const [chartData, setChartData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchIncomeData = async (period) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await api.get("/api/v1/transactions", {
-        params: { period },
-        timeout: 30000, // 30 seconds timeout for this request
-      });
-
-      const data = response.data?.data;
-      if (data) {
-        setBalance(data.balance || 0);
-        setTransferred(data.transferred || 0);
-        
-        // Transform chart data to match the expected format
-        const formattedChartData = (data.chart_data || []).map((item) => ({
-          label: item.label,
-          income: item.income,
-        }));
-        setChartData(formattedChartData);
-      }
-    } catch (err) {
-      console.error("Error fetching income data:", err);
-      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
-        setError("Request timed out. Please try again or contact support if the issue persists.");
-      } else {
-        setError("Failed to load income data");
-      }
-      setChartData([]);
-      setBalance(0);
-      setTransferred(0);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (sellerId) {
-      fetchIncomeData(selectedPeriod);
-    }
-  }, [sellerId, selectedPeriod]);
-
-  const handlePeriodChange = (period) => {
-    setSelectedPeriod(period);
-  };
-
-  // Calculate dynamic Y-axis domain based on data
-  const getYAxisDomain = () => {
-    if (chartData.length === 0) return [0, 10000];
-    const maxIncome = Math.max(...chartData.map((d) => d.income), 0);
-    const minIncome = Math.min(...chartData.map((d) => d.income), 0);
-    const padding = Math.max(maxIncome * 0.2, 1000);
-    const max = Math.ceil((maxIncome + padding) / 1000) * 1000;
-    const min = Math.max(0, Math.floor((minIncome - padding) / 1000) * 1000);
-    return [min, max];
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  const {
+    balance,
+    transferred,
+    chartData,
+    selectedPeriod,
+    setSelectedPeriod,
+    isLoading,
+    error,
+    formatCurrency,
+    getYAxisDomain,
+    getYAxisTicks,
+    getMinDataPoint,
+  } = useSellerIncome(sellerId);
 
   const [yMin, yMax] = getYAxisDomain();
-  const yTicks = [];
-  const step = (yMax - yMin) / 4;
-  for (let i = yMin; i <= yMax; i += step) {
-    yTicks.push(Math.round(i));
-  }
-
-  // Find the data point with minimum income for ReferenceDot
-  const minDataPoint = chartData.length > 0 
-    ? chartData.reduce((min, item) => (item.income < min.income ? item : min), chartData[0])
-    : null;
+  const yTicks = getYAxisTicks();
+  const minDataPoint = getMinDataPoint();
 
   return (
     <section>
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Income</h2>
+      <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4">Income</h2>
       <div className="rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-shadow duration-200">
         <div className="p-6">
           <div className="flex justify-between mb-4">
             <div>
-              <p className="text-sm text-gray-600">Balance</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Balance</p>
               {isLoading ? (
-                <p className="text-2xl font-bold text-brand-red">Loading...</p>
+                <Skeleton className="h-8 w-32 mt-1" />
               ) : (
                 <p className="text-2xl font-bold text-brand-red">{formatCurrency(balance)}</p>
               )}
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">Transferred</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Transferred</p>
               {isLoading ? (
-                <p className="text-2xl font-bold text-brand-red">Loading...</p>
+                <Skeleton className="h-8 w-32 mt-1" />
               ) : (
                 <p className="text-2xl font-bold text-brand-red">{formatCurrency(transferred)}</p>
               )}
@@ -114,59 +48,77 @@ const IncomeSectionClient = ({ sellerId }) => {
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+            <div className="mb-4 p-3 bg-[var(--color-error-light)] border border-[var(--color-error)] rounded-lg text-[var(--color-error)] text-sm">
               {error}
+              <button
+                onClick={() => setSelectedPeriod(selectedPeriod)}
+                className="ml-2 underline hover:no-underline"
+              >
+                Retry
+              </button>
             </div>
           )}
 
           <div className="h-64">
             {isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-gray-500">Loading chart data...</p>
+              <div className="h-full space-y-2">
+                <Skeleton className="h-full w-full" />
               </div>
             ) : chartData.length === 0 ? (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-gray-500">No income data available</p>
+              <div className="h-full flex flex-col items-center justify-center">
+                <svg className="w-16 h-16 text-[var(--color-neutral-300)] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <p className="text-[var(--color-text-secondary)]">No income data available</p>
+                <p className="text-sm text-[var(--color-text-tertiary)] mt-1">Try selecting a different period</p>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 12, right: 20, left: 8, bottom: 0 }}>
-                  <XAxis 
-                    dataKey="label" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: "#888", fontSize: 12 }}
+                  <XAxis
+                    dataKey="label"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "var(--color-text-tertiary)", fontSize: 12 }}
                     angle={-45}
                     textAnchor="end"
                     height={60}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: "#888", fontSize: 12 }} 
-                    tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} 
-                    domain={[yMin, yMax]} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "var(--color-text-tertiary)", fontSize: 12 }}
+                    tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v.toString()}
+                    domain={[yMin, yMax]}
                     ticks={yTicks}
+                    width={60}
                   />
-                  <Tooltip 
-                    contentStyle={{ background: "white", border: "1px solid #eee", borderRadius: "8px" }} 
-                    formatter={(value) => [formatCurrency(value), "Income"]} 
+                  <Tooltip
+                    contentStyle={{
+                      background: "white",
+                      border: "1px solid var(--color-border-default)",
+                      borderRadius: "8px",
+                      padding: "8px 12px"
+                    }}
+                    formatter={(value) => [formatCurrency(value), "Income"]}
+                    labelStyle={{ color: "var(--color-text-primary)", fontWeight: 600 }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="income" 
-                    stroke="#ef4444" 
-                    strokeWidth={2} 
-                    dot={false} 
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    stroke="var(--color-brand-primary)"
+                    strokeWidth={3}
+                    dot={{ fill: "var(--color-brand-primary)", r: 4 }}
+                    activeDot={{ r: 6 }}
                   />
                   {minDataPoint && (
-                    <ReferenceDot 
-                      x={minDataPoint.label} 
-                      y={minDataPoint.income} 
-                      r={6} 
-                      fill="#ef4444" 
-                      stroke="white" 
-                      strokeWidth={2} 
+                    <ReferenceDot
+                      x={minDataPoint.label}
+                      y={minDataPoint.income}
+                      r={6}
+                      fill="var(--color-brand-primary)"
+                      stroke="white"
+                      strokeWidth={2}
                     />
                   )}
                 </LineChart>
@@ -174,16 +126,16 @@ const IncomeSectionClient = ({ sellerId }) => {
             )}
           </div>
 
-          <div className="flex mt-6 bg-gray-100 rounded-xl p-1">
+          <div className="flex mt-6 bg-[var(--color-neutral-100)] rounded-xl p-1">
             {["Year", "Month", "Week"].map((p) => (
               <button
                 key={p}
-                onClick={() => handlePeriodChange(p)}
+                onClick={() => setSelectedPeriod(p)}
                 disabled={isLoading}
-                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  selectedPeriod === p 
-                    ? "bg-brand-red text-white" 
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                  selectedPeriod === p
+                    ? "bg-brand-red text-white shadow-md"
+                    : "bg-[var(--color-neutral-100)] text-[var(--color-text-secondary)] hover:bg-[var(--color-neutral-200)]"
                 } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {p}

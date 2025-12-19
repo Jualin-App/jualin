@@ -33,7 +33,7 @@ function BannerSection({ banners, isLoading = false }) {
   if (isLoading) {
     return (
       <section className="w-full mt-4 sm:mt-8 mb-6 px-2 sm:px-4">
-        <div className="w-full max-w-7xl mx-auto overflow-hidden relative h-[400px] sm:h-[560px] bg-gray-200 rounded-2xl animate-pulse flex items-center justify-start">
+        <div className="w-full max-w-7xl mx-auto overflow-hidden relative h-[300px] sm:h-[420px] bg-gray-200 rounded-2xl animate-pulse flex items-center justify-start">
           <div className="relative z-20 text-white px-4 sm:px-10 py-8 max-w-xl text-left">
             <div className="h-10 sm:h-14 bg-gray-300 rounded-lg w-64 mb-4 animate-pulse"></div>
             <div className="h-6 bg-gray-300 rounded w-80 mb-2 animate-pulse"></div>
@@ -55,7 +55,7 @@ function BannerSection({ banners, isLoading = false }) {
   return (
     <section className="w-full mt-4 sm:mt-8 mb-6 px-2 sm:px-4">
       <div
-        className="w-full max-w-7xl mx-auto overflow-hidden relative h-[400px] sm:h-[560px] flex items-center justify-start bg-gray-100 rounded-2xl"
+        className="w-full max-w-7xl mx-auto overflow-hidden relative h-[300px] sm:h-[420px] flex items-center justify-start bg-gray-100 rounded-2xl"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >

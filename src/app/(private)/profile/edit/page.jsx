@@ -1,4 +1,5 @@
 "use client";
+<<<<<<< HEAD
 import { useEffect, useMemo, useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthProvider";
@@ -245,6 +246,75 @@ export default function EditProfilePage() {
 
   const onLogout = async () => {
     try {
+=======
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthProvider";
+import Navbar from "@/components/ui/Navbar";
+import { useProfileUpdate } from "@/hooks/profile/useProfileUpdate";
+import { usePasswordChange } from "@/hooks/profile/usePasswordChange";
+import { usePurchaseHistory } from "@/hooks/profile/usePurchaseHistory";
+import { ProfileFormSection } from "../sections/profile-form";
+import { PasswordChangeSection } from "../sections/password-change";
+import { PurchaseHistorySection } from "../sections/purchase-history";
+import { ProfileSidebarSection } from "../sections/profile-sidebar";
+
+export default function EditProfilePage() {
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState("edit"); // 'edit' | 'purchases'
+
+  // Toast state
+  const [toast, setToast] = useState(null);
+
+  // Profile update hook
+  const profileUpdate = useProfileUpdate();
+
+  // Password change hook
+  const passwordChange = usePasswordChange();
+
+  // Purchase history hook
+  const purchaseHistory = usePurchaseHistory();
+
+  // Handlers
+  const handleCancel = () => {
+    router.back();
+  };
+
+  const handleSaveProfile = async () => {
+    const result = await profileUpdate.submit();
+
+    if (result.success) {
+      setToast({
+        type: "success",
+        message: result.message || "Profile updated",
+      });
+      setTimeout(() => router.push("/profile"), 800);
+    } else {
+      setToast({
+        type: "error",
+        message: result.message || "Failed to update",
+      });
+    }
+  };
+
+  const handlePasswordSubmit = async () => {
+    const result = await passwordChange.submit();
+
+    if (result.success) {
+      setToast({ type: "success", message: result.message });
+    } else {
+      setToast({ type: "error", message: result.message });
+    }
+
+    return result;
+  };
+
+  const handleLogout = async () => {
+    try {
+>>>>>>> e9e8d23328c9646c110a2a8f39dc7711c2d428b6
       await logout();
     } catch (error) {
       console.error("Logout failed:", error);
@@ -259,6 +329,7 @@ export default function EditProfilePage() {
 
       <div className="flex">
         {/* Sidebar */}
+<<<<<<< HEAD
         <div className="w-64 bg-[#F7F7F8] min-h-screen flex flex-col">
           <div className="p-6 flex-1">
             <div className="space-y-8">
@@ -346,6 +417,13 @@ export default function EditProfilePage() {
             </button>
           </div>
         </div>
+=======
+        <ProfileSidebarSection
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onLogout={handleLogout}
+        />
+>>>>>>> e9e8d23328c9646c110a2a8f39dc7711c2d428b6
 
         {/* Main Content */}
         <div className="flex-1 bg-white">
@@ -359,17 +437,11 @@ export default function EditProfilePage() {
                   </h1>
                   <div className="flex gap-3">
                     <button
-                      onClick={onCancel}
-                      className="px-4 py-2 text-[#1F1F1F] hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={handleSaveProfile}
+                      disabled={profileUpdate.isLoading}
+                      className="px-6 py-2 bg-[#E53935] hover:bg-[#D32F2F] text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg focus:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md outline-none"
                     >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={onSubmit}
-                      disabled={loading}
-                      className="px-6 py-2 bg-[#E53935] hover:bg-[#D32F2F] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {loading ? "Saving..." : "Save changes"}
+                      {profileUpdate.isLoading ? "Saving..." : "Simpan Perubahan"}
                     </button>
                   </div>
                 </div>
@@ -377,16 +449,24 @@ export default function EditProfilePage() {
                 {/* Toast */}
                 {toast && (
                   <div
+<<<<<<< HEAD
                     className={`mb-6 rounded-lg p-4 ${
                       toast.type === "success"
                         ? "bg-green-50 text-green-700 border border-green-200"
                         : "bg-red-50 text-red-700 border border-red-200"
                     }`}
+=======
+                    className={`mb-6 rounded-lg p-4 shadow-md ${toast.type === "success"
+                      ? "bg-green-50 text-green-700 shadow-green-200"
+                      : "bg-red-50 text-red-700 shadow-red-200"
+                      }`}
+>>>>>>> e9e8d23328c9646c110a2a8f39dc7711c2d428b6
                   >
                     {toast.message}
                   </div>
                 )}
 
+<<<<<<< HEAD
                 {/* Profile Photo and Upload */}
                 <div className="bg-white border border-gray-200 rounded-xl p-8 mb-8">
                   <div className="flex items-center gap-8">
@@ -796,6 +876,38 @@ export default function EditProfilePage() {
                   </div>
                 </div>
               </div>
+=======
+                {/* Profile Form Section */}
+                <ProfileFormSection
+                  form={profileUpdate.form}
+                  errors={profileUpdate.errors}
+                  imagePreview={profileUpdate.imagePreview}
+                  onFieldChange={profileUpdate.updateField}
+                  onImageSelect={profileUpdate.selectImage}
+                />
+
+                {/* Password Change Section */}
+                <PasswordChangeSection
+                  form={passwordChange.form}
+                  errors={passwordChange.errors}
+                  isLoading={passwordChange.isLoading}
+                  onFieldChange={passwordChange.updateField}
+                  onSubmit={handlePasswordSubmit}
+                />
+              </>
+            ) : (
+              // Purchase History Content
+              <PurchaseHistorySection
+                purchases={purchaseHistory.purchases}
+                totalAmount={purchaseHistory.totalAmount}
+                dateFilter={purchaseHistory.dateFilter}
+                pagination={purchaseHistory.pagination}
+                formatCurrency={purchaseHistory.formatCurrency}
+                formatDate={purchaseHistory.formatDate}
+                onDateFilterChange={purchaseHistory.updateDateFilter}
+                isLoading={purchaseHistory.isLoading}
+              />
+>>>>>>> e9e8d23328c9646c110a2a8f39dc7711c2d428b6
             )}
           </div>
         </div>

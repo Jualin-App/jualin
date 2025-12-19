@@ -1,38 +1,42 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/AuthProvider";
 import AppChrome from "../components/ui/AppChrome.jsx";
 import { ChatProvider } from "@/context/ChatProvider";
+import { QueryProvider } from "@/providers/QueryProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata = {
   title: "Jualin",
   description: "Jualin - Your trusted marketplace",
-  icons: {
-    icon: "/Logo.png",
-  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <ChatProvider>
-            <AppChrome>{children}</AppChrome>
-          </ChatProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <ChatProvider>
+              <AppChrome>{children}</AppChrome>
+            </ChatProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
