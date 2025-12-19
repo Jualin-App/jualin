@@ -110,7 +110,7 @@ const LoginForm = ({ onSuccess, onError }) => {
         </a>
       </div>
 
-      <Button type="submit" variant="primary" disabled={isLoading}>
+      <Button type="submit" variant="primary" loading={isLoading}>
         {isLoading ? 'Masuk...' : 'Masuk'}
       </Button>
     </form>

@@ -22,34 +22,47 @@ export const profileService = {
 
   /**
    * Update user profile with optional profile picture
-   * @param {Object} profileData - Profile fields (fullName, email, phone, location, bio, profilePicture)
+   * @param {Object} profileData - Profile fields (username, email, gender, birthday, region, city, bio, profile_picture)
    * @param {File|null} imageFile - Profile picture file (optional)
    * @returns {Promise<Object>} Update response with success status and updated data
    */
   async updateProfile(profileData, imageFile = null) {
     try {
+      // Get user ID from localStorage
+      const storedUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || 'null') : null;
+      const userId = storedUser?.id;
+
+      if (!userId) {
+        throw new Error('User ID not found. Please login again.');
+      }
+
       let response;
 
       if (imageFile) {
+        // With image upload - use FormData with POST method
         const formData = new FormData();
-        formData.append('fullName', profileData.fullName);
+        formData.append('username', profileData.username);
         formData.append('email', profileData.email);
-        formData.append('phone', profileData.phone || '');
-        formData.append('location', profileData.location);
+        formData.append('gender', profileData.gender || 'male');
+        formData.append('birthday', profileData.birthday || '');
+        formData.append('region', profileData.region || '');
+        formData.append('city', profileData.city || '');
         formData.append('bio', profileData.bio || '');
-        formData.append('profilePicture', imageFile);
+        formData.append('profile_picture', imageFile);
 
-        response = await apiClient.patch('/profile/update', formData, {
+        response = await apiClient.post(`/api/v1/users/${userId}/update?_method=PATCH`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
-        response = await apiClient.patch('/profile/update', {
-          fullName: profileData.fullName,
+        // Without image - use JSON with POST method
+        response = await apiClient.post(`/api/v1/users/${userId}/update?_method=PATCH`, {
+          username: profileData.username,
           email: profileData.email,
-          phone: profileData.phone || '',
-          location: profileData.location,
+          gender: profileData.gender || 'male',
+          birthday: profileData.birthday || '',
+          region: profileData.region || '',
+          city: profileData.city || '',
           bio: profileData.bio || '',
-          profilePicture: profileData.profilePicture || '',
         });
       }
 

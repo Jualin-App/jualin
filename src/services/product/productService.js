@@ -38,9 +38,54 @@ export const productService = {
     }
   },
 
-  async create(payload) {
+  async create(productData, imageFile = null) {
     try {
-      const response = await apiClient.post('/api/v1/products', payload);
+      // Get seller ID from localStorage
+      const storedUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || 'null') : null;
+
+      console.log('🔍 Stored user:', storedUser);
+
+      const sellerId = storedUser?.id || storedUser?.user_id || storedUser?.userId;
+
+      console.log('🔍 Seller ID:', sellerId);
+
+      if (!sellerId) {
+        console.error('❌ User object:', storedUser);
+        throw new Error('Seller ID not found. Please login again.');
+      }
+
+      let response;
+
+      if (imageFile) {
+        // With image upload - use FormData
+        const formData = new FormData();
+        formData.append('seller_id', sellerId);
+        formData.append('name', productData.name);
+        formData.append('description', productData.description || '');
+        formData.append('price', productData.price);
+        formData.append('stock_quantity', productData.stock_quantity || 0);
+        formData.append('category', productData.category || '');
+        formData.append('condition', productData.condition || 'new');
+        formData.append('status', productData.status || 'active');
+        formData.append('image', imageFile);
+
+        response = await apiClient.post('/api/v1/products', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        // Without image - use JSON
+        response = await apiClient.post('/api/v1/products', {
+          seller_id: sellerId,
+          name: productData.name,
+          description: productData.description || '',
+          price: productData.price,
+          stock_quantity: productData.stock_quantity || 0,
+          category: productData.category || '',
+          condition: productData.condition || 'new',
+          status: productData.status || 'active',
+        });
+      }
+
       return normalizeProduct(response.data.data);
     } catch (error) {
       console.error('Error creating product:', error);
@@ -48,9 +93,38 @@ export const productService = {
     }
   },
 
-  async update(id, payload) {
+  async update(id, productData, imageFile = null) {
     try {
-      const response = await apiClient.put(`/api/v1/products/${id}`, payload);
+      let response;
+
+      if (imageFile) {
+        // With image upload - use FormData with POST method
+        const formData = new FormData();
+        formData.append('name', productData.name);
+        formData.append('description', productData.description || '');
+        formData.append('price', productData.price);
+        formData.append('stock_quantity', productData.stock_quantity || 0);
+        formData.append('category', productData.category || '');
+        formData.append('condition', productData.condition || 'new');
+        formData.append('status', productData.status || 'active');
+        formData.append('image', imageFile);
+
+        response = await apiClient.post(`/api/v1/products/${id}?_method=PATCH`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        // Without image - use PATCH
+        response = await apiClient.patch(`/api/v1/products/${id}`, {
+          name: productData.name,
+          description: productData.description || '',
+          price: productData.price,
+          stock_quantity: productData.stock_quantity || 0,
+          category: productData.category || '',
+          condition: productData.condition || 'new',
+          status: productData.status || 'active',
+        });
+      }
+
       return normalizeProduct(response.data.data);
     } catch (error) {
       console.error(`Error updating product ${id}:`, error);
