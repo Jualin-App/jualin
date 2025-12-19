@@ -12,7 +12,10 @@ export default function AppChrome({ children }) {
     pathname.startsWith("/register") ||
     pathname.startsWith("/auth/login") ||
     pathname.startsWith("/auth/register") ||
-    pathname.startsWith("/profile/edit");
+    pathname.startsWith("/profile/edit") ||
+    pathname.startsWith("/auth/forgot-password") ||
+    pathname.startsWith("/auth/reset-password") ||
+    pathname === "/404_not_found";
   const isDashboard = pathname.startsWith("/dashboard");
   const hideNavbar = hideBoth;
   const hideFooter = hideBoth;
