@@ -32,14 +32,11 @@ export function ChatProvider({ children }) {
       return;
     }
 
-    console.log("🔥 Subscribe ke chatrooms untuk user:", user.id);
-
     const unsubscribe = getUserChatRooms(user.id, (chatsData) => {
       setChats(chatsData);
     });
 
     return () => {
-      console.log("🔴 Unsubscribe dari chatrooms");
       unsubscribe();
     };
   }, [user?.id]);
@@ -49,8 +46,6 @@ export function ChatProvider({ children }) {
       setMessages([]);
       return;
     }
-
-    console.log("🔥 Subscribe ke messages untuk chat:", currentChat.id);
 
     const unsubscribe = getChatMessages(currentChat.id, (messagesData) => {
       setMessages(messagesData);
@@ -63,26 +58,39 @@ export function ChatProvider({ children }) {
     }
 
     return () => {
-      console.log("🔴 Unsubscribe dari messages");
       unsubscribe();
     };
   }, [currentChat?.id, user?.id]);
 
   const startChat = useCallback(
-    async (sellerId, sellerInfo, productId = null) => {
+    async (otherUserId, otherUserInfo, productId = null) => {
       if (!user?.id) {
         throw new Error("User belum login");
       }
 
       setLoading(true);
       try {
-        const customerInfo = {
+        const currentUserInfo = {
           name: user.name || user.username || user.email,
           avatar: user.avatar || user.profile_picture || null,
+          role: String(user.role || "customer").toLowerCase(),
         };
 
+        const otherUserInfoWithRole = {
+          ...otherUserInfo,
+          role: otherUserInfo.role || "seller", // backward compatibility
+        };
+
+        // Tentukan siapa customer dan siapa seller berdasarkan role
+        const isCurrentUserCustomer = currentUserInfo.role === "customer";
+
+        const customerId = isCurrentUserCustomer ? user.id : otherUserId;
+        const sellerId = isCurrentUserCustomer ? otherUserId : user.id;
+        const customerInfo = isCurrentUserCustomer ? currentUserInfo : otherUserInfoWithRole;
+        const sellerInfo = isCurrentUserCustomer ? otherUserInfoWithRole : currentUserInfo;
+
         const chatId = await getOrCreateChatRoom(
-          user.id,
+          customerId,
           sellerId,
           customerInfo,
           sellerInfo,
@@ -103,6 +111,54 @@ export function ChatProvider({ children }) {
     [user]
   );
 
+  const openChatWithUser = useCallback(
+    async (targetUserId) => {
+      if (!user?.id) {
+        throw new Error("User belum login");
+      }
+
+      setLoading(true);
+      try {
+        console.log("🔍 Looking for chat with user:", targetUserId);
+        console.log("📋 Available chats:", chats.length);
+        console.log("👤 Current user ID:", user.id);
+
+        // Konversi targetUserId ke string untuk comparison
+        const targetUserIdStr = String(targetUserId);
+
+        // Cari chat yang sudah ada dengan user ini
+        const existingChat = chats.find(chat => {
+          if (!chat.participants) return false;
+
+          // Konversi semua participants ke string untuk comparison yang konsisten
+          const participantsStr = chat.participants.map(p => String(p));
+          const hasTarget = participantsStr.includes(targetUserIdStr);
+
+          console.log("  Checking chat:", chat.id, "participants:", participantsStr, "has target?", hasTarget);
+
+          return hasTarget;
+        });
+
+        if (existingChat) {
+          console.log("✅ Found existing chat:", existingChat.id);
+          setCurrentChat(existingChat);
+          return existingChat.id;
+        }
+
+        // Jika tidak ada chat, throw error
+        // Seller tidak boleh create chat baru, hanya respond
+        console.log("❌ No existing chat found with user:", targetUserId);
+        throw new Error("No existing conversation found with this user");
+      } catch (error) {
+        console.error("❌ Error opening chat:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, chats]
+  );
+
   const sendMessage = useCallback(
     async (text) => {
       if (!currentChat?.id || !user?.id || !text.trim()) {
@@ -118,8 +174,6 @@ export function ChatProvider({ children }) {
           text.trim(),
           user.avatar || user.profile_picture || null
         );
-
-        console.log("✅ Message sent successfully");
       } catch (error) {
         console.error("❌ Error sending message:", error);
         throw error;
@@ -140,6 +194,7 @@ export function ChatProvider({ children }) {
         messages,
         loading,
         startChat,
+        openChatWithUser,
         sendMessage,
         selectChat,
       }}

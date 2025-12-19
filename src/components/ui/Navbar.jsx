@@ -14,11 +14,35 @@ const Navbar = () => {
     <header className="bg-white">
       <div className="w-full px-2 sm:px-4 py-3 flex items-center gap-4 transition-shadow duration-200">
         <div className="flex items-center gap-4 sm:gap-6 min-w-0">
-          <Logo />
+          <Logo className="-mt-1.5" />
+        </div>
+
+        {/* Navigation Items */}
+        <div className="hidden md:flex items-center gap-2 mx-4">
+          <a
+            href="/"
+            className="px-3 py-2 text-gray-600 font-medium rounded-lg hover:text-[#E83030] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+          >
+            Beranda
+          </a>
+          {user?.role !== "seller" && (
+            <a
+              href="/products"
+              className="px-3 py-2 text-gray-600 font-medium rounded-lg hover:text-[#E83030] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+            >
+              Produk
+            </a>
+          )}
+          <a
+            href="/chat"
+            className="px-3 py-2 text-gray-600 font-medium rounded-lg hover:text-[#E83030] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+          >
+            Pesan
+          </a>
         </div>
         {showSearch && (
           <div className="flex-1">
-            <Suspense fallback={<div className="h-10 w-full bg-gray-100 rounded-2xl animate-pulse" />}>
+            <Suspense fallback={<div className="w-full px-4 py-2.5 bg-gray-100 rounded-2xl animate-pulse"></div>}>
               <SearchBar inline />
             </Suspense>
           </div>
@@ -39,26 +63,28 @@ const Navbar = () => {
                   Hi, {user.name || user.username || "User"}
                 </span>
               </a>
-              <a
-                href="/jual"
-                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
-              >
-                Jual
-              </a>
+              {user?.role === "seller" && (
+                <a
+                  href="/jual"
+                  className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
+                >
+                  Jual
+                </a>
+              )}
             </>
           ) : (
             <>
               <a
                 href="/auth/login"
-                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
+                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
               >
-                Login
+                Masuk
               </a>
               <a
                 href="/auth/register"
-                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"
+                className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
               >
-                Register
+                Daftar
               </a>
             </>
           )}

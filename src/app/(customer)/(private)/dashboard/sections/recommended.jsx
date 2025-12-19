@@ -1,12 +1,24 @@
 "use client";
-import React, { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import ProductFilter from "./filter.jsx";
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import ProductFilter from "@/components/product/ProductFilter";
+import { ProductCardSkeleton } from "@/components/ui/skeleton";
+import { getProductImageUrl } from "@/utils/imageHelper";
+import { smoothScrollTo } from "@/utils/scroll";
 
-export default function RecommendedSection({ products }) {
+export default function RecommendedSection({ products, isLoading = false }) {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState("all");
   const searchParams = useSearchParams();
   const q = (searchParams.get("q") || "").trim().toLowerCase();
+  const sectionRef = useRef(null);
+  const VISIBLE_LIMIT = 6;
+
+  useEffect(() => {
+    if (q && sectionRef.current) {
+      smoothScrollTo(sectionRef.current, 500, 100);
+    }
+  }, [q]);
 
   const filteredProducts = useMemo(() => {
     const base =
@@ -24,8 +36,46 @@ export default function RecommendedSection({ products }) {
     });
   }, [products, activeFilter, q]);
 
+  const visibleProducts = useMemo(
+    () => filteredProducts.slice(0, VISIBLE_LIMIT),
+    [filteredProducts]
+  );
+
+  const handleSeeAll = () => {
+    const params = new URLSearchParams();
+    if (activeFilter && activeFilter !== "all") {
+      params.set("category", activeFilter);
+    }
+    const query = params.toString();
+    router.push(query ? `/products?${query}` : "/products");
+  };
+
+  if (isLoading) {
+    return (
+      <section
+        className="w-full my-8 animate-fade-in scroll-mt-24"
+        ref={sectionRef}
+      >
+        <div className="h-8 bg-[var(--color-neutral-200)] rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
+        <div className="flex justify-center gap-4 mb-6">
+          {[...Array(4)].map((_, idx) => (
+            <div key={idx} className="h-10 w-20 bg-[var(--color-neutral-200)] rounded-lg animate-pulse"></div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {[...Array(6)].map((_, idx) => (
+            <ProductCardSkeleton key={idx} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="w-full my-8 animate-fade-in">
+    <section
+      className="w-full my-8 animate-fade-in scroll-mt-24"
+      ref={sectionRef}
+    >
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
         Produk yang mungkin kamu suka
       </h2>
@@ -33,8 +83,17 @@ export default function RecommendedSection({ products }) {
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
       />
+      <div className="w-full flex justify-center sm:justify-end mb-4">
+        <button
+          type="button"
+          onClick={handleSeeAll}
+          className="text-sm text-brand-red font-semibold hover:text-red-600 hover:opacity-90 hover:drop-shadow-sm transform hover:scale-105 transition-all duration-150 cursor-pointer"
+        >
+          Lihat semua
+        </button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {filteredProducts.map((product, idx) => (
+        {visibleProducts.map((product, idx) => (
           <a
             key={product.id}
             href={`/product/${product.id}`}
@@ -43,9 +102,12 @@ export default function RecommendedSection({ products }) {
             tabIndex={0}
           >
             <img
-              src={product.img ? product.img : "https://via.placeholder.com/400x400?text=No+Image"}
-              alt={product.name || "Product image"}
+              src={getProductImageUrl(product.image)}
+              alt={product.name || "Foto Produk"}
               className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+              }}
             />
             <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
               {product.brand || product.category}

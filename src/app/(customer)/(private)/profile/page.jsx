@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthProvider"
 import { useRouter } from "next/navigation"
 
+
 export default function ProfilePage() {
   const { user } = useAuth()
   const router = useRouter()

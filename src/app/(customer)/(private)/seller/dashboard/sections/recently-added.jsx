@@ -3,6 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 import { MoreHorizontal, Plus } from "lucide-react";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 const RecentlyAddedSection = ({ products, isLoading = false }) => {
   const router = useRouter();
@@ -17,7 +18,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
 
   const handleDelete = (productId) => {
     if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
-      // Handle delete logic here
       console.log("Delete product:", productId);
     }
   };
@@ -50,7 +50,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
       <div className="grid grid-cols-5 gap-4">
         {isLoading ? (
           <>
-            {/* Loading skeleton untuk 4 produk */}
             {[...Array(4)].map((_, index) => (
               <div key={index} className="bg-white rounded-2xl p-4 shadow-lg animate-pulse">
                 <div className="relative">
@@ -66,7 +65,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                 </div>
               </div>
             ))}
-            {/* Add New Product Card - selalu di posisi ke-5 */}
             <div className="border-2 border-dashed rounded-2xl p-4 min-h-[180px] flex items-center justify-center">
               <button
                 onClick={() => router.push('/seller/products/new')}
@@ -86,13 +84,19 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                       trigger={<MoreHorizontal className="h-4 w-4" />}
                       items={[
                         { label: "Edit Produk", onClick: () => handleEdit(product.id) },
-                        { label: "Lihat Produk", onClick: () => handleView(product.id) },
                         { label: "Hapus Produk", onClick: () => handleDelete(product.id), variant: "danger" }
                       ]}
                     />
                   </div>
                   <div className="flex justify-center mb-3">
-                    <img src={product.img || product.image || "/ProfilePhoto.png"} alt={product.name} className="h-20 object-contain" />
+                    <img
+                      src={getProductImageUrl(product.image)}
+                      alt={product.name}
+                      className="h-20 object-contain"
+                      onError={(e) => {
+                        e.target.src = "/ProfilePhoto.png";
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="text-center">

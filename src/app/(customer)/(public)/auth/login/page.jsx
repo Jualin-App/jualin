@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [toast, setToast] = useState(null);
 
   const handleSuccess = () => {
-    setToast({ message: 'Login successful! Redirecting...', type: 'success' });
+    setToast({ message: 'Masuk berhasil! Tunggu Sebentar...', type: 'success' });
   };
 
   const handleError = (error) => {
@@ -37,33 +37,20 @@ export default function LoginPage() {
           <Logo size="xl" className="mb-6" />
 
           <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Welcome back !
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+              Selamat Datang Kembali !
             </h1>
-            <p className="text-gray-600 text-sm md:text-base">
-              Enter to get second best price!
+            <p className="text-gray-600 text-xs md:text-base">
+              Masuk untuk mendapatkan harga terbaik!
             </p>
           </div>
 
           <LoginForm onSuccess={handleSuccess} onError={handleError} />
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or, Login with</span>
-            </div>
-          </div>
-
-          <Button variant="google">
-            Sign up with Google
-          </Button>
-
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/auth" className="text-[#E83030] hover:text-red-600 font-medium">
-              Register here
+            Belum Punya Akun?{' '}
+            <Link href="/auth/register" className="text-[#E83030] hover:text-red-600 font-medium">
+              Daftar disini
             </Link>
           </p>
         </div>

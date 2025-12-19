@@ -54,7 +54,6 @@ export async function getOrCreateChatRoom(
   });
 
   if (existingChat) {
-    console.log('✅ Chat room already exists:', existingChat.id);
     return existingChat.id;
   }
 
@@ -84,7 +83,6 @@ export async function getOrCreateChatRoom(
   };
 
   const docRef = await addDoc(chatsRef, chatData);
-  console.log('✅ New chat room created:', docRef.id);
   return docRef.id;
 }
 
@@ -120,8 +118,6 @@ export async function sendMessage(chatId, senderId, senderName, text, senderAvat
     },
     updatedAt: serverTimestamp(),
   });
-
-  console.log('✅ Message sent successfully');
 }
 
 /**
@@ -145,7 +141,6 @@ export function getUserChatRooms(userId, callback) {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log('📩 Chat rooms updated:', chats.length, 'chats');
       callback(chats);
     },
     (error) => {
@@ -172,7 +167,6 @@ export function getChatMessages(chatId, callback) {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log('💬 Messages updated:', messages.length, 'messages');
       callback(messages);
     },
     (error) => {

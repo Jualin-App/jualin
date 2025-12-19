@@ -61,10 +61,8 @@ const LoginForm = ({ onSuccess, onError }) => {
       });
 
       const data = await response.json();
-      console.log('Login response:', data);
 
       if (!response.ok) {
-        // Ambil pesan error dari backend, bisa dari data.message atau data.error
         const errorMsg =
           data.message ||
           (data.errors && Object.values(data.errors).flat().join(', ')) ||
@@ -100,17 +98,17 @@ const LoginForm = ({ onSuccess, onError }) => {
         label="Email"
         type="email"
         name="email"
-        placeholder="Enter your mail address"
+        placeholder="Masukkan Alamat Email"
         value={formData.email}
         onChange={handleChange}
         required
       />
 
       <Input
-        label="Password"
+        label="Kata Sandi"
         type="password"
         name="password"
-        placeholder="Enter Password"
+        placeholder="Masukkan Kata Sandi"
         value={formData.password}
         onChange={handleChange}
         required
@@ -127,17 +125,17 @@ const LoginForm = ({ onSuccess, onError }) => {
             className="h-4 w-4 text-[#E83030] focus:ring-[#E83030] border-gray-300 rounded"
           />
           <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-            Remember me
+            Ingat Saya
           </label>
         </div>
 
         <a href="#" className="text-sm text-[#E83030] hover:text-red-600 font-medium">
-          Forgot your password?
+          Lupa Kata Sandi?
         </a>
       </div>
 
-      <Button type="submit" variant="primary" disabled={isLoading}>
-        {isLoading ? 'Logging in...' : 'Log In'}
+      <Button type="submit" variant="primary" loading={isLoading}>
+        {isLoading ? 'Masuk...' : 'Masuk'}
       </Button>
     </form>
   );

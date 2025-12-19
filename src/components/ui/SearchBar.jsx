@@ -1,56 +1,62 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 function SearchBar({ inline = false, className = "" }) {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const pathname = usePathname();
-  const initialQ = useMemo(() => searchParams.get("q") || "", [searchParams]);
-  const [q, setQ] = useState(initialQ);
+  const initialValue = searchParams.get("q") || "";
+
+  const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (!isFocused) {
-      setQ(initialQ);
-    }
-  }, [initialQ, isFocused]);
+    setValue(initialValue);
+  }, [initialValue]);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      const nextQ = q.trim();
-      const currentQ = params.get("q") || "";
-      if (nextQ) {
-        params.set("q", nextQ);
-      } else {
-        params.delete("q");
-      }
-      const qs = params.toString();
-      const url = qs ? `${pathname}?${qs}` : pathname;
-      if (nextQ !== currentQ) {
-        router.replace(url);
-      }
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [q, pathname, router, searchParams]);
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    const trimmedValue = value.trim();
+
+    if (trimmedValue) {
+      params.set("q", trimmedValue);
+    } else {
+      params.delete("q");
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `${pathname}?${queryString}` : pathname;
+
+    // Check if we are already on the page with same query to avoid redundant pushes,
+    // but here we want to ensure scroll trigger if needed.
+    // Actually router.push/replace will trigger useEffect in page.
+    router.push(url);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   const inputEl = (
     <input
       type="text"
-      value={q}
-      onChange={(e) => setQ(e.target.value)}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={handleKeyDown}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
       placeholder="Cari produk, merek, atau deskripsi"
-      className={`w-full px-4 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-2xl shadow-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${className}`}
+      className={`w-full px-4 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-2xl shadow-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:shadow-xl focus:border-gray-300 focus:-translate-y-1 transition-all duration-200 hover:shadow-md hover:border-gray-400 hover:bg-gray-50 ${className}`}
       aria-label="Search products"
     />
   );
 
   if (inline) {
     return (
-      <div className="w-full pl-4 sm:pl-8">
+      <div className="w-full pl-2 sm:pl-4 pr-4 sm:pr-12">
         <div className="max-w-7xl mx-auto">{inputEl}</div>
       </div>
     );

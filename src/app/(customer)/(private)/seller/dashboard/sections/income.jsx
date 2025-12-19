@@ -1,7 +1,7 @@
-import IncomeSectionClient from "./income-client";
+import IncomeSectionClientCached from "./income-client-cached";
 
 const IncomeSection = ({ sellerId }) => {
-  return <IncomeSectionClient sellerId={sellerId} />;
+  return <IncomeSectionClientCached sellerId={sellerId} />;
 };
 
 export default IncomeSection;
