@@ -69,7 +69,15 @@ const LoginForm = ({ onSuccess, onError }) => {
       await refetchUser();
 
       onSuccess?.();
-      router.push(role === "seller" ? "/seller/dashboard" : "/dashboard");
+
+      // Route based on user role
+      if (role === "admin") {
+        router.push("/backoffice");
+      } else if (role === "seller") {
+        router.push("/seller/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       onError?.(
         error.message || "Login failed - please check your credentials"
