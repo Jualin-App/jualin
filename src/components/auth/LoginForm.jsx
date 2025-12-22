@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Input from '../ui/Input';
-import Button from '../ui/Button';
-import Cookies from 'js-cookie';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
+import Cookies from "js-cookie";
 
 const LoginForm = ({ onSuccess, onError }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -52,12 +52,12 @@ const LoginForm = ({ onSuccess, onError }) => {
       const response = await fetch('http://localhost:8000/api/v1/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
@@ -65,28 +65,30 @@ const LoginForm = ({ onSuccess, onError }) => {
       if (!response.ok) {
         const errorMsg =
           data.message ||
-          (data.errors && Object.values(data.errors).flat().join(', ')) ||
-          'Login failed';
+          (data.errors && Object.values(data.errors).flat().join(", ")) ||
+          "Login failed";
         throw new Error(errorMsg);
       }
 
-      localStorage.setItem('token', data.data.access_token);
-      const role = String(data.data.role || 'customer').toLowerCase();
-      localStorage.setItem('user', JSON.stringify({
-        email: data.data.email,
-        username: data.data.username,
-        role
-      }));
-      Cookies.set('role', role, { sameSite: 'lax' });
-      Cookies.set('token', data.data.access_token, { sameSite: 'lax' });
+      localStorage.setItem("token", data.data.access_token);
+      const role = String(data.data.role || "customer").toLowerCase();
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          email: data.data.email,
+          username: data.data.username,
+          role,
+        })
+      );
+      Cookies.set("role", role, { sameSite: "lax" });
+      Cookies.set("token", data.data.access_token, { sameSite: "lax" });
 
       onSuccess?.();
-
-
-
-      router.push(role === 'seller' ? '/seller/dashboard' : '/dashboard');
+      router.push(role === "seller" ? "/seller/dashboard" : "/dashboard");
     } catch (error) {
-      onError?.(error.message || 'Login failed - please check your credentials');
+      onError?.(
+        error.message || "Login failed - please check your credentials"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -124,18 +126,24 @@ const LoginForm = ({ onSuccess, onError }) => {
             onChange={handleChange}
             className="h-4 w-4 text-[#E83030] focus:ring-[#E83030] border-gray-300 rounded"
           />
-          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+          <label
+            htmlFor="remember-me"
+            className="ml-2 block text-sm text-gray-700"
+          >
             Ingat Saya
           </label>
         </div>
 
-        <a href="#" className="text-sm text-[#E83030] hover:text-red-600 font-medium">
+        <a
+          href="/auth/forgot-password"
+          className="text-sm text-[#E83030] hover:text-red-600 font-medium"
+        >
           Lupa Kata Sandi?
         </a>
       </div>
 
       <Button type="submit" variant="primary" loading={isLoading}>
-        {isLoading ? 'Masuk...' : 'Masuk'}
+        {isLoading ? "Masuk..." : "Masuk"}
       </Button>
     </form>
   );
