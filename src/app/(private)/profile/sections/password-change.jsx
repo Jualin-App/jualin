@@ -1,133 +1,68 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Button from "@/components/ui/Button";
+import Toast from "@/components/ui/Toast";
+import { passwordService } from "@/services";
+import { useAuth } from "@/context/AuthProvider";
 
-/**
- * PasswordChangeSection
- * Collapsible password change form with validation and strength indicator
- * Used in profile/edit/page.jsx
- */
-export function PasswordChangeSection({
-  form,
-  errors,
-  isLoading,
-  onFieldChange,
-  onSubmit,
-}) {
-  const [showForm, setShowForm] = useState(false);
+export function PasswordChangeSection() {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  const handleSubmit = async () => {
-    const result = await onSubmit();
-    if (result.success) {
-      setShowForm(false);
+  const handleDirectReset = async () => {
+    if (!user?.email) {
+      setToast({ message: "Email profil tidak ditemukan.", type: "error" });
+      return;
+    }
+
+    setLoading(true);
+    setToast(null);
+
+    try {
+      await passwordService.sendResetLink(user.email);
+      setToast({
+        message: "Link reset telah dikirim ke email Anda. Anda akan keluar...",
+        type: "success",
+      });
+      await logout();
+      router.replace("/auth/login");
+    } catch (err) {
+      setToast({
+        message: err.message || "Gagal mengirim link reset password.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-all duration-200">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-[#1F1F1F]">
           Ubah Kata Sandi
         </h2>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-white text-[#1F1F1F] hover:bg-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg focus:shadow-xl outline-none"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-          Edit
-        </button>
       </div>
 
-      {showForm && (
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">
-              Current Password *
-            </label>
-            <input
-              type="password"
-              value={form.currentPassword}
-              onChange={(e) => onFieldChange("currentPassword", e.target.value)}
-              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.currentPassword ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Enter your current password"
-            />
-            {errors.currentPassword && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.currentPassword}
-              </p>
-            )}
-          </div>
+      <p className="text-sm text-gray-600 mb-4">
+        Untuk keamanan, kami akan mengirimkan tautan reset ke email profil Anda
+        ({user?.email || "-"}).
+      </p>
 
-          <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">
-              New Password *
-            </label>
-            <input
-              type="password"
-              value={form.newPassword}
-              onChange={(e) => onFieldChange("newPassword", e.target.value)}
-              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.newPassword ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Enter your new password"
-            />
-            {errors.newPassword && (
-              <p className="mt-1 text-sm text-red-600">{errors.newPassword}</p>
-            )}
-            {/* Password strength indicator */}
-            <div className="mt-2 flex space-x-1">
-              {[1, 2, 3, 4].map((level) => (
-                <div
-                  key={level}
-                  className={`h-1 flex-1 rounded ${form.newPassword.length >= level * 2
-                      ? level <= 2
-                        ? "bg-red-500"
-                        : level === 3
-                          ? "bg-yellow-500"
-                          : "bg-green-500"
-                      : "bg-gray-200"
-                    }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#9CA3AF] mb-2">
-              Confirm Password *
-            </label>
-            <input
-              type="password"
-              value={form.confirmPassword}
-              onChange={(e) => onFieldChange("confirmPassword", e.target.value)}
-              className={`w-full px-4 py-3 rounded-lg outline-none transition-all duration-200 bg-white text-black shadow-md hover:shadow-lg focus:shadow-xl ${errors.confirmPassword ? "shadow-red-300 focus:shadow-red-400" : ""}`}
-              placeholder="Confirm your password"
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.confirmPassword}
-              </p>
-            )}
-          </div>
-
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="w-full px-6 py-3 bg-[#E53935] hover:bg-[#D32F2F] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-          >
-            {isLoading ? "Changing..." : "Set new password"}
-          </button>
-        </div>
-      )}
+      <Button variant="primary" onClick={handleDirectReset} disabled={loading}>
+        {loading ? "Memproses..." : "Kirim Link Reset & Keluar"}
+      </Button>
     </div>
   );
 }

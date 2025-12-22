@@ -51,31 +51,49 @@ const fetchSellerOrders = async (_sellerId, _status = "all", limit = 10) => {
 };
 
 // Ambil produk milik seller (backend akan kita lengkapi dengan filter seller_id)
-const fetchSellerProducts = async (sellerId, limit = 6) => {
+const fetchSellerProducts = async (sellerId, limit = 6, page = 1) => {
   try {
     const response = await api.get("/api/v1/products", {
       params: {
         seller_id: sellerId,
         per_page: limit,
+        page: page,
         sort_by: "created_at",
         sort_dir: "desc",
       },
     });
 
-    const payload = response.data?.data;
+    const payload = response.data;
 
-    if (payload && Array.isArray(payload.data)) {
-      return payload.data;
+    // Handle new pagination structure from ProductController@index
+    if (payload && Array.isArray(payload.products)) {
+      return {
+        products: payload.products,
+        totalProducts: payload.totalProducts || 0,
+        totalPages: payload.totalPages || 1,
+        currentPage: payload.currentPage || 1
+      };
     }
 
-    if (Array.isArray(payload)) {
-      return payload;
+    // Legacy standard
+    const legacyPayload = payload?.data;
+    if (legacyPayload && Array.isArray(legacyPayload.data)) {
+      return {
+        products: legacyPayload.data,
+        totalProducts: legacyPayload.total || 0,
+        totalPages: legacyPayload.last_page || 1,
+        currentPage: legacyPayload.current_page || 1
+      };
     }
 
-    return [];
+    if (Array.isArray(legacyPayload)) {
+      return { products: legacyPayload, totalProducts: legacyPayload.length, totalPages: 1, currentPage: 1 };
+    }
+
+    return { products: [], totalProducts: 0, totalPages: 1, currentPage: 1 };
   } catch (err) {
     console.error("Error fetching seller products:", err);
-    return [];
+    return { products: [], totalProducts: 0, totalPages: 1, currentPage: 1 };
   }
 };
 
