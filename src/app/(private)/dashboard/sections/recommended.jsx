@@ -1,45 +1,45 @@
-"use client";
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import ProductFilter from "@/components/product/ProductFilter";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
+import Pagination from "@/components/ui/Pagination";
 import { getProductImageUrl } from "@/utils/imageHelper";
 import { smoothScrollTo } from "@/utils/scroll";
 
-export default function RecommendedSection({ products, isLoading = false }) {
+export default function RecommendedSection() {
   const router = useRouter();
-  const [activeFilter, setActiveFilter] = useState("all");
   const searchParams = useSearchParams();
   const q = (searchParams.get("q") || "").trim().toLowerCase();
   const sectionRef = useRef(null);
-  const VISIBLE_LIMIT = 6;
 
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [page, setPage] = useState(1);
+
+  // Reset page when filter or search changes
   useEffect(() => {
+    setPage(1);
     if (q && sectionRef.current) {
       smoothScrollTo(sectionRef.current, 500, 100);
     }
-  }, [q]);
+  }, [activeFilter, q]);
 
-  const filteredProducts = useMemo(() => {
-    const base =
-      activeFilter === "all"
-        ? products
-        : products.filter((p) => p.category === activeFilter);
-    if (!q) return base;
-    return base.filter((p) => {
-      const name = (p.name || "").toLowerCase();
-      const brand = (p.brand || "").toLowerCase();
-      const desc = (p.description || "").toLowerCase();
-      return (
-        name.includes(q) || brand.includes(q) || desc.includes(q)
-      );
-    });
-  }, [products, activeFilter, q]);
+  const queryParams = {
+    page,
+    per_page: 6,
+    category: activeFilter !== 'all' ? activeFilter : undefined,
+    name: q || undefined,
+  };
 
-  const visibleProducts = useMemo(
-    () => filteredProducts.slice(0, VISIBLE_LIMIT),
-    [filteredProducts]
-  );
+  const { data, isLoading } = useProductsQuery(queryParams);
+  const { products, totalPages, currentPage } = data || { products: [], totalPages: 1, currentPage: 1 };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    if (sectionRef.current) {
+      smoothScrollTo(sectionRef.current, 500, 100);
+    }
+  };
 
   const handleSeeAll = () => {
     const params = new URLSearchParams();
@@ -49,27 +49,6 @@ export default function RecommendedSection({ products, isLoading = false }) {
     const query = params.toString();
     router.push(query ? `/products?${query}` : "/products");
   };
-
-  if (isLoading) {
-    return (
-      <section
-        className="w-full my-8 animate-fade-in scroll-mt-24"
-        ref={sectionRef}
-      >
-        <div className="h-8 bg-[var(--color-neutral-200)] rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
-        <div className="flex justify-center gap-4 mb-6">
-          {[...Array(4)].map((_, idx) => (
-            <div key={idx} className="h-10 w-20 bg-[var(--color-neutral-200)] rounded-lg animate-pulse"></div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {[...Array(6)].map((_, idx) => (
-            <ProductCardSkeleton key={idx} />
-          ))}
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section
@@ -92,38 +71,55 @@ export default function RecommendedSection({ products, isLoading = false }) {
           Lihat semua
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {visibleProducts.map((product, idx) => (
-          <a
-            key={product.id}
-            href={`/product/${product.id}`}
-            className="group bg-white rounded-2xl shadow p-6 flex flex-col items-start transition-all duration-200 ease-out hover:shadow-xl hover:-translate-y-1 active:scale-95 focus:outline-none"
-            style={{ cursor: "pointer" }}
-            tabIndex={0}
-          >
-            <img
-              src={getProductImageUrl(product.image)}
-              alt={product.name || "Foto Produk"}
-              className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
-              onError={(e) => {
-                e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
-              }}
-            />
-            <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
-              {product.brand || product.category}
-            </span>
-            <h3 className="font-semibold text-xl mb-1 text-black">
-              {product.name}
-            </h3>
-            <p className="text-gray-500 text-base mb-2">
-              {product.description}
-            </p>
-            <span className="font-bold text-lg text-black">
-              Rp {product.price}
-            </span>
-          </a>
-        ))}
-      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {[...Array(6)].map((_, idx) => (
+            <ProductCardSkeleton key={idx} />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {products.map((product, idx) => (
+              <a
+                key={product.id}
+                href={`/product/${product.id}`}
+                className="group bg-white rounded-2xl shadow p-6 flex flex-col items-start transition-all duration-200 ease-out hover:shadow-xl hover:-translate-y-1 active:scale-95 focus:outline-none"
+                style={{ cursor: "pointer" }}
+                tabIndex={0}
+              >
+                <img
+                  src={getProductImageUrl(product.image)}
+                  alt={product.name || "Foto Produk"}
+                  className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+                  }}
+                />
+                <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
+                  {product.brand || product.category}
+                </span>
+                <h3 className="font-semibold text-xl mb-1 text-black">
+                  {product.name}
+                </h3>
+                <p className="text-gray-500 text-base mb-2">
+                  {product.description}
+                </p>
+                <span className="font-bold text-lg text-black">
+                  Rp {product.price}
+                </span>
+              </a>
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </section>
   );
 }

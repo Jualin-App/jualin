@@ -5,33 +5,44 @@ export function ChatItem({ chat, isSelected, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`mx-4 my-2 p-4 rounded-2xl cursor-pointer transition-all ${
-        isSelected
-          ? 'bg-gray-50 shadow-md shadow-red-500/20 border border-red-200 ring-2 ring-red-500/30'
-          : 'hover:bg-gray-50/50 border border-transparent hover:shadow-sm'
-      }`}
+      className={`mx-3 my-2 p-4 rounded-2xl cursor-pointer transition-all duration-300 ease-in-out group relative overflow-hidden ${isSelected
+          ? 'bg-gradient-to-r from-red-50 via-white to-white shadow-md border-l-4 border-red-500 translate-x-1'
+          : 'hover:bg-gray-50 border border-transparent hover:shadow-sm hover:translate-x-1'
+        }`}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-4 relative z-10">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shadow-sm" />
+          <div className={`h-12 w-12 rounded-full overflow-hidden shadow-sm ${!chat.avatar ? 'bg-gradient-to-br from-gray-100 to-gray-200' : 'bg-gray-100'}`}>
+            {chat.avatar ? (
+              <img src={chat.avatar} alt={chat.name} className="h-full w-full object-cover" />
+            ) : null}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 py-0.5">
           {/* Name and Handle */}
-          <div className="mb-1">
-            <h3 className="font-semibold text-gray-900 text-sm truncate">{chat.name}</h3>
-            <p className="text-xs text-gray-500 truncate">{chat.handle || `@${chat.name.toLowerCase().replace(/\s+/g, '')}`}</p>
+          <div className="flex justify-between items-start mb-1">
+            <div className="min-w-0">
+              <h3 className={`font-bold text-sm truncate transition-colors ${isSelected ? 'text-gray-900' : 'text-gray-800'}`}>
+                {chat.name}
+              </h3>
+            </div>
+            {chat.time && (
+              <span className={`text-[10px] font-medium shrink-0 ml-2 ${isSelected ? 'text-red-500' : 'text-gray-400 group-hover:text-red-400'}`}>
+                {chat.time}
+              </span>
+            )}
           </div>
 
           {/* Message Preview and Badge */}
-          <div className="flex items-center justify-between gap-2 mt-1">
-            <p className="text-xs text-gray-600 truncate flex-1 leading-relaxed">
-              {chat.message || 'No messages'}
+          <div className="flex items-center justify-between gap-2">
+            <p className={`text-xs truncate flex-1 leading-relaxed ${isSelected ? 'text-gray-600 font-medium' : 'text-gray-500'}`}>
+              {chat.message}
             </p>
             {chat.unread > 0 && (
-              <Badge className="h-5 min-w-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center px-1.5 text-[10px] font-medium shrink-0 text-white">
+              <Badge className="h-5 min-w-5 rounded-full bg-gradient-to-r from-red-500 to-red-600 shadow-md shadow-red-200 text-white flex items-center justify-center px-1.5 text-[10px] font-bold shrink-0 animate-pulse-once">
                 {chat.unread}
               </Badge>
             )}
