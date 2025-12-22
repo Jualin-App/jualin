@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthProvider.jsx";
 import SearchBar from "./SearchBar.jsx";
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   const pathname = usePathname() || "";
   const showSearch = pathname.startsWith("/dashboard") || pathname.startsWith("/product");
 
@@ -51,7 +51,14 @@ const Navbar = () => {
           </div>
         )}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-          {user ? (
+          {loading ? (
+            // Skeleton Loader
+            <div className="flex items-center gap-3 animate-pulse">
+              <div className="w-8 h-8 rounded-full bg-gray-200"></div>
+              <div className="hidden sm:block w-24 h-5 rounded bg-gray-200"></div>
+              <div className="w-16 h-9 rounded-2xl bg-gray-200"></div>
+            </div>
+          ) : user ? (
             <>
               <a
                 href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`}
