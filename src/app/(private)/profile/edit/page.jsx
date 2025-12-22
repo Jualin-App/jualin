@@ -5,7 +5,6 @@ import { useAuth } from "@/context/AuthProvider";
 import Navbar from "@/components/ui/Navbar";
 import { useProfileUpdate } from "@/hooks/profile/useProfileUpdate";
 import { usePasswordChange } from "@/hooks/profile/usePasswordChange";
-import { usePurchaseHistory } from "@/hooks/profile/usePurchaseHistory";
 import { ProfileFormSection } from "../sections/profile-form";
 import { PasswordChangeSection } from "../sections/password-change";
 import { PurchaseHistorySection } from "../sections/purchase-history";
@@ -15,22 +14,12 @@ export default function EditProfilePage() {
   const router = useRouter();
   const { logout } = useAuth();
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState("edit"); // 'edit' | 'purchases'
-
-  // Toast state
+  const [activeTab, setActiveTab] = useState("edit");
   const [toast, setToast] = useState(null);
 
-  // Profile update hook
   const profileUpdate = useProfileUpdate();
-
-  // Password change hook
   const passwordChange = usePasswordChange();
 
-  // Purchase history hook
-  const purchaseHistory = usePurchaseHistory();
-
-  // Handlers
   const handleCancel = () => {
     router.back();
   };
@@ -102,7 +91,9 @@ export default function EditProfilePage() {
                       disabled={profileUpdate.isLoading}
                       className="px-6 py-2 bg-[#E53935] hover:bg-[#D32F2F] text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg focus:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md outline-none"
                     >
-                      {profileUpdate.isLoading ? "Saving..." : "Simpan Perubahan"}
+                      {profileUpdate.isLoading
+                        ? "Saving..."
+                        : "Simpan Perubahan"}
                     </button>
                   </div>
                 </div>
@@ -110,10 +101,11 @@ export default function EditProfilePage() {
                 {/* Toast */}
                 {toast && (
                   <div
-                    className={`mb-6 rounded-lg p-4 shadow-md ${toast.type === "success"
-                      ? "bg-green-50 text-green-700 shadow-green-200"
-                      : "bg-red-50 text-red-700 shadow-red-200"
-                      }`}
+                    className={`mb-6 rounded-lg p-4 shadow-md ${
+                      toast.type === "success"
+                        ? "bg-green-50 text-green-700 shadow-green-200"
+                        : "bg-red-50 text-red-700 shadow-red-200"
+                    }`}
                   >
                     {toast.message}
                   </div>
@@ -138,17 +130,7 @@ export default function EditProfilePage() {
                 />
               </>
             ) : (
-              // Purchase History Content
-              <PurchaseHistorySection
-                purchases={purchaseHistory.purchases}
-                totalAmount={purchaseHistory.totalAmount}
-                dateFilter={purchaseHistory.dateFilter}
-                pagination={purchaseHistory.pagination}
-                formatCurrency={purchaseHistory.formatCurrency}
-                formatDate={purchaseHistory.formatDate}
-                onDateFilterChange={purchaseHistory.updateDateFilter}
-                isLoading={purchaseHistory.isLoading}
-              />
+              <PurchaseHistorySection />
             )}
           </div>
         </div>
