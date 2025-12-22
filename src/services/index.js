@@ -5,4 +5,5 @@ export { userService } from "./user/userService";
 export { passwordService } from "./auth/passwordService";
 export { profileService } from "./profile/profileService";
 export { purchaseService } from "./purchase/purchaseService";
+export { paymentService } from "./payment/paymentService";
 export { apiClient } from "./api/client";
