@@ -74,6 +74,45 @@ export default function EditProfilePage() {
     }
   };
 
+  const handleExportCSV = () => {
+    const data = purchaseHistory.purchases;
+    if (!data || data.length === 0) {
+      setToast({ type: "error", message: "No purchase history to export" });
+      return;
+    }
+
+    // CSV Headers
+    const headers = ["Order ID", "Vendor", "Description", "Date", "Category", "Amount"];
+
+    // Format data rows with proper escaping
+    const csvRows = data.map(item => {
+      const row = [
+        item.id,
+        `"${(item.vendorName || "").replace(/"/g, '""')}"`,
+        `"${(item.description || "").replace(/"/g, '""')}"`,
+        item.date ? new Date(item.date).toLocaleDateString() : "",
+        `"${(item.category || "").replace(/"/g, '""')}"`,
+        item.amount
+      ];
+      return row.join(",");
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(","), ...csvRows].join("\n");
+
+    // Create Blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `purchase_history_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -148,6 +187,7 @@ export default function EditProfilePage() {
                 formatDate={purchaseHistory.formatDate}
                 onDateFilterChange={purchaseHistory.updateDateFilter}
                 isLoading={purchaseHistory.isLoading}
+                onExport={handleExportCSV}
               />
             )}
           </div>

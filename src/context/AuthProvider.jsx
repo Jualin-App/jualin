@@ -93,17 +93,20 @@ export function AuthProvider({ children }) {
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     try {
-      await api.post(
-        "/api/v1/logout",
-        null,
-        accessToken
-          ? {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-          : undefined
-      );
+      // Skip API logout for fake admin
+      if (accessToken !== 'admin-token-123') {
+        await api.post(
+          "/api/v1/logout",
+          null,
+          accessToken
+            ? {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+            : undefined
+        );
+      }
     } catch (error) {
       console.error("Error logging out:", error);
       // Tetap lanjut bersihkan token di client agar user benar-benar keluar

@@ -30,9 +30,30 @@ const LoginForm = ({ onSuccess, onError }) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Bypass for hardcoded admin
+    if (formData.email === 'admin1@example.com' && formData.password === 'admin1234') {
+      const adminData = {
+        email: 'admin1@example.com',
+        username: 'Administrator',
+        role: 'admin',
+        id: 'admin-123'
+      };
+      const adminToken = 'admin-token-123';
+
+      localStorage.setItem('token', adminToken);
+      localStorage.setItem('user', JSON.stringify(adminData));
+      Cookies.set('role', 'admin', { sameSite: 'lax' });
+      Cookies.set('token', adminToken, { sameSite: 'lax' });
+
+      onSuccess?.();
+      router.push('/backoffice');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:8000/api/v1/login", {
-        method: "POST",
+      const response = await fetch('http://localhost:8000/api/v1/login', {
+        method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },

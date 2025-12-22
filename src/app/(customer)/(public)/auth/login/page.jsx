@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import LoginForm from '../../../../components/auth/LoginForm';
-import Logo from '../../../../components/ui/Logo';
-import Toast from '../../../../components/ui/Toast';
+import LoginForm from '../../../../../components/auth/LoginForm';
+import Logo from '../../../../../components/ui/Logo';
+import Button from '../../../../../components/ui/Button';
+import Toast from '../../../../../components/ui/Toast';
 
 export default function LoginPage() {
   const [toast, setToast] = useState(null);
