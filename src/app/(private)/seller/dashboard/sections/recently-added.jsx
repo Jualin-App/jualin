@@ -4,9 +4,17 @@ import { useRouter } from "next/navigation";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { getProductImageUrl } from "@/utils/imageHelper";
+import { deleteProduct } from "@/modules/seller/service.js";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import Toast from "@/components/ui/Toast";
+import { useState } from "react";
 
 const RecentlyAddedSection = ({ products, isLoading = false }) => {
   const router = useRouter();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: "", type: "info" });
+  const [deletedProductIds, setDeletedProductIds] = useState([]);
 
   const handleEdit = (productId) => {
     router.push(`/seller/products/${productId}/edit`);
@@ -17,9 +25,41 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
   };
 
   const handleDelete = (productId) => {
-    if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
-      console.log("Delete product:", productId);
+    setProductToDelete(productId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+
+    try {
+      const success = await deleteProduct(productToDelete);
+
+      if (success) {
+        setDeletedProductIds([...deletedProductIds, productToDelete]);
+        setToast({
+          show: true,
+          message: "Produk berhasil dihapus",
+          type: "success"
+        });
+      } else {
+        throw new Error("Gagal menghapus produk");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setToast({
+        show: true,
+        message: "Gagal menghapus produk",
+        type: "error"
+      });
+    } finally {
+      setDeleteModalOpen(false);
+      setProductToDelete(null);
     }
+  };
+
+  const closeToast = () => {
+    setToast({ ...toast, show: false });
   };
 
   const formatRupiah = (price) => {
@@ -30,7 +70,11 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
     }).format(price);
   };
 
-  const hasProducts = Array.isArray(products) && products.length > 0;
+  const visibleProducts = Array.isArray(products)
+    ? products.filter(p => !deletedProductIds.includes(p.id))
+    : [];
+
+  const hasProducts = visibleProducts.length > 0;
 
   return (
     <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-200 p-6">
@@ -39,7 +83,7 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
           <h2 className="text-lg font-semibold text-gray-900">Produk Terbaru</h2>
           <p className="text-sm text-gray-600">Produk yang baru ditambahkan</p>
         </div>
-        <button 
+        <button
           onClick={() => router.push('/seller/products')}
           className="text-sm text-brand-red hover:text-red-600 font-medium"
         >
@@ -76,7 +120,8 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
           </>
         ) : hasProducts ? (
           <>
-            {products.slice(0, 4).map((product) => (
+
+            {visibleProducts.slice(0, 4).map((product) => (
               <div key={product.id} className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-200">
                 <div className="relative">
                   <div className="absolute top-0 right-0 h-6 w-6 text-gray-400 flex items-center justify-center">
@@ -151,7 +196,29 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
           </>
         )}
       </div>
-    </div>
+
+
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Hapus Produk?"
+        message="Produk yang dihapus tidak dapat dipulihkan. Apakah Anda yakin ingin melanjutkan?"
+        confirmText="Hapus"
+        cancelText="Batal"
+        isDanger={true}
+      />
+
+      {
+        toast.show && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={closeToast}
+          />
+        )
+      }
+    </div >
   );
 };
 

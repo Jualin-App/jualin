@@ -6,8 +6,11 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import Cookies from "js-cookie";
 
+import { AuthContext } from "../../context/AuthProvider";
+
 const LoginForm = ({ onSuccess, onError }) => {
   const router = useRouter();
+  const { refetchUser } = React.useContext(AuthContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -61,6 +64,9 @@ const LoginForm = ({ onSuccess, onError }) => {
       );
       Cookies.set("role", role, { sameSite: "lax" });
       Cookies.set("token", data.data.access_token, { sameSite: "lax" });
+
+      // Refetch user to update AuthContext state immediately
+      await refetchUser();
 
       onSuccess?.();
       router.push(role === "seller" ? "/seller/dashboard" : "/dashboard");

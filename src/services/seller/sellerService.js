@@ -19,9 +19,15 @@ export const sellerService = {
         },
       });
 
-      const payload = response.data?.data;
+      const payload = response.data;
 
-      if (payload && Array.isArray(payload.data)) {
+      // Handle new pagination structure from ProductController@index
+      if (payload && Array.isArray(payload.products)) {
+        return payload.products;
+      }
+
+      // Legacy structure fallback (just in case)
+      if (payload?.data && Array.isArray(payload.data)) {
         return payload.data;
       }
 
