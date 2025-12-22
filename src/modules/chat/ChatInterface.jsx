@@ -80,7 +80,7 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-white overflow-hidden shadow-lg border border-gray-100">
+    <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-gray-100 overflow-hidden">
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -90,10 +90,10 @@ export function ChatInterface() {
         {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
 
-      {/* Sidebar - 30% width */}
+      {/* Sidebar - detached floating panel */}
       <div
         className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 absolute md:relative top-0 left-0 bottom-0 md:inset-y-0 z-30 md:z-auto w-80 md:w-[30%] bg-white transition-transform duration-300 ease-in-out`}
+          } md:translate-x-0 absolute md:relative top-0 left-0 bottom-0 md:inset-auto z-30 md:z-auto w-80 md:w-[30%] transition-transform duration-300 ease-in-out md:ml-4 md:my-4 md:h-[calc(100%-2rem)] md:rounded-3xl md:shadow-xl md:bg-white md:overflow-hidden hash-sidebar-floating`}
       >
         <ChatSidebar
           chats={chats}

@@ -3,15 +3,12 @@ import { Suspense } from "react";
 import BannerSection from "./sections/banner.jsx";
 import RecommendedSection from "./sections/recommended.jsx";
 import { banners } from "../../dummydata.jsx";
-import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
-  const { products, isLoading } = useProductsQuery();
-
   return (
     <main className="bg-white">
-      <BannerSection banners={banners} isLoading={isLoading} />
+      <BannerSection banners={banners} />
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <Suspense
           fallback={
@@ -24,7 +21,7 @@ export default function DashboardPage() {
             </div>
           }
         >
-          <RecommendedSection products={products} isLoading={isLoading} />
+          <RecommendedSection />
         </Suspense>
       </div>
     </main>

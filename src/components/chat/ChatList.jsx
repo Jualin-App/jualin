@@ -119,9 +119,9 @@ export function ChatList({
     return (
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="text-center">
-          <p className="text-sm text-gray-500">No chats found</p>
+          <p className="text-sm text-gray-500">Chat tidak ditemukan</p>
           <p className="text-xs text-gray-400 mt-1">
-            Try a different search term
+            Coba kata kunci lain
           </p>
         </div>
       </div>
@@ -129,7 +129,7 @@ export function ChatList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto py-2">
+    <div className="flex-1 overflow-y-auto py-2 custom-scrollbar">
       {filteredChats.map((chat) => (
         <ChatItem
           key={chat.id}

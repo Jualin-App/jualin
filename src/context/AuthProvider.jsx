@@ -47,46 +47,38 @@ export function AuthProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    async function fetchUser() {
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
-      // Bypass for hardcoded admin
-      if (token === 'admin-token-123') {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-        return;
-      }
-
-      try {
-        const res = await baseRequest.get(`${API_URL}/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        setUser(res.data);
-        localStorage.setItem("user", JSON.stringify(res.data));
-
-        syncUserToFirestore(res.data);
-      } catch (err) {
-        console.error("Error fetching user:", err);
-        setUser(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-      } finally {
-        setLoading(false);
-      }
+  const refetchUser = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    setLoading(true);
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
     }
+    try {
+      const res = await baseRequest.get(`${API_URL}/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
 
-    fetchUser();
-  }, [token]);
+      syncUserToFirestore(res.data);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refetchUser();
+  }, []);
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);
@@ -131,7 +123,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading, refetchUser }}>
       {children}
     </AuthContext.Provider>
   );
