@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthProvider";
 import Navbar from "@/components/ui/Navbar";
 import { useProfileUpdate } from "@/hooks/profile/useProfileUpdate";
 import { usePasswordChange } from "@/hooks/profile/usePasswordChange";
+import usePaymentHistory from "@/hooks/payments/usePaymentHistory";
 import { ProfileFormSection } from "../sections/profile-form";
 import { PasswordChangeSection } from "../sections/password-change";
 import { PurchaseHistorySection } from "../sections/purchase-history";
@@ -19,6 +20,7 @@ export default function EditProfilePage() {
 
   const profileUpdate = useProfileUpdate();
   const passwordChange = usePasswordChange();
+  const paymentHistory = usePaymentHistory();
 
   const handleCancel = () => {
     router.back();
@@ -62,6 +64,45 @@ export default function EditProfilePage() {
     }
   };
 
+  const handleExportCSV = () => {
+    const data = paymentHistory.payments;
+    if (!data || data.length === 0) {
+      setToast({ type: "error", message: "No purchase history to export" });
+      return;
+    }
+
+    // CSV Headers
+    const headers = ["Order ID", "Transaction Time", "Status", "Amount"];
+
+    // Format data rows with proper escaping
+    const csvRows = data.map(payment => {
+      const row = [
+        `"${(payment.order_id || "").replace(/"/g, '""')}"`,
+        payment.transaction_time ? new Date(payment.transaction_time).toLocaleString('id-ID') : "",
+        `"${(payment.transaction_status || "").replace(/"/g, '""')}"`,
+        payment.gross_amount || 0
+      ];
+      return row.join(",");
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(","), ...csvRows].join("\n");
+
+    // Create Blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `purchase_history_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToast({ type: "success", message: "CSV exported successfully" });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -100,11 +141,10 @@ export default function EditProfilePage() {
                 {/* Toast */}
                 {toast && (
                   <div
-                    className={`mb-6 rounded-lg p-4 shadow-md ${
-                      toast.type === "success"
-                        ? "bg-green-50 text-green-700 shadow-green-200"
-                        : "bg-red-50 text-red-700 shadow-red-200"
-                    }`}
+                    className={`mb-6 rounded-lg p-4 shadow-md ${toast.type === "success"
+                      ? "bg-green-50 text-green-700 shadow-green-200"
+                      : "bg-red-50 text-red-700 shadow-red-200"
+                      }`}
                   >
                     {toast.message}
                   </div>
@@ -129,7 +169,15 @@ export default function EditProfilePage() {
                 />
               </>
             ) : (
-              <PurchaseHistorySection />
+              <PurchaseHistorySection
+                purchases={paymentHistory.paginated}
+                totalAmount={paymentHistory.totalAmount}
+                pagination={paymentHistory.pagination}
+                formatCurrency={paymentHistory.formatCurrency}
+                isLoading={paymentHistory.isLoading}
+                onExport={handleExportCSV}
+                onRefresh={paymentHistory.refetch}
+              />
             )}
           </div>
         </div>
