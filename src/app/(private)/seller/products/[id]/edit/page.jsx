@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { fetchProductById, updateProduct } from "@/modules/product/service.js";
+import { productService } from "@/services/product/productService";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function EditProductPage() {
     const loadProduct = async () => {
       try {
         setLoading(true);
-        const product = await fetchProductById(productId);
+        const product = await productService.fetchById(productId);
         if (product) {
           setFormData({
             name: product.name || "",
@@ -130,7 +130,7 @@ export default function EditProductPage() {
         image: formData.image || imagePreview, // Use existing image or preview URL
       };
 
-      const updatedProduct = await updateProduct(productId, payload);
+      const updatedProduct = await productService.update(productId, payload);
 
       if (updatedProduct) {
         router.push("/seller/products");
@@ -264,9 +264,7 @@ export default function EditProductPage() {
               <p className="text-sm text-gray-600">
                 At least 800x800 px recommended.
               </p>
-              <p className="text-sm text-gray-600">
-                JPG or PNG is allowed.
-              </p>
+              <p className="text-sm text-gray-600">JPG or PNG is allowed.</p>
             </div>
           </div>
         </div>
@@ -365,4 +363,3 @@ export default function EditProductPage() {
     </main>
   );
 }
-

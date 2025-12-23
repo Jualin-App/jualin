@@ -1,4 +1,5 @@
-import { queryClient, queryKeys } from '@/lib/queryClient';
+import { queryClient, queryKeys } from "@/lib/queryClient";
+import { productService } from "@/services/product/productService";
 
 /**
  * Cache Invalidation Utilities
@@ -31,7 +32,7 @@ export const invalidateProductDetail = async (productId) => {
  */
 export const invalidateSellerIncome = async (sellerId) => {
   await queryClient.invalidateQueries({
-    queryKey: ['seller', sellerId, 'income'],
+    queryKey: ["seller", sellerId, "income"],
     exact: false, // Invalidate all periods
   });
 };
@@ -95,7 +96,7 @@ export const clearAllCache = async () => {
 export const prefetchProductDetail = async (productId) => {
   await queryClient.prefetchQuery({
     queryKey: queryKeys.productDetail(productId),
-    queryFn: () => fetch(`/api/v1/products/${productId}`).then(res => res.json()),
+    queryFn: () => productService.fetchById(productId),
   });
 };
 

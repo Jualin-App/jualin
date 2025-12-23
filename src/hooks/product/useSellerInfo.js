@@ -1,11 +1,7 @@
-import { useEffect } from 'react';
-import { useAsync } from '../common/useAsync';
-import { userService } from '@/services/user/userService';
+import { useEffect, useRef } from "react";
+import { useAsync } from "../common/useAsync";
+import { userService } from "@/services/user/userService";
 
-/**
- * Hook to fetch seller information by seller ID
- * @param {number|null} sellerId - Seller ID
- */
 export const useSellerInfo = (sellerId) => {
   const {
     data: seller,
@@ -14,22 +10,18 @@ export const useSellerInfo = (sellerId) => {
     execute,
   } = useAsync(
     () => (sellerId ? userService.fetchById(sellerId) : Promise.resolve(null)),
-    {
-      immediate: false,
-      initialData: null,
-    }
+    { immediate: false, initialData: null }
   );
 
+  // Prevent duplicate execute on Strict Mode double-mount
+  const lastIdRef = useRef(null);
   useEffect(() => {
-    if (sellerId) {
+    if (!sellerId) return;
+    if (lastIdRef.current !== sellerId) {
+      lastIdRef.current = sellerId;
       execute();
     }
-  }, [sellerId]);
+  }, [sellerId, execute]);
 
-  return {
-    seller,
-    isLoading: loading,
-    error,
-    refetch: execute,
-  };
+  return { seller, isLoading: loading, error, refetch: execute };
 };

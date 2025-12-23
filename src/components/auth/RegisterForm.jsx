@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import Select from "../ui/Select";
-import Cookies from "js-cookie";
+import { useAuth } from "@/context/AuthProvider";
+import { authService } from "@/services/auth/authService";
 
 const RegisterForm = ({ onSuccess, onError }) => {
   const router = useRouter();
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     password_confirmation: "",
-    role: "customer", // Default role
+    role: "customer",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -22,18 +25,12 @@ const RegisterForm = ({ onSuccess, onError }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleRoleChange = (value) => {
     setFormData((prev) => ({ ...prev, role: value }));
-    // Clear role error when user selects a role
-    if (errors.role) {
-      setErrors((prev) => ({ ...prev, role: "" }));
-    }
+    if (errors.role) setErrors((prev) => ({ ...prev, role: "" }));
   };
 
   const handleSubmit = async (e) => {
@@ -41,71 +38,77 @@ const RegisterForm = ({ onSuccess, onError }) => {
     setIsLoading(true);
     setErrors({});
 
-    // Validasi password match
-    if (formData.password !== formData.password_confirmation) {
-      setErrors({
-        password_confirmation: "password tidak sesuai",
-      });
-      setIsLoading(false);
-      return;
-    }
+    // Client-side validations
+    const newErrors = {};
+    const rawUsername = formData.name.toLowerCase().replace(/\s+/g, "");
+    if (!formData.name.trim()) newErrors.name = "nama tidak boleh kosong";
+    else if (rawUsername.length < 3)
+      newErrors.name = "nama menghasilkan username minimal 3 karakter";
+    if (!formData.email.trim()) newErrors.email = "email tidak boleh kosong";
+    if (!formData.password || formData.password.length < 8)
+      newErrors.password = "password minimal 8 karakter";
+    if (!formData.password_confirmation)
+      newErrors.password_confirmation = "konfirmasi kata sandi wajib";
+    if (formData.password !== formData.password_confirmation)
+      newErrors.password_confirmation = "password tidak sesuai";
+    if (!formData.role) newErrors.role = "role tidak boleh kosong";
 
-    // Validasi role selection
-    if (!formData.role) {
-      setErrors({ role: "role tidak boleh kosong" });
+    if (Object.keys(newErrors).length) {
+      setErrors(newErrors);
       setIsLoading(false);
       return;
     }
 
     try {
-      // Menggunakan API backend Laravel yang sebenarnya
-      const response = await fetch("http://localhost:8000/api/v1/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.name.toLowerCase().replace(/\s+/g, ""),
-          email: formData.email,
-          password: formData.password,
-          password_confirmation: formData.password_confirmation,
-          role: formData.role,
-        }),
-      });
+      const payload = {
+        username: rawUsername,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+        role: formData.role,
+      };
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Handle validation errors
-        if (data.errors) {
-          const newErrors = {};
-          Object.keys(data.errors).forEach((key) => {
-            newErrors[key] = data.errors[key][0];
-          });
-          setErrors(newErrors);
-          throw new Error("terjadi kesalahan");
-        }
-        throw new Error(data.message || "terjadi kesalahan");
+      const result = await authService.register(payload);
+      if (!result?.access_token || !result?.user) {
+        throw new Error("Registrasi berhasil namun token/user tidak tersedia.");
       }
 
-      // Simpan token dan user data dari response backend
-      localStorage.setItem("token", data.access_token);
-      const role = String(data?.user?.role || formData.role || "customer").toLowerCase();
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          email: data.user.email,
-          username: data.user.username,
-          role,
-        })
-      );
-      Cookies.set("role", role, { sameSite: "lax" });
-      Cookies.set("token", data.access_token, { sameSite: "lax" });
+      const role = String(
+        result.role || result.user?.role || formData.role || "customer"
+      ).toLowerCase();
 
+      const userData = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.username || payload.username,
+        name: result.user.name || result.user.username || result.user.email,
+        role,
+        avatar: result.user.avatar || result.user.profile_picture || null,
+      };
+
+      login(userData, result.access_token);
       onSuccess?.();
       router.push(role === "seller" ? "/seller/dashboard" : "/dashboard");
-    } catch (error) {
-      onError?.(error.message || "terjadi kesalahan");
+    } catch (err) {
+      const status = err?.statusCode || err?.originalError?.response?.status;
+      const apiMessage = err?.message || "terjadi kesalahan";
+      const fieldErrors =
+        err?.errors || err?.originalError?.response?.data?.errors || null;
+
+      if (fieldErrors && typeof fieldErrors === "object") {
+        const mapped = {};
+        Object.entries(fieldErrors).forEach(([field, messages]) => {
+          const firstMsg = Array.isArray(messages)
+            ? messages[0]
+            : String(messages);
+          if (field === "username") mapped.name = firstMsg;
+          else if (field in formData) mapped[field] = firstMsg;
+          else mapped.email = mapped.email || firstMsg;
+        });
+        setErrors(mapped);
+      }
+
+      if (status !== 422) onError?.(apiMessage);
     } finally {
       setIsLoading(false);
     }

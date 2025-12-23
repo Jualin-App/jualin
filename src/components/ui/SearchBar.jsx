@@ -16,21 +16,30 @@ function SearchBar({ inline = false, className = "" }) {
   }, [initialValue]);
 
   const handleSearch = () => {
-    const params = new URLSearchParams(searchParams.toString());
     const trimmedValue = value.trim();
+
+    if (!pathname.startsWith("/products")) {
+      const target = trimmedValue
+        ? `/products?q=${encodeURIComponent(trimmedValue)}`
+        : "/products";
+      router.push(target);
+      return;
+    }
+
+    // Already on /products: update current query params
+    const params = new URLSearchParams(searchParams.toString());
 
     if (trimmedValue) {
       params.set("q", trimmedValue);
+      params.delete("category");
+      params.set("page", "1");
     } else {
       params.delete("q");
+      params.set("page", "1");
     }
 
     const queryString = params.toString();
     const url = queryString ? `${pathname}?${queryString}` : pathname;
-
-    // Check if we are already on the page with same query to avoid redundant pushes,
-    // but here we want to ensure scroll trigger if needed.
-    // Actually router.push/replace will trigger useEffect in page.
     router.push(url);
   };
 
