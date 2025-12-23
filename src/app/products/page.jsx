@@ -2,19 +2,16 @@
 
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { User } from "lucide-react";
 import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import ProductFilter from "@/components/product/ProductFilter";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
 import Pagination from "@/components/ui/Pagination";
 import { smoothScrollTo } from "@/utils/scroll";
 import { getProductImageUrl } from "@/utils/imageHelper";
+import { formatCurrency } from "@/utils/formatters/currency";
 
-const formatRupiah = (price) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(price || 0);
+
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -127,9 +124,17 @@ export default function ProductsPage() {
                     <p className="text-sm text-gray-600 text-center mb-4 line-clamp-2">
                       {p.category || p.description || "Tidak ada informasi"}
                     </p>
+                    <div className="flex justify-center mb-3">
+                      <div className="flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
+                        <User size={12} className="text-red-600" />
+                        <span className="text-xs text-red-800 font-medium">
+                          {p.seller?.username || "Unknown"}
+                        </span>
+                      </div>
+                    </div>
                     <div className="flex justify-center">
                       <span className="px-4 py-2 bg-brand-red text-white rounded-full text-sm font-medium">
-                        {formatRupiah(p.price)}
+                        {formatCurrency(p.price)}
                       </span>
                     </div>
                   </button>

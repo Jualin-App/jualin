@@ -43,6 +43,31 @@ export const sellerService = {
   },
 
   /**
+   * Fetch authenticated seller's products (Secure)
+   * @param {number} limit - Maximum number of products to fetch
+   */
+  async fetchMyProducts(limit = 6) {
+    try {
+      const response = await apiClient.get('/api/v1/seller/products', {
+        params: {
+          per_page: limit,
+          sort_by: 'created_at',
+          sort_dir: 'desc',
+        },
+      });
+
+      const payload = response.data;
+      if (payload && Array.isArray(payload.products)) {
+        return payload.products;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching my products:', error);
+      throw parseApiError(error);
+    }
+  },
+
+  /**
    * Fetch seller statistics (computed from orders)
    * @param {number} sellerId - Seller ID
    * @param {string} period - Period for stats ('daily', 'weekly', 'monthly')

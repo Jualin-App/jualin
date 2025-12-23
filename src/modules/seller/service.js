@@ -51,11 +51,10 @@ const fetchSellerOrders = async (_sellerId, _status = "all", limit = 10) => {
 };
 
 // Ambil produk milik seller (backend akan kita lengkapi dengan filter seller_id)
-const fetchSellerProducts = async (sellerId, limit = 6, page = 1) => {
+const fetchSellerProducts = async (_sellerId, limit = 6, page = 1) => {
   try {
-    const response = await api.get("/api/v1/products", {
+    const response = await api.get("/api/v1/seller/products", {
       params: {
-        seller_id: sellerId,
         per_page: limit,
         page: page,
         sort_by: "created_at",
