@@ -1,37 +1,26 @@
-import apiClient from "../api/client";
-import { parseApiError } from "../api/errorHandler";
+import { fetcher } from "@/lib/fetcher";
 
 export const passwordService = {
   async sendResetLink(email) {
     try {
-      // bump timeout for slower mail providers
-      const res = await apiClient.post(
-        "/api/v1/password/email",
-        { email },
-        { timeout: 30000 }
-      );
-      return res.data;
+      const res = await fetcher.post("/api/v1/password/email", { email });
+      return res; 
     } catch (err) {
-      // Special-case timeout: show a friendly hint
-      if (err.code === "ECONNABORTED") {
-        throw new Error(
-          "Request timeout. If email arrives, please check your inbox."
-        );
+      if (err.code === "ECONNABORTED" || err.message?.toLowerCase().includes("timeout")) {
+        throw new Error("Request timeout. If email arrives, please check your inbox.");
       }
-      throw parseApiError(err);
+      throw new Error(err.message || "Gagal mengirim tautan reset password");
     }
   },
 
   async resetPassword({ token, email, password, password_confirmation }) {
     try {
-      const res = await apiClient.post(
-        "/api/v1/password/reset",
-        { token, email, password, password_confirmation },
-        { timeout: 30000 }
-      );
-      return res.data;
+      const res = await fetcher.post("/api/v1/password/reset", {
+        token, email, password, password_confirmation
+      });
+      return res;
     } catch (err) {
-      throw parseApiError(err);
+      throw new Error(err.message || "Gagal mereset password");
     }
   },
 };

@@ -1,10 +1,9 @@
 "use client";
 import React, { createContext, useState, useEffect, useContext } from "react";
-import baseRequest from "../utils/baseRequest";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { api } from "@/lib/axios";
 import Cookies from "js-cookie";
+import { authService } from "@/services/auth/authService";
 
 export const AuthContext = createContext();
 
@@ -15,21 +14,14 @@ export function useAuth() {
   }
   return context;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL
-  ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-  : "http://localhost:8000/api/v1";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
   const syncUserToFirestore = async (userData) => {
     try {
       const userRef = doc(db, "users", userData.id.toString());
-
       await setDoc(
         userRef,
         {
@@ -48,7 +40,8 @@ export function AuthProvider({ children }) {
   };
 
   const refetchUser = async () => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     setLoading(true);
     if (!token) {
       setUser(null);
@@ -56,16 +49,10 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      const res = await baseRequest.get(`${API_URL}/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      setUser(res.data);
-      localStorage.setItem("user", JSON.stringify(res.data));
-
-      syncUserToFirestore(res.data);
+      const me = await authService.me();
+      setUser(me);
+      localStorage.setItem("user", JSON.stringify(me));
+      syncUserToFirestore(me);
     } catch (err) {
       console.error("Error fetching user:", err);
       setUser(null);
@@ -84,29 +71,19 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-    Cookies.set("role", String(userData?.role || "customer").toLowerCase(), { sameSite: "lax" });
+    Cookies.set("role", String(userData?.role || "customer").toLowerCase(), {
+      sameSite: "lax",
+    });
     Cookies.set("token", token, { sameSite: "lax" });
   };
 
   const logout = async () => {
     const accessToken =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
     try {
-      await api.post(
-        "/api/v1/logout",
-        null,
-        accessToken
-          ? {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-          : undefined
-      );
+      await authService.logout();
     } catch (error) {
       console.error("Error logging out:", error);
-      // Tetap lanjut bersihkan token di client agar user benar-benar keluar
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("refresh_token");
@@ -120,7 +97,9 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading, refetchUser }}>
+    <AuthContext.Provider
+      value={{ user, setUser, login, logout, loading, refetchUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -67,11 +67,7 @@ export default function ProductDetailSection({ product, seller }) {
         avatar: seller?.avatar || seller?.profile_picture || null,
       };
 
-      await startChat(
-        seller.id,
-        sellerInfo,
-        product.id
-      );
+      await startChat(seller.id, sellerInfo, product.id);
 
       router.push("/chat");
     } catch (error) {
@@ -106,6 +102,7 @@ export default function ProductDetailSection({ product, seller }) {
         <img
           src={getProductImageUrl(product.image)}
           alt={product.name}
+          loading="lazy"
           className="w-full md:w-1/2 h-80 object-cover rounded-2xl shadow"
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/400x400?text=No+Image";

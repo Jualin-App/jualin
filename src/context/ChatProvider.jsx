@@ -15,7 +15,7 @@ import {
   getOrCreateChatRoom,
   getChatRoomInfo,
   resetUnreadCount,
-} from "../modules/chat/service";
+} from "@/services/chat/chatService";
 
 export const ChatContext = createContext();
 
@@ -86,8 +86,12 @@ export function ChatProvider({ children }) {
 
         const customerId = isCurrentUserCustomer ? user.id : otherUserId;
         const sellerId = isCurrentUserCustomer ? otherUserId : user.id;
-        const customerInfo = isCurrentUserCustomer ? currentUserInfo : otherUserInfoWithRole;
-        const sellerInfo = isCurrentUserCustomer ? otherUserInfoWithRole : currentUserInfo;
+        const customerInfo = isCurrentUserCustomer
+          ? currentUserInfo
+          : otherUserInfoWithRole;
+        const sellerInfo = isCurrentUserCustomer
+          ? otherUserInfoWithRole
+          : currentUserInfo;
 
         const chatId = await getOrCreateChatRoom(
           customerId,
@@ -127,14 +131,21 @@ export function ChatProvider({ children }) {
         const targetUserIdStr = String(targetUserId);
 
         // Cari chat yang sudah ada dengan user ini
-        const existingChat = chats.find(chat => {
+        const existingChat = chats.find((chat) => {
           if (!chat.participants) return false;
 
           // Konversi semua participants ke string untuk comparison yang konsisten
-          const participantsStr = chat.participants.map(p => String(p));
+          const participantsStr = chat.participants.map((p) => String(p));
           const hasTarget = participantsStr.includes(targetUserIdStr);
 
-          console.log("  Checking chat:", chat.id, "participants:", participantsStr, "has target?", hasTarget);
+          console.log(
+            "  Checking chat:",
+            chat.id,
+            "participants:",
+            participantsStr,
+            "has target?",
+            hasTarget
+          );
 
           return hasTarget;
         });

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchSellerProducts, deleteProduct } from "@/modules/seller/service.js";
+import { sellerService } from "@/services/seller/sellerService";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import Toast from "@/components/ui/Toast";
 import { getProductImageUrl } from "@/utils/imageHelper";
@@ -23,7 +23,11 @@ export default function SellerProductsPage() {
   // Delete handling state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [toast, setToast] = useState({ show: false, message: "", type: "info" });
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "info",
+  });
 
   useEffect(() => {
     // Scroll to top on page change
@@ -36,20 +40,18 @@ export default function SellerProductsPage() {
         ? JSON.parse(localStorage.getItem("user") || "null")
         : null;
 
-    const sellerId = storedUser?.id || storedUser?.user_id || storedUser?.userId || 1;
+    const sellerId =
+      storedUser?.id || storedUser?.user_id || storedUser?.userId || 1;
 
     const load = async () => {
       setLoading(true);
       try {
-        // limit 6, page dynamic
-        const data = await fetchSellerProducts(sellerId, 6, page);
+        const data = await sellerService.fetchProducts(sellerId, 6, page);
 
-        // Handle response from updated service
         const list = data.products || [];
         setProducts(Array.isArray(list) ? list : []);
         setTotalPages(data.totalPages || 1);
         setCurrentPage(data.currentPage || 1);
-
       } catch (err) {
         console.error("❌ Failed to load seller products:", err);
         setProducts([]);
@@ -59,7 +61,7 @@ export default function SellerProductsPage() {
     };
 
     load();
-  }, [page]); // Re-fetch when page changes
+  }, [page]);
 
   const formatRupiah = (price) =>
     new Intl.NumberFormat("id-ID", {
@@ -77,17 +79,18 @@ export default function SellerProductsPage() {
     if (!productToDelete) return;
 
     try {
-      const success = await deleteProduct(productToDelete.id);
+      const success = await sellerService.deleteProduct(productToDelete.id);
 
       if (success) {
-        // If it was the last item on page and not first page, go back
         if (products.length === 1 && page > 1) {
-          setPage(prev => prev - 1);
+          setPage((prev) => prev - 1);
         } else {
-          // Reload current page to refresh list and pagination
-          const storedUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+          const storedUser =
+            typeof window !== "undefined"
+              ? JSON.parse(localStorage.getItem("user") || "null")
+              : null;
           const sellerId = storedUser?.id || storedUser?.user_id || 1;
-          const data = await fetchSellerProducts(sellerId, 6, page);
+          const data = await sellerService.fetchProducts(sellerId, 6, page);
           setProducts(data.products || []);
           setTotalPages(data.totalPages || 1);
         }
@@ -95,7 +98,7 @@ export default function SellerProductsPage() {
         setToast({
           show: true,
           message: "Produk berhasil dihapus",
-          type: "success"
+          type: "success",
         });
       } else {
         throw new Error("Gagal menghapus produk");
@@ -105,7 +108,7 @@ export default function SellerProductsPage() {
       setToast({
         show: true,
         message: "Gagal menghapus produk. Silakan coba lagi.",
-        type: "error"
+        type: "error",
       });
     } finally {
       setDeleteModalOpen(false);
@@ -176,11 +179,14 @@ export default function SellerProductsPage() {
                     {p.category || "Tidak ada kategori"}
                   </p>
                   <p className="text-xs text-gray-500 text-center mb-4">
-                    Stok: {p.stock_quantity || 0} | Kondisi: {p.condition === 'new' ? 'Baru' : 'Bekas'}
+                    Stok: {p.stock_quantity || 0} | Kondisi:{" "}
+                    {p.condition === "new" ? "Baru" : "Bekas"}
                   </p>
                   <div className="flex justify-center gap-3">
                     <button
-                      onClick={() => router.push(`/seller/products/${p.id}/edit`)}
+                      onClick={() =>
+                        router.push(`/seller/products/${p.id}/edit`)
+                      }
                       className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-50 font-medium"
                     >
                       Edit
@@ -223,13 +229,8 @@ export default function SellerProductsPage() {
       />
 
       {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={closeToast}
-        />
+        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
       )}
     </main>
   );
 }
-

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import ProductFilter from "@/components/product/ProductFilter";
@@ -16,13 +16,14 @@ const formatRupiah = (price) =>
     minimumFractionDigits: 0,
   }).format(price || 0);
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const productsRef = useRef(null);
 
-  const categoryFromQuery =
-    (searchParams.get("category") || "all").toLowerCase();
+  const categoryFromQuery = (
+    searchParams.get("category") || "all"
+  ).toLowerCase();
 
   const [activeFilter, setActiveFilter] = useState(categoryFromQuery);
   const [searchQuery, setSearchQuery] = useState(
@@ -50,11 +51,15 @@ export default function ProductsPage() {
     page,
     per_page: 6, // Limit per requirement
     name: searchQuery || undefined, // Send name filter if exists
-    category: activeFilter !== 'all' ? activeFilter : undefined, // Send category if not 'all'
+    category: activeFilter !== "all" ? activeFilter : undefined, // Send category if not 'all'
   };
 
   const { data, isLoading } = useProductsQuery(queryParams);
-  const { products, totalPages, currentPage } = data || { products: [], totalPages: 1, currentPage: 1 };
+  const { products, totalPages, currentPage } = data || {
+    products: [],
+    totalPages: 1,
+    currentPage: 1,
+  };
 
   const handleCardClick = (id) => {
     router.push(`/product/${id}`);
@@ -73,16 +78,11 @@ export default function ProductsPage() {
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Semua Produk
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Semua Produk</h1>
           </div>
         </div>
 
-        <div
-          className="flex flex-col gap-4 scroll-mt-24"
-          ref={productsRef}
-        >
+        <div className="flex flex-col gap-4 scroll-mt-24" ref={productsRef}>
           <ProductFilter
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
@@ -103,40 +103,41 @@ export default function ProductsPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                 {products.map((p) => (
-                  <button
+                  <a
                     key={p.id}
-                    type="button"
-                    onClick={() => handleCardClick(p.id)}
-                    className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-200 text-left group"
+                    href={`/product/${p.id}`}
+                    className="group bg-white rounded-2xl shadow p-6 flex flex-col items-start transition-all duration-200 ease-out hover:shadow-xl hover:-translate-y-1 active:scale-95 focus:outline-none"
+                    style={{ cursor: "pointer" }}
+                    tabIndex={0}
                   >
-                    <div className="flex justify-center mb-4">
-                      <img
-                        src={getProductImageUrl(p.image)}
-                        alt={p.name}
-                        className="h-48 w-full object-contain rounded-xl group-hover:scale-[1.02] transition-transform duration-200"
-                        onError={(e) => {
-                          e.target.src = "/ProfilePhoto.png";
-                        }}
-                      />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 text-base text-center mb-2 line-clamp-2">
+                    <img
+                      src={getProductImageUrl(product.image)}
+                      alt={product.name}
+                      loading="lazy"
+                      className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://via.placeholder.com/400x400?text=No+Image";
+                      }}
+                    />
+                    <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">
+                      {p.brand || p.category}
+                    </span>
+                    <h3 className="font-semibold text-xl mb-1 text-black">
                       {p.name}
                     </h3>
-                    <p className="text-sm text-gray-600 text-center mb-4 line-clamp-2">
-                      {p.category || p.description || "Tidak ada informasi"}
+                    <p className="text-gray-500 text-base mb-2">
+                      {p.description || "Tidak ada informasi"}
                     </p>
-                    <div className="flex justify-center">
-                      <span className="px-4 py-2 bg-brand-red text-white rounded-full text-sm font-medium">
-                        {formatRupiah(p.price)}
-                      </span>
-                    </div>
-                  </button>
+                    <span className="font-bold text-lg text-black">
+                      {formatRupiah(p.price)}
+                    </span>
+                  </a>
                 ))}
               </div>
 
-              {/* Pagination Component */}
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -150,6 +151,22 @@ export default function ProductsPage() {
   );
 }
 
-
-
-
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="bg-white min-h-screen">
+          <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, idx) => (
+                <ProductCardSkeleton key={idx} />
+              ))}
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <ProductsPageContent />
+    </Suspense>
+  );
+}

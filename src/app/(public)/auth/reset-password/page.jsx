@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "@/components/ui/Logo";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import { passwordService } from "@/services";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
   const tokenFromLink = useMemo(
     () => searchParams.get("token") || "",
     [searchParams]
@@ -136,7 +136,6 @@ export default function ResetPasswordPage() {
               required
             />
 
-            {/* Strength bar (kept, but styled around Inputs) */}
             <div className="flex gap-2 mb-2">
               {[1, 2, 3, 4].map((level) => (
                 <div
@@ -181,5 +180,19 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-gray-500">Loading…</div>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

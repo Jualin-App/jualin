@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "../context/AuthProvider";
 import AppChrome from "../components/ui/AppChrome.jsx";
 import { ChatProvider } from "@/context/ChatProvider";
-import { QueryProvider } from "@/providers/QueryProvider";
+import { QueryProvider } from "@/context/QueryProvider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
