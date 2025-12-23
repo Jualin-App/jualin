@@ -1,82 +1,25 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import Toast from "@/components/ui/Toast";
-import usePaymentHistory from "@/hooks/payments/usePaymentHistory";
-import useMidtransSnap from "@/hooks/payments/useMidtransSnap";
-import { paymentService } from "@/services/payment/paymentService";
-import PaymentHistoryList from "@/components/profile/PaymentHistoryList";
-
-export function PurchaseHistorySection() {
-  const {
-    paginated,
-    isLoading,
-    totalAmount,
-    pagination,
-    refetch,
-    formatCurrency,
-  } = usePaymentHistory();
-
-  const { loaded, openSnap } = useMidtransSnap();
-  const [toast, setToast] = useState(null);
-  const [isContinuing, setIsContinuing] = useState(false);
-
-  const handleItemClick = async (p) => {
-    const status = String(p?.transaction_status || "").toLowerCase();
-    if (status !== "pending") {
-      setToast({ type: "info", message: "Transaksi tidak berstatus pending" });
-      return;
-    }
-
-    const callbacks = {
-      onSuccess: () =>
-        setToast({ type: "success", message: "Pembayaran berhasil" }),
-      onPending: () =>
-        setToast({ type: "info", message: "Pembayaran tertunda" }),
-      onError: () => setToast({ type: "error", message: "Pembayaran gagal" }),
-      onClose: () => setToast({ type: "info", message: "Pembayaran ditutup" }),
-    };
-
-    try {
-      setIsContinuing(true);
-
-      if (loaded && (p?.snap_token || p?.snap_url)) {
-        openSnap(p.snap_token, p.snap_url, callbacks);
-        return;
-      }
-
-      if (p?.payment_id) {
-        const reissued = await paymentService.reissueToken(p.payment_id);
-        if (loaded && (reissued?.snap_token || reissued?.snap_url)) {
-          openSnap(reissued.snap_token, reissued.snap_url, callbacks);
-          return;
-        }
-      }
-
-      setToast({
-        type: "error",
-        message: "Token pembayaran tidak tersedia dari riwayat.",
-      });
-    } catch (err) {
-      setToast({
-        type: "error",
-        message: err.message || "Gagal membuka pembayaran",
-      });
-    } finally {
-      setIsContinuing(false);
-    }
-  };
+/**
+ * PurchaseHistorySection
+ * Purchase history display with date filter, summary, and pagination
+ * Used in profile/edit/page.jsx
+ */
+export function PurchaseHistorySection({
+  purchases,
+  totalAmount,
+  pagination,
+  formatCurrency,
+  isLoading,
+  onExport,
+  onRefresh
+}) {
+  if (isLoading) {
+    return <div className="text-center py-12 text-gray-500">Loading purchases...</div>;
+  }
 
   return (
     <div>
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-[#1F1F1F] mb-4">
           Riwayat Pembelian
@@ -85,10 +28,22 @@ export function PurchaseHistorySection() {
           <div />
           <div className="flex gap-4">
             <button
-              onClick={() => refetch()}
+              onClick={onExport}
+              className="group relative text-sm font-medium text-[#E53935] hover:text-[#D32F2F] transition-colors flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span className="relative">
+                Export to CSV
+                <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#E53935] transition-all duration-300 group-hover:w-full"></span>
+              </span>
+            </button>
+            <button
+              onClick={onRefresh}
               className="text-sm font-medium text-[#E53935] hover:text-[#D32F2F] transition-colors"
             >
-              {isLoading || isContinuing ? "Refreshing..." : "Refresh"}
+              {isLoading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
         </div>
@@ -102,21 +57,53 @@ export function PurchaseHistorySection() {
         </h2>
       </div>
 
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500">
-          Loading payments...
+      {/* Payment List */}
+      {purchases && purchases.length > 0 ? (
+        <div className="space-y-4">
+          {purchases.map((payment) => (
+            <div
+              key={payment.order_id}
+              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-[#1F1F1F] mb-1">
+                    Order #{payment.order_id}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(payment.transaction_time).toLocaleDateString('id-ID', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-[#E53935]">
+                    {formatCurrency(payment.gross_amount)}
+                  </p>
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${payment.transaction_status === 'settlement'
+                      ? 'bg-green-100 text-green-700'
+                      : payment.transaction_status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                    {payment.transaction_status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        <PaymentHistoryList
-          items={paginated}
-          formatCurrency={formatCurrency}
-          onItemClick={handleItemClick}
-        />
+        <div className="text-center py-12 text-gray-500">
+          No purchase history found
+        </div>
       )}
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+        <div className="flex items-center justify-between border-t border-gray-200 pt-6 mt-6">
           <div className="flex items-center gap-2">
             <button
               className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 disabled:opacity-50"
@@ -143,11 +130,10 @@ export function PurchaseHistorySection() {
                 <button
                   key={page}
                   onClick={() => pagination.goToPage(page)}
-                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                    pagination.currentPage === page
+                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${pagination.currentPage === page
                       ? "bg-[#E53935] text-white"
                       : "text-gray-600 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {page}
                 </button>
