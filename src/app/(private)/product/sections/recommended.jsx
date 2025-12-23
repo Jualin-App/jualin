@@ -57,9 +57,11 @@ export default function RecommendedSection({
               <img
                 src={getProductImageUrl(product.image)}
                 alt={product.name}
+                loading="lazy"
                 className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+                  e.target.src =
+                    "https://via.placeholder.com/400x400?text=No+Image";
                 }}
               />
               <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">

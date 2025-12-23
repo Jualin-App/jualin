@@ -24,8 +24,7 @@ export function ChatInterface() {
     if (chat) {
       selectChat(chat);
     }
-    // Close sidebar on mobile after selection
-    if (window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
       setSidebarOpen(false);
     }
   };
@@ -34,12 +33,11 @@ export function ChatInterface() {
     if (!text.trim()) return;
     try {
       await sendMessage(text.trim());
-    } catch (error) {
+    } catch {
       alert("Failed to send message. Please try again.");
     }
   };
 
-  // Show Skeleton if Auth is loading OR Chat data is loading (initial fetch)
   if (authLoading || (loading && !chats.length)) {
     return <ChatSkeleton />;
   }
@@ -81,7 +79,6 @@ export function ChatInterface() {
 
   return (
     <div className="relative flex h-[calc(100vh-4rem)] md:h-[800px] bg-gray-100 overflow-hidden">
-      {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="md:hidden absolute top-2 left-2 z-40 p-2 bg-white rounded-lg shadow-md border border-gray-200 hover:bg-gray-50"
@@ -90,10 +87,10 @@ export function ChatInterface() {
         {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
 
-      {/* Sidebar - detached floating panel */}
       <div
-        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 absolute md:relative top-0 left-0 bottom-0 md:inset-auto z-30 md:z-auto w-80 md:w-[30%] transition-transform duration-300 ease-in-out md:ml-4 md:my-4 md:h-[calc(100%-2rem)] md:rounded-3xl md:shadow-xl md:bg-white md:overflow-hidden hash-sidebar-floating`}
+        className={`${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 absolute md:relative top-0 left-0 bottom-0 md:inset-auto z-30 md:z-auto w-80 md:w-[30%] transition-transform duration-300 ease-in-out md:ml-4 md:my-4 md:h-[calc(100%-2rem)] md:rounded-3xl md:shadow-xl md:bg-white md:overflow-hidden hash-sidebar-floating`}
       >
         <ChatSidebar
           chats={chats}
@@ -102,7 +99,6 @@ export function ChatInterface() {
         />
       </div>
 
-      {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
           className="md:hidden fixed inset-0 bg-black/50 z-20"
@@ -110,7 +106,6 @@ export function ChatInterface() {
         />
       )}
 
-      {/* Chat window - 70% width */}
       <div className="flex-1 md:w-[70%] flex flex-col min-w-0 relative z-10 md:z-auto">
         <ChatWindow
           chat={currentChat}

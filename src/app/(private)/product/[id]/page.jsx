@@ -6,33 +6,38 @@ import { useProductDetailQuery } from "@/hooks/product/useProductDetailQuery";
 import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import { useSellerInfo } from "@/hooks/product/useSellerInfo";
 import { ProductDetailSkeleton } from "@/components/ui/skeleton";
+import React, { useMemo } from "react";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const productId = Number(params.id);
 
-  const { product, isLoading: productLoading } = useProductDetailQuery(productId);
-  const { seller, isLoading: sellerLoading } = useSellerInfo(product?.seller_id || null);
-
-  // Fetch all products for recommendation filtering
-  const { products: allProducts, isLoading: recommendationsLoading } = useProductsQuery();
-
+  const { product, isLoading: productLoading } =
+    useProductDetailQuery(productId);
+  const { seller, isLoading: sellerLoading } = useSellerInfo(
+    product?.seller_id || null
+  );
   const loading = productLoading || sellerLoading;
 
-  // Filter recommendations:
-  // 1. Same category as current product
-  // 2. Exclude current product
-  // 3. Limit to 6 items
+  const recParams = useMemo(
+    () => ({
+      per_page: 6,
+      category: product?.category || undefined,
+    }),
+    [product?.category]
+  );
+
+  const { data: recData, isLoading: recommendationsLoading } = useProductsQuery(
+    recParams,
+    {
+      enabled: !!product?.category,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const recommendedProducts =
-    product && allProducts
-      ? allProducts
-        .filter(
-          (p) =>
-            p.category?.toLowerCase() === product.category?.toLowerCase() &&
-            p.id !== productId
-        )
-        .slice(0, 6)
-      : [];
+    recData?.products?.filter((p) => p.id !== productId) || [];
 
   return (
     <main className="bg-[#fafafa]">

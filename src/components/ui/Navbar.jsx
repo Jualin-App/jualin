@@ -8,7 +8,10 @@ import SearchBar from "./SearchBar.jsx";
 const Navbar = () => {
   const { user, loading } = useContext(AuthContext);
   const pathname = usePathname() || "";
-  const showSearch = pathname.startsWith("/dashboard") || pathname.startsWith("/product");
+  const showSearch =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/product") ||
+    pathname.startsWith("/products");
 
   return (
     <header className="bg-white">
@@ -43,13 +46,19 @@ const Navbar = () => {
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#E83030] transition-all duration-300 group-hover:w-full"></span>
           </a>
         </div>
+
         {showSearch && (
           <div className="flex-1">
-            <Suspense fallback={<div className="w-full px-4 py-2.5 bg-gray-100 rounded-2xl animate-pulse"></div>}>
+            <Suspense
+              fallback={
+                <div className="w-full px-4 py-2.5 bg-gray-100 rounded-2xl animate-pulse"></div>
+              }
+            >
               <SearchBar inline />
             </Suspense>
           </div>
         )}
+
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
           {loading ? (
             // Skeleton Loader
@@ -61,7 +70,7 @@ const Navbar = () => {
           ) : user ? (
             <>
               <a
-                href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ''}`}
+                href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ""}`}
                 className="flex items-center gap-2"
               >
                 <img
@@ -75,7 +84,7 @@ const Navbar = () => {
               </a>
               {user?.role === "seller" && (
                 <a
-                  href="/jual"
+                  href="/seller/products/new"
                   className="px-4 py-2 rounded-2xl bg-[#E83030] text-white font-semibold shadow transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
                 >
                   Jual

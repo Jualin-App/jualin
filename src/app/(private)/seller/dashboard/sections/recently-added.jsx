@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import DropdownMenu from "@/components/ui/DropdownMenu";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { getProductImageUrl } from "@/utils/imageHelper";
-import { deleteProduct } from "@/modules/seller/service.js";
+import { sellerService } from "@/services/seller/sellerService";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import Toast from "@/components/ui/Toast";
 import { useState } from "react";
@@ -13,7 +13,11 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
   const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [toast, setToast] = useState({ show: false, message: "", type: "info" });
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "info",
+  });
   const [deletedProductIds, setDeletedProductIds] = useState([]);
 
   const handleEdit = (productId) => {
@@ -33,14 +37,14 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
     if (!productToDelete) return;
 
     try {
-      const success = await deleteProduct(productToDelete);
+      const success = await sellerService.deleteProduct(productToDelete);
 
       if (success) {
         setDeletedProductIds([...deletedProductIds, productToDelete]);
         setToast({
           show: true,
           message: "Produk berhasil dihapus",
-          type: "success"
+          type: "success",
         });
       } else {
         throw new Error("Gagal menghapus produk");
@@ -50,7 +54,7 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
       setToast({
         show: true,
         message: "Gagal menghapus produk",
-        type: "error"
+        type: "error",
       });
     } finally {
       setDeleteModalOpen(false);
@@ -63,15 +67,15 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
   };
 
   const formatRupiah = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     }).format(price);
   };
 
   const visibleProducts = Array.isArray(products)
-    ? products.filter(p => !deletedProductIds.includes(p.id))
+    ? products.filter((p) => !deletedProductIds.includes(p.id))
     : [];
 
   const hasProducts = visibleProducts.length > 0;
@@ -80,11 +84,13 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
     <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Produk Terbaru</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Produk Terbaru
+          </h2>
           <p className="text-sm text-gray-600">Produk yang baru ditambahkan</p>
         </div>
         <button
-          onClick={() => router.push('/seller/products')}
+          onClick={() => router.push("/seller/products")}
           className="text-sm text-brand-red hover:text-red-600 font-medium"
         >
           Lihat Semua
@@ -95,7 +101,10 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
         {isLoading ? (
           <>
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="bg-white rounded-2xl p-4 shadow-lg animate-pulse">
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-4 shadow-lg animate-pulse"
+              >
                 <div className="relative">
                   <div className="absolute top-0 right-0 h-6 w-6 bg-gray-200 rounded-full"></div>
                   <div className="flex justify-center mb-3">
@@ -111,7 +120,7 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
             ))}
             <div className="border-2 border-dashed rounded-2xl p-4 min-h-[180px] flex items-center justify-center">
               <button
-                onClick={() => router.push('/seller/products/new')}
+                onClick={() => router.push("/seller/products/new")}
                 className="h-12 w-12 rounded-full border-2 border-dashed border-gray-400 text-gray-500 hover:text-gray-700 hover:border-gray-700 flex items-center justify-center"
               >
                 <Plus className="h-6 w-6" />
@@ -120,16 +129,25 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
           </>
         ) : hasProducts ? (
           <>
-
             {visibleProducts.slice(0, 4).map((product) => (
-              <div key={product.id} className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-200">
+              <div
+                key={product.id}
+                className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-200"
+              >
                 <div className="relative">
                   <div className="absolute top-0 right-0 h-6 w-6 text-gray-400 flex items-center justify-center">
                     <DropdownMenu
                       trigger={<MoreHorizontal className="h-4 w-4" />}
                       items={[
-                        { label: "Edit Produk", onClick: () => handleEdit(product.id) },
-                        { label: "Hapus Produk", onClick: () => handleDelete(product.id), variant: "danger" }
+                        {
+                          label: "Edit Produk",
+                          onClick: () => handleEdit(product.id),
+                        },
+                        {
+                          label: "Hapus Produk",
+                          onClick: () => handleDelete(product.id),
+                          variant: "danger",
+                        },
                       ]}
                     />
                   </div>
@@ -145,9 +163,14 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                   </div>
                 </div>
                 <div className="text-center">
-                  <h3 className="font-semibold text-gray-900 text-sm truncate">{product.name}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm truncate">
+                    {product.name}
+                  </h3>
                   <p className="text-xs text-gray-600 mb-3">
-                    {product.size || product.brand || product.category || "Tidak ada informasi ukuran / brand"}
+                    {product.size ||
+                      product.brand ||
+                      product.category ||
+                      "Tidak ada informasi ukuran / brand"}
                   </p>
                   <button
                     onClick={() => handleView(product.id)}
@@ -161,7 +184,7 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
             {/* Add New Product Card - selalu di posisi ke-5 */}
             <div className="border-2 border-dashed rounded-2xl p-4 min-h-[180px] flex items-center justify-center">
               <button
-                onClick={() => router.push('/seller/products/new')}
+                onClick={() => router.push("/seller/products/new")}
                 className="h-12 w-12 rounded-full border-2 border-dashed border-gray-400 text-gray-500 hover:text-gray-700 hover:border-gray-700 flex items-center justify-center"
               >
                 <Plus className="h-6 w-6" />
@@ -177,7 +200,7 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
                 Tambahkan produk pertama Anda agar tampil di sini.
               </p>
               <button
-                onClick={() => router.push('/seller/products/new')}
+                onClick={() => router.push("/seller/products/new")}
                 className="inline-flex items-center gap-2 bg-brand-red text-white rounded-full px-4 py-2 text-sm hover:bg-red-600"
               >
                 <Plus className="h-4 w-4" />
@@ -187,7 +210,7 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
             {/* Add New Product Card - selalu di posisi ke-5 */}
             <div className="border-2 border-dashed rounded-2xl p-4 min-h-[180px] flex items-center justify-center">
               <button
-                onClick={() => router.push('/seller/products/new')}
+                onClick={() => router.push("/seller/products/new")}
                 className="h-12 w-12 rounded-full border-2 border-dashed border-gray-400 text-gray-500 hover:text-gray-700 hover:border-gray-700 flex items-center justify-center"
               >
                 <Plus className="h-6 w-6" />
@@ -196,7 +219,6 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
           </>
         )}
       </div>
-
 
       <ConfirmationModal
         isOpen={deleteModalOpen}
@@ -209,16 +231,10 @@ const RecentlyAddedSection = ({ products, isLoading = false }) => {
         isDanger={true}
       />
 
-      {
-        toast.show && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={closeToast}
-          />
-        )
-      }
-    </div >
+      {toast.show && (
+        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+      )}
+    </div>
   );
 };
 

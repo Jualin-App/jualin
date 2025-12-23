@@ -13,7 +13,7 @@ Tujuan utama folder ini adalah:
 
 | Jenis | Contoh | Penjelasan |
 |------|--------|-----------|
-| Konfigurasi HTTP Client | `axios.js` | Untuk melakukan request ke backend Laravel secara konsisten. |
+| Konfigurasi HTTP Client | `fetcher.js` | Untuk melakukan request ke backend Laravel secara konsisten. |
 | Konfigurasi Firebase (jika dipakai) | `firebase.js` | Setup Firebase Auth, Firestore, atau Realtime Database. |
 | Helper global | `formatDate.js`, `formatCurrency.js` | Fungsi pemrosesan data yang tidak terkait fitur tertentu. |
 
