@@ -1,26 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
 
 export function middleware(request) {
-  const url = request.nextUrl;
-  const role = (request.cookies.get('role')?.value || '').toLowerCase();
+  const pathname = request.nextUrl.pathname
+  const role = (request.cookies.get('role')?.value || '').toLowerCase()
 
-  if (url.pathname.startsWith('/dashboard')) {
-    if (role === 'seller') {
-      url.pathname = '/seller/dashboard';
-      return NextResponse.redirect(url);
-    }
+  // dashboard → seller dashboard
+  if (pathname.startsWith('/dashboard') && role === 'seller') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/seller/dashboard'
+    return NextResponse.redirect(url)
   }
 
-  if (url.pathname.startsWith('/seller')) {
-    if (role !== 'seller') {
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
-    }
+  // seller area → hanya seller
+  if (pathname.startsWith('/seller') && role !== 'seller') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
   }
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/seller/:path*']
-};
+  matcher: ['/dashboard/:path*', '/seller/:path*'],
+}
