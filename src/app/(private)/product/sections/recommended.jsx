@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import ProductFilter from "./filter.jsx";
 import { getProductImageUrl } from "@/utils/imageHelper";
+import { formatCurrency } from "@/utils/formatters/currency";
+import { User } from "lucide-react";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
 
 export default function RecommendedSection({
@@ -69,8 +71,14 @@ export default function RecommendedSection({
               <p className="text-gray-500 text-base mb-2">
                 {product.description}
               </p>
+              <div className="flex items-center gap-1.5 mb-3 bg-red-50 px-3 py-1.5 rounded-full border border-red-100 self-start">
+                <User size={12} className="text-red-600" />
+                <span className="text-xs text-red-800 font-medium">
+                  {product.seller?.username || "Unknown"}
+                </span>
+              </div>
               <span className="font-bold text-lg text-black">
-                Rp {product.price}
+                {formatCurrency(product.price)}
               </span>
             </a>
           ))}

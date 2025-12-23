@@ -1,10 +1,6 @@
 export const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  const num = Number(amount) || 0;
+  return "Rp " + num.toLocaleString("id-ID");
 };
 
 export const formatPrice = (price) => {
