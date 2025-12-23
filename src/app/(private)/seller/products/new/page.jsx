@@ -41,6 +41,12 @@ export default function NewProductPage() {
       return;
     }
 
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Ukuran gambar terlalu besar. Maksimal 2MB. Silakan gunakan gambar dengan ukuran lebih kecil atau kompres terlebih dahulu.");
+      return;
+    }
+
     // Create preview
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
@@ -100,7 +106,14 @@ export default function NewProductPage() {
       }
     } catch (err) {
       console.error("Failed to create product:", err);
-      setError(err.message || "Gagal menambahkan produk");
+
+      const validationErrors = err.originalError?.response?.data?.errors;
+      if (validationErrors) {
+        const firstError = Object.values(validationErrors).flat()[0];
+        setError(firstError);
+      } else {
+        setError(err.message || "Gagal menambahkan produk");
+      }
     } finally {
       setSaving(false);
     }

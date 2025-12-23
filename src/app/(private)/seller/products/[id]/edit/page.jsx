@@ -68,6 +68,12 @@ export default function EditProductPage() {
       return;
     }
 
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Ukuran gambar terlalu besar. Maksimal 2MB. Silakan gunakan gambar dengan ukuran lebih kecil atau kompres terlebih dahulu.");
+      return;
+    }
+
     // Create preview
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
@@ -124,7 +130,11 @@ export default function EditProductPage() {
         image: formData.image || imagePreview, // Use existing image or preview URL
       };
 
+<<<<<<< HEAD
       const updatedProduct = await productService.update(productId, payload);
+=======
+      const updatedProduct = await updateProduct(productId, payload);
+>>>>>>> 078814603e2e5ff5376916d6643d08af66e03d77
 
       if (updatedProduct) {
         router.push("/seller/products");
@@ -133,7 +143,14 @@ export default function EditProductPage() {
       }
     } catch (err) {
       console.error("Failed to update product:", err);
-      setError("Gagal menyimpan perubahan");
+
+      const validationErrors = err.originalError?.response?.data?.errors;
+      if (validationErrors) {
+        const firstError = Object.values(validationErrors).flat()[0];
+        setError(firstError);
+      } else {
+        setError("Gagal menyimpan perubahan");
+      }
     } finally {
       setSaving(false);
     }

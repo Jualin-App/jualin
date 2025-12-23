@@ -5,6 +5,7 @@ import { sellerService } from "@/services/seller/sellerService";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import Toast from "@/components/ui/Toast";
 import { getProductImageUrl } from "@/utils/imageHelper";
+import { formatCurrency } from "@/utils/formatters/currency";
 
 import Pagination from "@/components/ui/Pagination";
 import { smoothScrollTo } from "@/utils/scroll";
@@ -63,12 +64,7 @@ export default function SellerProductsPage() {
     load();
   }, [page]);
 
-  const formatRupiah = (price) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price || 0);
+
 
   const handleDeleteClick = (product) => {
     setProductToDelete(product);
@@ -195,7 +191,7 @@ export default function SellerProductsPage() {
                       onClick={() => router.push(`/product/${p.id}`)}
                       className="px-4 py-2 bg-brand-red text-white rounded-full text-sm hover:bg-red-600 font-medium"
                     >
-                      {formatRupiah(p.price)}
+                      {formatCurrency(p.price)}
                     </button>
                     <button
                       onClick={() => handleDeleteClick(p)}

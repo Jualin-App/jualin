@@ -2,19 +2,14 @@
 
 import React, { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { User } from "lucide-react";
 import { useProductsQuery } from "@/hooks/dashboard/useProductsQuery";
 import ProductFilter from "@/components/product/ProductFilter";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
 import Pagination from "@/components/ui/Pagination";
 import { smoothScrollTo } from "@/utils/scroll";
 import { getProductImageUrl } from "@/utils/imageHelper";
-
-const formatRupiah = (price) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(price || 0);
+import { formatCurrency } from "@/utils/formatters/currency";
 
 function ProductsPageContent() {
   const router = useRouter();
@@ -105,12 +100,11 @@ function ProductsPageContent() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                 {products.map((p) => (
-                  <a
+                  <button
                     key={p.id}
-                    href={`/product/${p.id}`}
-                    className="group bg-white rounded-2xl shadow p-6 flex flex-col items-start transition-all duration-200 ease-out hover:shadow-xl hover:-translate-y-1 active:scale-95 focus:outline-none"
-                    style={{ cursor: "pointer" }}
-                    tabIndex={0}
+                    type="button"
+                    onClick={() => handleCardClick(p.id)}
+                    className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-200 text-left group"
                   >
                     <img
                       src={getProductImageUrl(product.image)}
@@ -131,10 +125,20 @@ function ProductsPageContent() {
                     <p className="text-gray-500 text-base mb-2">
                       {p.description || "Tidak ada informasi"}
                     </p>
-                    <span className="font-bold text-lg text-black">
-                      {formatRupiah(p.price)}
-                    </span>
-                  </a>
+                    <div className="flex justify-center mb-3">
+                      <div className="flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
+                        <User size={12} className="text-red-600" />
+                        <span className="text-xs text-red-800 font-medium">
+                          {p.seller?.username || "Unknown"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex justify-center">
+                      <span className="px-4 py-2 bg-brand-red text-white rounded-full text-sm font-medium">
+                        {formatCurrency(p.price)}
+                      </span>
+                    </div>
+                  </button>
                 ))}
               </div>
 
