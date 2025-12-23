@@ -8,6 +8,7 @@ import useMidtransPayment from "../hooks/useMidtransPayment";
 import { ChatContext } from "@/context/ChatProvider";
 import { AuthContext } from "@/context/AuthProvider";
 import { getProductImageUrl } from "@/utils/imageHelper";
+import { formatCurrency } from "@/utils/formatters/currency";
 
 export default function ProductDetailSection({ product, seller }) {
   const router = useRouter();
@@ -119,8 +120,24 @@ export default function ProductDetailSection({ product, seller }) {
             {product.brand || product.category}
           </h1>
           <p className="text-gray-600 mb-6">{product.description}</p>
+
+          {/* Seller Info */}
+          <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+              {seller?.profile_picture ? (
+                <img src={seller.profile_picture} alt={seller.username} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-gray-500 font-bold text-lg">{(seller?.username || 'S')[0].toUpperCase()}</span>
+              )}
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900">{seller?.username || "Seller"}</p>
+              {seller?.city && <p className="text-xs text-gray-500">{seller.city}</p>}
+            </div>
+          </div>
+
           <span className="block font-bold text-xl text-black mb-6">
-            Rp {product.price}
+            {formatCurrency(product.price)}
           </span>
           <div className="flex items-center gap-3">
             <button

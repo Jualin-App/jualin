@@ -59,7 +59,7 @@ export const productService = {
       if (imageFile) {
         // With image upload - use FormData
         const formData = new FormData();
-        formData.append('seller_id', sellerId);
+        // Backend handles seller_id from auth token
         formData.append('name', productData.name);
         formData.append('description', productData.description || '');
         formData.append('price', productData.price);
@@ -75,7 +75,7 @@ export const productService = {
       } else {
         // Without image - use JSON
         response = await apiClient.post('/api/v1/products', {
-          seller_id: sellerId,
+          // seller_id handled by backend
           name: productData.name,
           description: productData.description || '',
           price: productData.price,

@@ -68,10 +68,16 @@ export default function EditProductPage() {
       return;
     }
 
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Ukuran gambar terlalu besar. Maksimal 2MB. Silakan gunakan gambar dengan ukuran lebih kecil atau kompres terlebih dahulu.");
+      return;
+    }
+
     // Create preview
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
-    
+
     // For now, we'll store the file object
     // In production, you'd want to upload it to a storage service first
     // and then store the URL in formData.image
@@ -106,7 +112,7 @@ export default function EditProductPage() {
 
     try {
       setSaving(true);
-      
+
       // Get user from localStorage
       const storedUser =
         typeof window !== "undefined"
@@ -125,7 +131,7 @@ export default function EditProductPage() {
       };
 
       const updatedProduct = await updateProduct(productId, payload);
-      
+
       if (updatedProduct) {
         router.push("/seller/products");
       } else {
@@ -133,7 +139,14 @@ export default function EditProductPage() {
       }
     } catch (err) {
       console.error("Failed to update product:", err);
-      setError("Gagal menyimpan perubahan");
+
+      const validationErrors = err.originalError?.response?.data?.errors;
+      if (validationErrors) {
+        const firstError = Object.values(validationErrors).flat()[0];
+        setError(firstError);
+      } else {
+        setError("Gagal menyimpan perubahan");
+      }
     } finally {
       setSaving(false);
     }
