@@ -1,3 +1,4 @@
+"use client";
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { User } from "lucide-react";
@@ -29,12 +30,16 @@ export default function RecommendedSection() {
   const queryParams = {
     page,
     per_page: 6,
-    category: activeFilter !== 'all' ? activeFilter : undefined,
+    category: activeFilter !== "all" ? activeFilter : undefined,
     name: q || undefined,
   };
 
   const { data, isLoading } = useProductsQuery(queryParams);
-  const { products, totalPages, currentPage } = data || { products: [], totalPages: 1, currentPage: 1 };
+  const { products, totalPages, currentPage } = data || {
+    products: [],
+    totalPages: 1,
+    currentPage: 1,
+  };
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -96,7 +101,8 @@ export default function RecommendedSection() {
                   alt={product.name || "Foto Produk"}
                   className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
                   onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+                    e.target.src =
+                      "https://via.placeholder.com/400x400?text=No+Image";
                   }}
                 />
                 <span className="font-bold text-blue-700 uppercase text-sm mb-2 tracking-wide">

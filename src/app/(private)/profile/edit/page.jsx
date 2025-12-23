@@ -32,7 +32,6 @@ export default function EditProfilePage() {
         type: "success",
         message: result.message || "Profile updated",
       });
-      setTimeout(() => router.push("/profile"), 800);
     } else {
       setToast({
         type: "error",
