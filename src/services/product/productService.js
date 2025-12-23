@@ -45,13 +45,23 @@ export const productService = {
   },
 
   async create(productData, imageFile = null) {
-    // Require auth token; backend derives seller from token (role: seller)
+    // Ensure logged-in
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (!token) throw new Error("Please login as seller to create a product.");
 
+    // Derive seller_id from stored user
+    const storedUser =
+      typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("user") || "null")
+        : null;
+    const sellerId =
+      storedUser?.id || storedUser?.user_id || storedUser?.userId || null;
+    if (!sellerId) throw new Error("Seller ID not found. Please login again.");
+
     if (imageFile) {
       const formData = new FormData();
+      formData.append("seller_id", sellerId);
       Object.entries({
         name: productData.name,
         description: productData.description || "",
@@ -69,6 +79,7 @@ export const productService = {
 
     // JSON path (no image)
     const res = await fetcher.post("/api/v1/products", {
+      seller_id: sellerId,
       name: productData.name,
       description: productData.description || "",
       price: productData.price,

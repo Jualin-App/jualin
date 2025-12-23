@@ -130,11 +130,7 @@ export default function EditProductPage() {
         image: formData.image || imagePreview, // Use existing image or preview URL
       };
 
-<<<<<<< HEAD
       const updatedProduct = await productService.update(productId, payload);
-=======
-      const updatedProduct = await updateProduct(productId, payload);
->>>>>>> 078814603e2e5ff5376916d6643d08af66e03d77
 
       if (updatedProduct) {
         router.push("/seller/products");

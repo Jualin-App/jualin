@@ -64,8 +64,6 @@ export default function SellerProductsPage() {
     load();
   }, [page]);
 
-
-
   const handleDeleteClick = (product) => {
     setProductToDelete(product);
     setDeleteModalOpen(true);
@@ -162,7 +160,7 @@ export default function SellerProductsPage() {
                     <img
                       src={getProductImageUrl(p.image)}
                       alt={p.name}
-                      className="h-48 w-full object-contain"
+                      className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
                       onError={(e) => {
                         e.target.src = "/ProfilePhoto.png";
                       }}

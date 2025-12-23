@@ -107,8 +107,8 @@ function ProductsPageContent() {
                     className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-200 text-left group"
                   >
                     <img
-                      src={getProductImageUrl(product.image)}
-                      alt={product.name}
+                      src={getProductImageUrl(p.image)}
+                      alt={p.name}
                       loading="lazy"
                       className="w-full h-60 object-cover rounded-xl mb-4 transition-transform duration-200 group-hover:scale-[1.02]"
                       onError={(e) => {
