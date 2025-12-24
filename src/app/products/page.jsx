@@ -44,10 +44,7 @@ function ProductsPageContent() {
     per_page: 6,
     name: searchQuery || undefined,
     category: activeFilter !== "all" ? activeFilter : undefined,
-<<<<<<< HEAD
     min_stock: 1, // Filter out out-of-stock products from backend
-=======
->>>>>>> b6bb4306636a9f8d64dd51625356672c425300f6
   };
 
   const { data, isLoading } = useProductsQuery(queryParams);
