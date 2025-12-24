@@ -44,6 +44,7 @@ function ProductsPageContent() {
     per_page: 6,
     name: searchQuery || undefined,
     category: activeFilter !== "all" ? activeFilter : undefined,
+    min_stock: 1, // Filter out out-of-stock products from backend
   };
 
   const { data, isLoading } = useProductsQuery(queryParams);
@@ -118,7 +119,7 @@ function ProductsPageContent() {
                     <h3 className="font-semibold text-xl mb-1 text-black">
                       {p.name}
                     </h3>
-                    <p className="text-gray-500 text-base mb-2">
+                    <p className="text-gray-500 text-base mb-2 line-clamp-2 break-all text-ellipsis overflow-hidden">
                       {p.description || "Tidak ada informasi"}
                     </p>
                     <div className="flex justify-center mb-3">
@@ -129,9 +130,12 @@ function ProductsPageContent() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex justify-center">
+                    <div className="flex justify-between items-center mt-4">
                       <span className="px-4 py-2 bg-brand-red text-white rounded-full text-sm font-medium">
                         {formatCurrency(p.price)}
+                      </span>
+                      <span className="text-sm text-gray-600 font-medium">
+                        Stok: {p.stock}
                       </span>
                     </div>
                   </button>

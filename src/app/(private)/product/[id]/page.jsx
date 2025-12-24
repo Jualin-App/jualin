@@ -17,12 +17,17 @@ export default function ProductDetailPage() {
   const { seller, isLoading: sellerLoading } = useSellerInfo(
     product?.seller_id || null
   );
+
+  // Calculate availability derived from stock
+  const isProductAvailable = product && (product.stock ?? 0) > 0;
+
   const loading = productLoading || sellerLoading;
 
   const recParams = useMemo(
     () => ({
       per_page: 6,
       category: product?.category || undefined,
+      min_stock: 1,
     }),
     [product?.category]
   );
@@ -44,6 +49,14 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-2 sm:px-4 pt-8">
         {loading ? (
           <ProductDetailSkeleton />
+        ) : !isProductAvailable ? (
+          <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Produk Tidak Tersedia</h2>
+            <p className="text-gray-600">Maaf, stok produk ini sedang kosong atau produk telah dihapus.</p>
+            <a href="/products" className="mt-6 px-6 py-2 bg-brand-red text-white rounded-full font-medium hover:bg-red-700 transition">
+              Cari Produk Lain
+            </a>
+          </div>
         ) : (
           <>
             <ProductDetailSection product={product} seller={seller} />

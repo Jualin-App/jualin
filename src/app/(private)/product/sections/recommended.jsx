@@ -68,7 +68,7 @@ export default function RecommendedSection({
               <h3 className="font-semibold text-xl mb-1 text-black">
                 {product.name}
               </h3>
-              <p className="text-gray-500 text-base mb-2">
+              <p className="text-gray-500 text-base mb-2 line-clamp-2 break-all text-ellipsis overflow-hidden">
                 {product.description}
               </p>
               <div className="flex items-center gap-1.5 mb-3 bg-red-50 px-3 py-1.5 rounded-full border border-red-100 self-start">
@@ -77,9 +77,14 @@ export default function RecommendedSection({
                   {product.seller?.username || "Unknown"}
                 </span>
               </div>
-              <span className="font-bold text-lg text-black">
-                {formatCurrency(product.price)}
-              </span>
+              <div className="flex justify-between items-center w-full">
+                <span className="font-bold text-lg text-black">
+                  {formatCurrency(product.price)}
+                </span>
+                <span className="text-sm text-gray-600 font-medium">
+                  Stok: {product.stock}
+                </span>
+              </div>
             </a>
           ))}
         </div>
