@@ -2,20 +2,13 @@
 
 import { getProfilePictureUrl } from '@/utils/imageHelper';
 
-/**
- * ProfileHeaderSection
- * Displays read-only profile information
- * Used in profile/page.jsx
- */
 export function ProfileHeaderSection({ user }) {
-  // Format birthday untuk display
   const formatBirthday = (birthday) => {
     if (!birthday) return "Not set";
     const date = new Date(birthday);
     return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  // Combine region and city untuk location
   const getLocation = () => {
     const parts = [];
     if (user?.city) parts.push(user.city);
@@ -23,7 +16,6 @@ export function ProfileHeaderSection({ user }) {
     return parts.length > 0 ? parts.join(', ') : "Not set";
   };
 
-  // Get full image URL
   const profileImageUrl = getProfilePictureUrl(user?.profile_picture);
 
   return (
@@ -36,7 +28,7 @@ export function ProfileHeaderSection({ user }) {
             alt={user.username || 'Profile'}
             className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
             onError={(e) => {
-              e.target.src = '/ProfilePhoto.png'; // Fallback if image fails to load
+              e.target.src = '/ProfilePhoto.png';
             }}
           />
         </div>

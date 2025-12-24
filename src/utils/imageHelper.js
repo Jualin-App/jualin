@@ -11,21 +11,12 @@
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return '';
 
-  // If already a full URL, return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
-
-  // Get base URL from environment or default to localhost
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-  // Remove trailing slash from baseUrl if exists
   const cleanBaseUrl = baseUrl.replace(/\/$/, '');
-
-  // Remove leading slash from imagePath if exists
   const cleanImagePath = imagePath.replace(/^\//, '');
-
-  // Construct full URL
   return `${cleanBaseUrl}/storage/${cleanImagePath}`;
 };
 

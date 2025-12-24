@@ -35,23 +35,17 @@ export default function NewProductPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       setError("File harus berupa gambar (JPG atau PNG)");
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       setError("Ukuran gambar terlalu besar. Maksimal 2MB. Silakan gunakan gambar dengan ukuran lebih kecil atau kompres terlebih dahulu.");
       return;
     }
-
-    // Create preview
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
-
-    // Store the file object
     setImageFile(file);
     setError("");
   };
@@ -64,7 +58,6 @@ export default function NewProductPage() {
     e.preventDefault();
     setError("");
 
-    // Validation
     if (!formData.name.trim()) {
       setError("Nama produk wajib diisi");
       return;
@@ -85,7 +78,6 @@ export default function NewProductPage() {
     try {
       setSaving(true);
 
-      // Prepare product data
       const productData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -96,7 +88,6 @@ export default function NewProductPage() {
         status: formData.status,
       };
 
-      // Call service with product data and image file
       const result = await productService.create(productData, imageFile);
 
       if (result) {

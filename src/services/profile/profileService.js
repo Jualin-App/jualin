@@ -19,7 +19,9 @@ export const profileService = {
       formData.append('username', profileData.username);
       formData.append('email', profileData.email);
       formData.append('gender', profileData.gender || 'male');
-      formData.append('birthday', profileData.birthday || '');
+      if (profileData.birthday) {
+        formData.append('birthday', profileData.birthday);
+      }
       formData.append('region', profileData.region || '');
       formData.append('city', profileData.city || '');
       formData.append('bio', profileData.bio || '');
@@ -31,7 +33,7 @@ export const profileService = {
         username: profileData.username,
         email: profileData.email,
         gender: profileData.gender || 'male',
-        birthday: profileData.birthday || '',
+        birthday: profileData.birthday || null,
         region: profileData.region || '',
         city: profileData.city || '',
         bio: profileData.bio || '',

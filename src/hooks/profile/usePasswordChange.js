@@ -21,7 +21,6 @@ export const usePasswordChange = () => {
    */
   const updateField = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
-    // Clear error for this field
     if (errors[key]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -63,7 +62,6 @@ export const usePasswordChange = () => {
       );
 
       if (result?.success) {
-        // Reset form on success
         setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
         return { success: true, message: result.message || 'Password changed successfully' };
       } else {

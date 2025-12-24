@@ -71,10 +71,8 @@ export default function EditProfilePage() {
       return;
     }
 
-    // CSV Headers
     const headers = ["Order ID", "Transaction Time", "Status", "Amount"];
 
-    // Format data rows with proper escaping
     const csvRows = data.map(payment => {
       const row = [
         `"${(payment.order_id || "").replace(/"/g, '""')}"`,
@@ -85,10 +83,8 @@ export default function EditProfilePage() {
       return row.join(",");
     });
 
-    // Combine headers and rows
     const csvContent = [headers.join(","), ...csvRows].join("\n");
 
-    // Create Blob and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

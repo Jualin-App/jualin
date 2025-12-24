@@ -15,13 +15,10 @@ export default function SellerProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const scrollRef = React.useRef(null);
-
-  // Delete handling state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [toast, setToast] = useState({
@@ -31,7 +28,6 @@ export default function SellerProductsPage() {
   });
 
   useEffect(() => {
-    // Scroll to top on page change
     if (scrollRef.current) {
       smoothScrollTo(scrollRef.current, 500, 100);
     }

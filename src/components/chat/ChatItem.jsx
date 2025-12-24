@@ -1,7 +1,28 @@
-'use client';
+import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/Badge';
+import { getProfilePictureUrl } from '@/utils/imageHelper';
+import { fetchChatPartnerProfile } from '@/services/chat/chatService';
 
 export function ChatItem({ chat, isSelected, onClick }) {
+  const [fetchedUser, setFetchedUser] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (chat.otherUserId) {
+      fetchChatPartnerProfile(chat.otherUserId)
+        .then(userData => {
+          if (isMounted && userData) {
+            setFetchedUser(userData);
+          }
+        });
+    }
+    return () => { isMounted = false; };
+  }, [chat.otherUserId]);
+
+  const displayAvatar = getProfilePictureUrl(
+    fetchedUser?.profile_picture || chat.avatar
+  );
+
   return (
     <div
       onClick={onClick}
@@ -13,9 +34,9 @@ export function ChatItem({ chat, isSelected, onClick }) {
       <div className="flex items-start gap-4 relative z-10">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className={`h-12 w-12 rounded-full overflow-hidden shadow-sm ${!chat.avatar ? 'bg-gradient-to-br from-gray-100 to-gray-200' : 'bg-gray-100'}`}>
-            {chat.avatar ? (
-              <img src={chat.avatar} alt={chat.name} className="h-full w-full object-cover" />
+          <div className={`h-12 w-12 rounded-full overflow-hidden shadow-sm ${!displayAvatar ? 'bg-gradient-to-br from-gray-100 to-gray-200' : 'bg-gray-100'}`}>
+            {displayAvatar ? (
+              <img src={displayAvatar} alt={chat.name} className="h-full w-full object-cover" />
             ) : null}
           </div>
         </div>

@@ -13,7 +13,6 @@ export const useSellerInfo = (sellerId) => {
     { immediate: false, initialData: null }
   );
 
-  // Prevent duplicate execute on Strict Mode double-mount
   const lastIdRef = useRef(null);
   useEffect(() => {
     if (!sellerId) return;

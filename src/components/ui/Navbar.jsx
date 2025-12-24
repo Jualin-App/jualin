@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Logo from "./Logo.jsx";
 import { AuthContext } from "../../context/AuthProvider.jsx";
 import SearchBar from "./SearchBar.jsx";
+import { getProfilePictureUrl } from "@/utils/imageHelper";
 
 const Navbar = () => {
   const { user, loading } = useContext(AuthContext);
@@ -61,7 +62,6 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
           {loading ? (
-            // Skeleton Loader
             <div className="flex items-center gap-3 animate-pulse">
               <div className="w-8 h-8 rounded-full bg-gray-200"></div>
               <div className="hidden sm:block w-24 h-5 rounded bg-gray-200"></div>
@@ -74,7 +74,7 @@ const Navbar = () => {
                 className="flex items-center gap-2"
               >
                 <img
-                  src={user?.avatar || "/ProfilePhoto.png"}
+                  src={getProfilePictureUrl(user?.profile_picture)}
                   alt="avatar"
                   className="w-8 h-8 rounded-full transition-transform duration-200 hover:scale-105"
                 />
