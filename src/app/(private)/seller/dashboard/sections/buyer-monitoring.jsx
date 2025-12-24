@@ -25,12 +25,9 @@ const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
     time: order.created_at ? new Date(order.created_at).toLocaleString('id-ID') : "Recently",
     avatar: getProfilePictureUrl(order.customer?.profile_picture)
   })) : [];
-
   const handleVerifyOrder = (orderId) => router.push(`/seller/orders/${orderId}/verify`);
 
   const handleChatBuyer = async (buyerId) => {
-    console.log("🔵 handleChatBuyer called with buyerId:", buyerId, "type:", typeof buyerId);
-
     if (!buyerId) {
       alert("Buyer ID tidak tersedia");
       return;
@@ -114,7 +111,6 @@ const BuyerMonitoringSection = ({ orders = [], isLoading = false }) => {
           </thead>
           <tbody>
             {isLoading ? (
-              // Skeleton Loading Rows
               [...Array(8)].map((_, index) => (
                 <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
                   <td className="py-3 px-2">

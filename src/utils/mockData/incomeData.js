@@ -50,8 +50,8 @@ export const generateMockIncomeData = (period = 'Month') => {
   const totalIncome = chartData.reduce((sum, item) => sum + item.income, 0);
 
   return {
-    balance: totalIncome * 0.7, // 70% of total
-    transferred: totalIncome * 0.3, // 30% already transferred
+    balance: totalIncome * 0.7,
+    transferred: totalIncome * 0.3,
     chart_data: chartData,
   };
 };

@@ -10,7 +10,6 @@ import { getProfilePictureUrl } from '@/utils/imageHelper';
 export const useProfileUpdate = () => {
   const { user, setUser } = useAuth();
 
-  // Initialize form state from user context
   const initialForm = useMemo(
     () => ({
       username: user?.username || '',
@@ -33,10 +32,8 @@ export const useProfileUpdate = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Update form when user changes
   useEffect(() => {
     setForm(initialForm);
-    // Convert relative path to full URL for image preview
     setImagePreview(getProfilePictureUrl(initialForm.profile_picture));
   }, [initialForm]);
 
@@ -47,7 +44,6 @@ export const useProfileUpdate = () => {
    */
   const updateField = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
-    // Clear error for this field
     if (errors[key]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -62,7 +58,32 @@ export const useProfileUpdate = () => {
    * @param {File} file - Image file
    * @param {string} previewUrl - Preview URL
    */
-  const selectImage = (file, previewUrl) => {
+  const selectImage = (file) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrors(prev => ({
+        ...prev,
+        profile_picture: 'File harus berupa gambar (JPG atau PNG)',
+      }));
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors(prev => ({
+        ...prev,
+        profile_picture: 'Ukuran gambar terlalu besar. Maksimal 2MB. Silakan gunakan gambar dengan ukuran lebih kecil atau kompres terlebih dahulu.',
+      }));
+      return;
+    }
+
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.profile_picture;
+      return newErrors;
+    });
+
+    const previewUrl = URL.createObjectURL(file);
     setImageFile(file);
     setImagePreview(previewUrl);
   };
@@ -92,7 +113,6 @@ export const useProfileUpdate = () => {
       const result = await profileService.updateProfile(form, imageFile);
 
       if (result?.success) {
-        // Update user context and localStorage
         const updatedUser = result.data;
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));

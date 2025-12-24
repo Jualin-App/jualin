@@ -33,7 +33,7 @@ export const invalidateProductDetail = async (productId) => {
 export const invalidateSellerIncome = async (sellerId) => {
   await queryClient.invalidateQueries({
     queryKey: ["seller", sellerId, "income"],
-    exact: false, // Invalidate all periods
+    exact: false,
   });
 };
 

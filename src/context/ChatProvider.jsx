@@ -1,4 +1,3 @@
-// src/context/ChatProvider.jsx
 "use client";
 import React, {
   createContext,
@@ -78,10 +77,9 @@ export function ChatProvider({ children }) {
 
         const otherUserInfoWithRole = {
           ...otherUserInfo,
-          role: otherUserInfo.role || "seller", // backward compatibility
+          role: otherUserInfo.role || "seller", 
         };
 
-        // Tentukan siapa customer dan siapa seller berdasarkan role
         const isCurrentUserCustomer = currentUserInfo.role === "customer";
 
         const customerId = isCurrentUserCustomer ? user.id : otherUserId;
@@ -123,42 +121,21 @@ export function ChatProvider({ children }) {
 
       setLoading(true);
       try {
-        console.log("🔍 Looking for chat with user:", targetUserId);
-        console.log("📋 Available chats:", chats.length);
-        console.log("👤 Current user ID:", user.id);
-
-        // Konversi targetUserId ke string untuk comparison
         const targetUserIdStr = String(targetUserId);
 
-        // Cari chat yang sudah ada dengan user ini
         const existingChat = chats.find((chat) => {
           if (!chat.participants) return false;
 
-          // Konversi semua participants ke string untuk comparison yang konsisten
           const participantsStr = chat.participants.map((p) => String(p));
           const hasTarget = participantsStr.includes(targetUserIdStr);
-
-          console.log(
-            "  Checking chat:",
-            chat.id,
-            "participants:",
-            participantsStr,
-            "has target?",
-            hasTarget
-          );
 
           return hasTarget;
         });
 
         if (existingChat) {
-          console.log("✅ Found existing chat:", existingChat.id);
           setCurrentChat(existingChat);
           return existingChat.id;
         }
-
-        // Jika tidak ada chat, throw error
-        // Seller tidak boleh create chat baru, hanya respond
-        console.log("❌ No existing chat found with user:", targetUserId);
         throw new Error("No existing conversation found with this user");
       } catch (error) {
         console.error("❌ Error opening chat:", error);

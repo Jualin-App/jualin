@@ -8,7 +8,6 @@
  * encrypt_it("Hello World!"); // Mengembalikan "SGVsbG8gV29ybGQh"
  */
 export function encryptIt(value) {
-  // Encode string to Base64 and make it URL-safe
   return btoa(value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
@@ -22,7 +21,6 @@ export function encryptIt(value) {
  * decrypt_it("SGVsbG8gV29ybGQh"); // Mengembalikan "Hello World!"
  */
 export function decryptIt(encryptedValue) {
-  // Decode URL-safe Base64 back to original Base64
   const base64 = encryptedValue.replace(/-/g, "+").replace(/_/g, "/");
   return atob(base64);
 }

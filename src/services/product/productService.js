@@ -45,12 +45,10 @@ export const productService = {
   },
 
   async create(productData, imageFile = null) {
-    // Ensure logged-in
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (!token) throw new Error("Please login as seller to create a product.");
 
-    // Derive seller_id from stored user
     const storedUser =
       typeof window !== "undefined"
         ? JSON.parse(localStorage.getItem("user") || "null")
@@ -77,7 +75,6 @@ export const productService = {
       return normalizeProduct(res?.data || res);
     }
 
-    // JSON path (no image)
     const res = await fetcher.post("/api/v1/products", {
       seller_id: sellerId,
       name: productData.name,

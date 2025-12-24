@@ -13,11 +13,9 @@ function TopBar() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Mulai slide out (ke atas) - cepat
       setIsSlidingOut(true);
       setJustChanged(false);
 
-      // Setelah slide out selesai, ganti teks dan slide in dari bawah
       setTimeout(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % TOP_BAR_MESSAGES.length);
         setJustChanged(true);
