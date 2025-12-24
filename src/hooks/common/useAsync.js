@@ -18,12 +18,10 @@ export const useAsync = (asyncFunction, options = {}) => {
     error: null,
   });
 
-  // Use ref to avoid recreating execute function on every render
   const asyncFunctionRef = useRef(asyncFunction);
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
 
-  // Update refs when values change
   useEffect(() => {
     asyncFunctionRef.current = asyncFunction;
     onSuccessRef.current = onSuccess;
@@ -44,19 +42,17 @@ export const useAsync = (asyncFunction, options = {}) => {
       onErrorRef.current?.(err);
       throw err;
     }
-  }, []); // Empty dependency array - execute never changes
+  }, []);
 
   const reset = useCallback(() => {
     setState({ data: initialData, loading: false, error: null });
   }, [initialData]);
 
-  // Execute once on mount if immediate is true
   useEffect(() => {
     if (immediate) {
       execute();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  }, []);
 
   return {
     ...state,

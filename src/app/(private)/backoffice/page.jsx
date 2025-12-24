@@ -1,10 +1,8 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import Navbar from "@/components/ui/Navbar"
 import { Search, ChevronLeft, ChevronRight, X, Edit2, Trash2, Plus } from "lucide-react"
 
-// Mock data for users (Managemen User section)
 const MOCK_USERS = Array.from({ length: 75 }, (_, i) => ({
   id: i + 1,
   name: "Aryo Jaty Pamungkas",
@@ -15,7 +13,6 @@ const MOCK_USERS = Array.from({ length: 75 }, (_, i) => ({
   avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
 }))
 
-// Mock data for products (Super Admin section)
 const MOCK_PRODUCTS = [
   {
     id: 1,
@@ -43,7 +40,6 @@ const MOCK_PRODUCTS = [
   },
 ]
 
-// Mock data for buyers (Super Admin section)
 const MOCK_BUYERS = Array.from({ length: 75 }, (_, i) => ({
   id: i + 1,
   productImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
@@ -56,10 +52,8 @@ const MOCK_BUYERS = Array.from({ length: 75 }, (_, i) => ({
 }))
 
 export default function BackofficeHome() {
-  // View toggle state
   const [activeView, setActiveView] = useState("user-management")
 
-  // State & logic for Managemen User section
   const [userSearchQuery, setUserSearchQuery] = useState("")
   const [userCurrentPage, setUserCurrentPage] = useState(1)
   const [userItemsPerPage, setUserItemsPerPage] = useState(8)
@@ -96,7 +90,6 @@ export default function BackofficeHome() {
     setUserCurrentPage(1)
   }
 
-  // State & logic for Super Admin section
   const [buyerSearchQuery, setBuyerSearchQuery] = useState("")
   const [buyerCurrentPage, setBuyerCurrentPage] = useState(1)
   const [buyerItemsPerPage, setBuyerItemsPerPage] = useState(8)

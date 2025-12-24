@@ -52,7 +52,6 @@ const LoginForm = ({ onSuccess, onError }) => {
 
       onSuccess?.();
 
-      // Route based on user role
       if (role === "admin") {
         router.push("/backoffice");
       } else if (role === "seller") {

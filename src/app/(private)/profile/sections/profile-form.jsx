@@ -14,6 +14,8 @@ export function ProfileFormSection({
 }) {
   return (
     <>
+      
+
       {/* Profile Photo and Upload */}
       <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">
         <div className="flex items-center gap-8">
@@ -58,14 +60,19 @@ export function ProfileFormSection({
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  const previewUrl = URL.createObjectURL(file);
-                  onImageSelect(file, previewUrl);
+                  onImageSelect(file);
                 }
               }}
             />
           </div>
         </div>
       </div>
+      {/* Error Message for Image Upload */}
+      {errors.profile_picture && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {errors.profile_picture}
+        </div>
+      )}
 
       {/* Personal Info Card */}
       <div className="bg-white rounded-xl p-8 mb-8 shadow-md hover:shadow-lg transition-all duration-200">

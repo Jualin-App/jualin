@@ -24,8 +24,7 @@ export const useProductDetail = (productId) => {
     if (productId) {
       execute();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productId]); // execute is stable from useAsync
+  }, [productId]);
 
   return {
     product,

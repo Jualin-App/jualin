@@ -2,6 +2,7 @@
 import { useContext } from "react";
 import { ChatItem } from "./ChatItem";
 import { AuthContext } from "@/context/AuthProvider";
+import { getProfilePictureUrl } from "@/utils/imageHelper";
 
 export function ChatList({
   chats = [],
@@ -12,24 +13,17 @@ export function ChatList({
 }) {
   const { user } = useContext(AuthContext);
 
-  // Transform Firebase data ke format yang dibutuhkan ChatItem
   const transformedChats = chats.map((chat) => {
-    // Cari participant yang bukan current user
     const otherParticipantId = chat.participants?.find(
       (id) => id !== user?.id?.toString()
     );
-
-    // GUNAKAN participantDetails (bukan participantsInfo)
     const otherParticipant = otherParticipantId
       ? chat.participantDetails?.[otherParticipantId]
       : null;
 
-    // Format timestamp
     let timeStr = "";
     if (chat.lastMessage?.timestamp) {
       const timestamp = chat.lastMessage.timestamp;
-
-      // Handle Firebase Timestamp
       const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
 
       const now = new Date();
@@ -58,6 +52,7 @@ export function ChatList({
 
     return {
       id: chat.id,
+      otherUserId: otherParticipantId,
       name: otherParticipant?.name || "Unknown User",
       handle: otherParticipant?.name
         ? `@${otherParticipant.name.toLowerCase().replace(/\s+/g, "")}`
@@ -65,14 +60,12 @@ export function ChatList({
       message: chat.lastMessage?.text || "No messages yet",
       time: timeStr,
       unread: chat.unreadCount?.[user?.id?.toString()] || 0,
-      avatar: otherParticipant?.avatar,
+      avatar: getProfilePictureUrl(otherParticipant?.profile_picture || otherParticipant?.avatar),
       role: otherParticipant?.role,
-      // Keep original data for selection
       originalChat: chat,
     };
   });
 
-  // Filter chats based on search and filter
   const filteredChats = transformedChats.filter((chat) => {
     const matchesSearch =
       chat.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||

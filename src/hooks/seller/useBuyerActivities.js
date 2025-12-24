@@ -39,7 +39,6 @@ export const useBuyerActivities = (orders = []) => {
     });
   }, [activities, searchQuery]);
 
-  // Pagination
   const pagination = usePagination(filteredActivities, {
     initialPage: 1,
     initialPerPage: 8,

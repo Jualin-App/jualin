@@ -1,15 +1,17 @@
 'use client';
-import { useEffect, useRef, useContext } from 'react';
+import { useEffect, useRef, useContext, useState } from 'react';
 import { ChatHeader } from './ChatHeader';
 import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 import { AuthContext } from '@/context/AuthProvider';
+import { getProfilePictureUrl } from '@/utils/imageHelper';
+import { fetchChatPartnerProfile } from '@/services/chat/chatService';
 
 export function ChatWindow({ chat, messages = [], onSend }) {
   const { user } = useContext(AuthContext);
   const messagesEndRef = useRef(null);
+  const [fetchedUser, setFetchedUser] = useState(null);
 
-  // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
@@ -18,7 +20,31 @@ export function ChatWindow({ chat, messages = [], onSend }) {
     scrollToBottom();
   }, [messages]);
 
-  // No chat selected
+  const otherParticipantId = chat?.participants?.find(
+    (id) => id !== user?.id?.toString()
+  );
+  
+  const otherParticipant = (chat && otherParticipantId)
+    ? chat.participantDetails?.[otherParticipantId]
+    : null;
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchUser = async () => {
+      if (otherParticipantId) {
+        const userData = await fetchChatPartnerProfile(otherParticipantId);
+        if (isMounted && userData) {
+          setFetchedUser(userData);
+        }
+      } else {
+        if (isMounted) setFetchedUser(null);
+      }
+    };
+
+    fetchUser();
+    return () => { isMounted = false; };
+  }, [otherParticipantId]);
+
   if (!chat) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50/50">
@@ -35,18 +61,7 @@ export function ChatWindow({ chat, messages = [], onSend }) {
     );
   }
 
-  // Get other participant info dari chat
-  // GUNAKAN participantDetails (bukan participantsInfo)
-  const otherParticipantId = chat.participants?.find(
-    (id) => id !== user?.id?.toString()
-  );
-  const otherParticipant = otherParticipantId
-    ? chat.participantDetails?.[otherParticipantId]
-    : null;
-
-  // Transform messages ke format ChatBubble
   const transformedMessages = messages.map((msg) => {
-    // Handle Firebase Timestamp
     const timestamp = msg.timestamp?.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp);
 
     return {
@@ -67,9 +82,11 @@ export function ChatWindow({ chat, messages = [], onSend }) {
     handle: otherParticipant?.name
       ? `@${otherParticipant.name.toLowerCase().replace(/\s+/g, '')}`
       : '@user',
-    avatar: otherParticipant?.avatar,
+    avatar: getProfilePictureUrl(
+      fetchedUser?.profile_picture
+    ),
     role: otherParticipant?.role,
-    online: true, // TODO: Real presence
+    online: true,
   };
 
   return (

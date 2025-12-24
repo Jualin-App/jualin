@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { productService } from "@/services/product/productService";
+import { getProductImageUrl } from "@/utils/imageHelper";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function EditProductPage() {
             description: product.description || "",
             image: product.image || product.img || "",
           });
-          setImagePreview(product.image || product.img || "");
+          setImagePreview(getProductImageUrl(product.image || product.img));
         } else {
           setError("Produk tidak ditemukan");
         }
@@ -62,25 +63,17 @@ export default function EditProductPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       setError("File harus berupa gambar (JPG atau PNG)");
       return;
     }
-
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       setError("Ukuran gambar terlalu besar. Maksimal 2MB. Silakan gunakan gambar dengan ukuran lebih kecil atau kompres terlebih dahulu.");
       return;
     }
 
-    // Create preview
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
-
-    // For now, we'll store the file object
-    // In production, you'd want to upload it to a storage service first
-    // and then store the URL in formData.image
     setFormData((prev) => ({
       ...prev,
       imageFile: file,
@@ -96,7 +89,6 @@ export default function EditProductPage() {
     e.preventDefault();
     setError("");
 
-    // Validation
     if (!formData.name.trim()) {
       setError("Nama produk wajib diisi");
       return;
@@ -113,7 +105,6 @@ export default function EditProductPage() {
     try {
       setSaving(true);
 
-      // Get user from localStorage
       const storedUser =
         typeof window !== "undefined"
           ? JSON.parse(localStorage.getItem("user") || "null")
@@ -121,13 +112,12 @@ export default function EditProductPage() {
 
       const sellerId = storedUser?.id || 1;
 
-      // Prepare payload
       const payload = {
         seller_id: sellerId,
         name: formData.name.trim(),
         price: parseFloat(formData.price),
         description: formData.description.trim(),
-        image: formData.image || imagePreview, // Use existing image or preview URL
+        image: formData.image || imagePreview,
       };
 
       const updatedProduct = await productService.update(productId, payload);

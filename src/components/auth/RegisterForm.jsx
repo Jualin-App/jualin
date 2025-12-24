@@ -38,7 +38,6 @@ const RegisterForm = ({ onSuccess, onError }) => {
     setIsLoading(true);
     setErrors({});
 
-    // Client-side validations
     const newErrors = {};
     const rawUsername = formData.name.toLowerCase().replace(/\s+/g, "");
     if (!formData.name.trim()) newErrors.name = "nama tidak boleh kosong";

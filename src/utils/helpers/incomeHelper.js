@@ -53,7 +53,6 @@ const groupByWeek = (transactions) => {
     }
   });
 
-  // Ensure all days are present
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   return days.map(day => weekGroups[day] || { label: day, income: 0 });
 };
@@ -78,7 +77,6 @@ const groupByMonth = (transactions) => {
     }
   });
 
-  // Ensure all weeks are present
   const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
   return weeks.map(week => weekGroups[week] || { label: week, income: 0 });
 };
@@ -104,7 +102,6 @@ const groupByYear = (transactions) => {
     }
   });
 
-  // Ensure all months are present
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return months.map(month => monthGroups[month] || { label: month, income: 0 });
 };
