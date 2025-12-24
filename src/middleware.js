@@ -14,7 +14,7 @@ const validRoutes = [
   '/404_not_found',
 ]
 
-const allowedRoutesWithParams = ['/profile/edit', '/product', '/seller']
+const allowedRoutesWithParams = ['/profile/edit', '/product', '/seller', '/backoffice']
 
 function isValidRoute(pathname) {
   const pathWithoutQuery = pathname.split('?')[0]
@@ -51,7 +51,20 @@ export function middleware(request) {
     return NextResponse.redirect(url)
   }
 
-  if (pathname.startsWith('/seller') && role !== 'seller') {
+  if (pathname.startsWith('/seller') && role !== 'seller' && role !== 'admin') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
+  // Admin Role-Based Access Control
+  if (pathname.startsWith('/dashboard') && role === 'admin') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/backoffice'
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname.startsWith('/backoffice') && role !== 'admin') {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
