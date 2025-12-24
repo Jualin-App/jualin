@@ -12,8 +12,8 @@ import { PurchaseHistorySection } from "../sections/purchase-history";
 import { ProfileSidebarSection } from "../sections/profile-sidebar";
 
 export default function EditProfilePage() {
+  const { logout, user } = useAuth();
   const router = useRouter();
-  const { logout } = useAuth();
 
   const [activeTab, setActiveTab] = useState("edit");
   const [toast, setToast] = useState(null);
@@ -73,12 +73,14 @@ export default function EditProfilePage() {
 
     const headers = ["Order ID", "Transaction Time", "Status", "Amount"];
 
-    const csvRows = data.map(payment => {
+    const csvRows = data.map((payment) => {
       const row = [
         `"${(payment.order_id || "").replace(/"/g, '""')}"`,
-        payment.transaction_time ? new Date(payment.transaction_time).toLocaleString('id-ID') : "",
+        payment.transaction_time
+          ? new Date(payment.transaction_time).toLocaleString("id-ID")
+          : "",
         `"${(payment.transaction_status || "").replace(/"/g, '""')}"`,
-        payment.gross_amount || 0
+        payment.gross_amount || 0,
       ];
       return row.join(",");
     });
@@ -89,7 +91,10 @@ export default function EditProfilePage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `purchase_history_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `purchase_history_${new Date().toISOString().split("T")[0]}.csv`
+    );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -109,6 +114,7 @@ export default function EditProfilePage() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onLogout={handleLogout}
+          role={user?.role}
         />
 
         {/* Main Content */}
@@ -137,10 +143,11 @@ export default function EditProfilePage() {
                 {/* Toast */}
                 {toast && (
                   <div
-                    className={`mb-6 rounded-lg p-4 shadow-md ${toast.type === "success"
-                      ? "bg-green-50 text-green-700 shadow-green-200"
-                      : "bg-red-50 text-red-700 shadow-red-200"
-                      }`}
+                    className={`mb-6 rounded-lg p-4 shadow-md ${
+                      toast.type === "success"
+                        ? "bg-green-50 text-green-700 shadow-green-200"
+                        : "bg-red-50 text-red-700 shadow-red-200"
+                    }`}
                   >
                     {toast.message}
                   </div>

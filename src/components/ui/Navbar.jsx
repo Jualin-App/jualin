@@ -18,35 +18,40 @@ const Navbar = () => {
     <header className="bg-white">
       <div className="w-full px-2 sm:px-4 py-3 flex items-center gap-4 transition-shadow duration-200">
         <div className="flex items-center gap-4 sm:gap-6 min-w-0">
-          <Logo className="-mt-1.5" />
+          <Logo
+            className="-mt-1.5"
+            href={user?.role === "admin" ? "/backoffice" : "/dashboard"}
+          />
         </div>
 
         {/* Navigation Items */}
-        <div className="hidden md:flex items-center gap-8 mx-4">
-          <a
-            href="/"
-            className="relative group text-gray-600 font-medium hover:text-[#E83030] transition-colors duration-300"
-          >
-            Beranda
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#E83030] transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          {user?.role !== "seller" && (
+        {user?.role !== "admin" && (
+          <div className="hidden md:flex items-center gap-8 mx-4">
             <a
-              href="/products"
+              href="/"
               className="relative group text-gray-600 font-medium hover:text-[#E83030] transition-colors duration-300"
             >
-              Produk
+              Beranda
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#E83030] transition-all duration-300 group-hover:w-full"></span>
             </a>
-          )}
-          <a
-            href="/chat"
-            className="relative group text-gray-600 font-medium hover:text-[#E83030] transition-colors duration-300"
-          >
-            Pesan
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#E83030] transition-all duration-300 group-hover:w-full"></span>
-          </a>
-        </div>
+            {user?.role !== "seller" && (
+              <a
+                href="/products"
+                className="relative group text-gray-600 font-medium hover:text-[#E83030] transition-colors duration-300"
+              >
+                Produk
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#E83030] transition-all duration-300 group-hover:w-full"></span>
+              </a>
+            )}
+            <a
+              href="/chat"
+              className="relative group text-gray-600 font-medium hover:text-[#E83030] transition-colors duration-300"
+            >
+              Pesan
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#E83030] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+          </div>
+        )}
 
         {showSearch && (
           <div className="flex-1">
@@ -70,7 +75,9 @@ const Navbar = () => {
           ) : user ? (
             <>
               <a
-                href={`/profile/edit?id=${user?.id || user?._id || user?.userId || ""}`}
+                href={`/profile/edit?id=${
+                  user?.id || user?._id || user?.userId || ""
+                }`}
                 className="flex items-center gap-2"
               >
                 <img

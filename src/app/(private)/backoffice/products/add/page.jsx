@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { productService } from "@/services/product/productService";
 import ProductForm from "@/components/forms/ProductForm";
 
-export default function NewProductPage() {
+export default function BackofficeNewProductPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -30,7 +30,7 @@ export default function NewProductPage() {
       );
 
       if (result) {
-        router.push("/seller/products");
+        router.push("/backoffice/products");
       } else {
         setError("Gagal menambahkan produk");
       }
@@ -50,13 +50,13 @@ export default function NewProductPage() {
   };
 
   return (
-    <main className="bg-white min-h-screen">
+    <div className="bg-[#F5F6FA] min-h-screen">
       <ProductForm
-        title="Tambah Produk"
+        title="Tambah Produk (Backoffice)"
         onSubmit={handleSubmit}
         saving={saving}
         error={error}
       />
-    </main>
+    </div>
   );
 }
