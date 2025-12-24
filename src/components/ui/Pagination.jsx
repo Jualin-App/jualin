@@ -9,7 +9,6 @@ import React from 'react';
  * @param {function} props.onPageChange - Callback when page changes
  */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-    // Generate page numbers with ellipsis
     const getPageNumbers = () => {
         const delta = 1;
         const range = [];

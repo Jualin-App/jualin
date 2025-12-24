@@ -12,6 +12,16 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { userService } from "@/services/user/userService";
+
+export async function fetchChatPartnerProfile(userId) {
+  try {
+    return await userService.fetchById(userId);
+  } catch (error) {
+    console.error("❌ Error fetching chat partner profile:", error);
+    return null;
+  }
+}
 
 export async function getOrCreateChatRoom(
   customerId,

@@ -21,9 +21,9 @@ export const useProductDetailQuery = (productId) => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.productDetail(productId),
     queryFn: () => fetchProductDetail(productId),
-    enabled: !!productId, // Only fetch when productId exists
-    staleTime: 10 * 60 * 1000, // 10 minutes - product details don't change often
-    gcTime: 30 * 60 * 1000, // 30 minutes cache
+    enabled: !!productId,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     retry: 2,
   });
 

@@ -26,11 +26,10 @@ function SearchBar({ inline = false, className = "" }) {
       return;
     }
 
-    // Already on /products: update current query params
     const params = new URLSearchParams(searchParams.toString());
 
     if (trimmedValue) {
-      params.set("q", trimmedValue);
+      params.set("q", trimmedValue);  
       params.delete("category");
       params.set("page", "1");
     } else {

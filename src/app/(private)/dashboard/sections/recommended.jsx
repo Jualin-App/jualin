@@ -19,7 +19,6 @@ export default function RecommendedSection() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [page, setPage] = useState(1);
 
-  // Reset page when filter or search changes
   useEffect(() => {
     setPage(1);
     if (q && sectionRef.current) {

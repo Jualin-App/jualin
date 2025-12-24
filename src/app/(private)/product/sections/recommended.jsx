@@ -14,8 +14,6 @@ export default function RecommendedSection({
 }) {
   const [activeFilter, setActiveFilter] = useState(initialFilter);
 
-  // If filter is shown, apply internal filtering logic.
-  // If filter is hidden, assume products are already filtered by parent.
   const filteredProducts = showFilter
     ? activeFilter === "all"
       ? products

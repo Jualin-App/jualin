@@ -25,7 +25,6 @@ function ProductsPageContent() {
     (searchParams.get("q") || "").trim()
   );
 
-  // State for pagination
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -37,17 +36,18 @@ function ProductsPageContent() {
       smoothScrollTo(productsRef.current, 500, 100);
     }
 
-    // Reset to page 1 when filters change (category or search)
     setPage(1);
   }, [categoryFromQuery, searchParams]);
 
-  // Construct query params for server-side fetching
   const queryParams = {
     page,
     per_page: 6,
     name: searchQuery || undefined,
     category: activeFilter !== "all" ? activeFilter : undefined,
+<<<<<<< HEAD
     min_stock: 1, // Filter out out-of-stock products from backend
+=======
+>>>>>>> b6bb4306636a9f8d64dd51625356672c425300f6
   };
 
   const { data, isLoading } = useProductsQuery(queryParams);
@@ -63,7 +63,6 @@ function ProductsPageContent() {
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    // Scroll to top of product grid when page changes
     if (productsRef.current) {
       smoothScrollTo(productsRef.current, 500, 100);
     }

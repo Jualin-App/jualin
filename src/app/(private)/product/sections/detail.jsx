@@ -1,13 +1,12 @@
 "use client";
 import React, { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle } from "lucide-react";
 import Toast from "../../../../components/ui/Toast";
 import Spinner from "../../../../components/ui/Spinner";
 import useMidtransPayment from "../hooks/useMidtransPayment";
 import { ChatContext } from "@/context/ChatProvider";
 import { AuthContext } from "@/context/AuthProvider";
-import { getProductImageUrl } from "@/utils/imageHelper";
+import { getProductImageUrl, getProfilePictureUrl } from "@/utils/imageHelper";
 import { formatCurrency } from "@/utils/formatters/currency";
 
 export default function ProductDetailSection({ product, seller }) {
@@ -18,7 +17,6 @@ export default function ProductDetailSection({ product, seller }) {
   const [isStartingChat, setIsStartingChat] = useState(false);
 
   const handleChatSeller = async () => {
-    // Check if user is logged in
     if (!user) {
       setToast({
         message: "Please login first to chat with seller",
@@ -65,7 +63,7 @@ export default function ProductDetailSection({ product, seller }) {
     try {
       const sellerInfo = {
         name: seller?.username || seller?.email || "Seller",
-        avatar: seller?.avatar || seller?.profile_picture || null,
+        avatar: getProfilePictureUrl(seller?.profile_picture),
       };
 
       await startChat(seller.id, sellerInfo, product.id);
@@ -122,7 +120,7 @@ export default function ProductDetailSection({ product, seller }) {
           <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
               {seller?.profile_picture ? (
-                <img src={seller.profile_picture} alt={seller.username} className="w-full h-full object-cover" />
+                <img src={getProfilePictureUrl(seller.profile_picture)} alt={seller.username} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-gray-500 font-bold text-lg">{(seller?.username || 'S')[0].toUpperCase()}</span>
               )}

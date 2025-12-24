@@ -1,5 +1,6 @@
 'use client';
 import { CheckCircle2 } from 'lucide-react';
+import { getProfilePictureUrl } from '@/utils/imageHelper';
 
 export function ChatHeader({ chat }) {
   if (!chat) {
@@ -10,7 +11,6 @@ export function ChatHeader({ chat }) {
     );
   }
 
-  // Ensure we have display data
   const displayName = chat.name || "Pengguna";
   const displayHandle = chat.handle || `@${displayName.toLowerCase().replace(/\s+/g, '')}`;
 
@@ -20,8 +20,12 @@ export function ChatHeader({ chat }) {
         {/* Large Avatar without Ring */}
         <div className="relative shrink-0">
           <div className="h-12 w-12 rounded-full border-2 border-white overflow-hidden shadow-sm bg-gray-100">
-            {chat.avatar ? (
-              <img src={chat.avatar} alt={displayName} className="h-full w-full object-cover" />
+            {getProfilePictureUrl(chat.avatar || chat.profile_picture) ? (
+              <img 
+                src={getProfilePictureUrl(chat.avatar || chat.profile_picture)} 
+                alt={displayName} 
+                className="h-full w-full object-cover" 
+              />
             ) : null}
           </div>
         </div>
