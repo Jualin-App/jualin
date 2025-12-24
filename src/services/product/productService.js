@@ -5,6 +5,7 @@ const normalizeProduct = (product) => ({
   img: product.image,
   id: product.id,
   category: product.category?.toLowerCase() || "",
+  stock: product.stock ?? product.stock_quantity ?? 0,
 });
 
 export const productService = {
@@ -27,8 +28,8 @@ export const productService = {
     const list = Array.isArray(payload?.data)
       ? payload.data
       : Array.isArray(payload)
-      ? payload
-      : [];
+        ? payload
+        : [];
     const products = list.map(normalizeProduct);
 
     return {

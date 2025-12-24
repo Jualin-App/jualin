@@ -116,7 +116,7 @@ export default function ProductDetailSection({ product, seller }) {
           <h1 className="text-2xl font-bold mb-6 text-blue-700">
             {product.brand || product.category}
           </h1>
-          <p className="text-gray-600 mb-6">{product.description}</p>
+          <p className="text-gray-600 mb-6 break-all w-full">{product.description}</p>
 
           {/* Seller Info */}
           <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -133,9 +133,14 @@ export default function ProductDetailSection({ product, seller }) {
             </div>
           </div>
 
-          <span className="block font-bold text-xl text-black mb-6">
-            {formatCurrency(product.price)}
-          </span>
+          <div className="mb-6">
+            <span className="block font-bold text-xl text-black mb-1">
+              {formatCurrency(product.price)}
+            </span>
+            <span className="text-sm text-gray-600 font-medium">
+              Stok tersedia: {product.stock} unit
+            </span>
+          </div>
           <div className="flex items-center gap-3">
             <button
               className="bg-red-500 text-white px-6 py-2 rounded-full font-semibold shadow hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
