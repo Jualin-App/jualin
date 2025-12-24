@@ -123,7 +123,7 @@ export const productService = {
   },
 
   async delete(id) {
-    await fetcher.delete(`/api/v1/products/${id}`);
+    await fetcher.delete(`/api/v1/products/${id}/delete`);
     return true;
   },
 };

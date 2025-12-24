@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { productService } from "@/services/product/productService";
 import ProductForm from "@/components/forms/ProductForm";
 
-export default function EditProductPage() {
+export default function BackofficeEditProductPage() {
   const router = useRouter();
   const params = useParams();
   const productId = params.id;
@@ -54,16 +54,12 @@ export default function EditProductPage() {
         name: formData.name.trim(),
         price: parseFloat(formData.price),
         description: formData.description.trim(),
-        image: formData.image || formData.imageFile,
+        image: formData.image,
         stock_quantity: parseInt(formData.stock_quantity),
         category: formData.category,
         condition: formData.condition,
         status: formData.status,
       };
-
-      // If it's a file, we need to pass it differently or let service handle it.
-      // ProductService update expects (id, productData, imageFile).
-      // Let's adjust payload logic to match ProductService signature.
 
       let imageFile = null;
       if (formData.imageFile) {
@@ -77,7 +73,7 @@ export default function EditProductPage() {
       );
 
       if (updatedProduct) {
-        router.push("/seller/products");
+        router.push("/backoffice/products");
       } else {
         setError("Gagal menyimpan perubahan");
       }
@@ -97,15 +93,16 @@ export default function EditProductPage() {
   };
 
   return (
-    <main className="bg-white min-h-screen">
+    <div className="bg-[#F5F6FA] min-h-screen">
+      {/* Use div wrapper to match backoffice bg style if needed, though ProductForm handles inner content */}
       <ProductForm
-        title="Edit Produk"
+        title="Edit Produk (Backoffice)"
         initialData={productData}
         onSubmit={handleSubmit}
         loading={loading}
         saving={saving}
         error={error}
       />
-    </main>
+    </div>
   );
 }
