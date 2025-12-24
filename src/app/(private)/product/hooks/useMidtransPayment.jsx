@@ -98,5 +98,23 @@ export default function useMidtransPayment() {
     }
   };
 
-  return { pay, continuePayment, loading, toast, setToast };
+  const resumePayment = async (snapToken, snapUrl) => {
+    if (loading) return;
+    if (!snapToken && !snapUrl) {
+      showToast("Token pembayaran tidak valid", "error");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await waitForSnapIfNeeded();
+      launchSnap(snapToken, snapUrl);
+    } catch (err) {
+      showToast("Gagal memuat popup pembayaran", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { pay, continuePayment, resumePayment, loading, toast, setToast };
 }

@@ -1,5 +1,7 @@
 "use client"
 
+import useMidtransPayment from "@/app/(private)/product/hooks/useMidtransPayment";
+
 /**
  * PurchaseHistorySection
  * Purchase history display with date filter, summary, and pagination
@@ -14,13 +16,35 @@ export function PurchaseHistorySection({
   onExport,
   onRefresh
 }) {
+  const { resumePayment, loading: isPaymentLoading, toast: paymentToast } = useMidtransPayment();
+
   if (isLoading) {
     return <div className="text-center py-12 text-gray-500">Loading purchases...</div>;
   }
 
   return (
     <div>
+      {/* Toast Notification */}
+      {paymentToast && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg ${paymentToast.type === 'error' ? 'bg-red-500 text-white' :
+          paymentToast.type === 'success' ? 'bg-green-500 text-white' :
+            'bg-blue-500 text-white'
+          }`}>
+          {paymentToast.message}
+        </div>
+      )}
+
+      {isPaymentLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+            <span className="font-medium text-gray-700">Mempersiapkan Pembayaran...</span>
+          </div>
+        </div>
+      )}
+
       <div className="mb-8">
+
         <h1 className="text-2xl font-semibold text-[#1F1F1F] mb-4">
           Riwayat Pembelian
         </h1>
@@ -50,7 +74,7 @@ export function PurchaseHistorySection({
       </div>
 
       {/* Total card */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 shadow-sm">
+      <div className="bg-white border border-gray-300 rounded-xl p-6 mb-8 shadow-md">
         <p className="text-sm font-medium text-gray-500 mb-1">Total Amount</p>
         <h2 className="text-3xl font-bold text-[#1F1F1F]">
           {formatCurrency(totalAmount)}
@@ -60,40 +84,102 @@ export function PurchaseHistorySection({
       {/* Payment List */}
       {purchases && purchases.length > 0 ? (
         <div className="space-y-4">
-          {purchases.map((payment) => (
-            <div
-              key={payment.order_id}
-              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold text-[#1F1F1F] mb-1">
-                    Order #{payment.order_id}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {new Date(payment.transaction_time).toLocaleDateString('id-ID', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
+          {purchases.map((p) => {
+            const status = String(p?.transaction_status || "").toLowerCase();
+            const isPending = status === "pending";
+
+            // Status Badge Styles
+            const statusStyles =
+              status === "pending"
+                ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                : status === "settlement" ||
+                  status === "capture" ||
+                  status === "paid" ||
+                  status === "completed"
+                  ? "bg-green-100 text-green-700 border-green-200"
+                  : "bg-red-100 text-red-700 border-red-200";
+
+            // Data extraction
+            // Data extraction
+            const orderLabel = `Order #${p?.order_id || "-"}`;
+            const title = p?.first_item_name || orderLabel;
+            const subtitle = p?.seller_name || orderLabel;
+
+            // Date formatting (keeping ID locale as per app context)
+            const when = p?.transaction_time
+              ? new Date(p.transaction_time).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              })
+              : "";
+
+            return (
+              <button
+                key={p?.order_id}
+                onClick={() => {
+                  if (isPending) {
+                    resumePayment(p.snap_token, p.snap_url);
+                  }
+                }}
+                className={`w-full text-left group bg-white border border-gray-300 p-5 rounded-xl transition-all relative shadow-md
+                  ${isPending
+                    ? 'cursor-pointer hover:bg-[#F7F7F8] hover:shadow-lg hover:border-red-200 ring-1 ring-inset ring-transparent hover:ring-red-100'
+                    : 'cursor-default hover:bg-[#F7F7F8]'
+                  }`}
+              >
+                {/* Tooltip for pending items */}
+                {isPending && (
+                  <div className="absolute top-2 right-2 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Klik untuk bayar
+                  </div>
+                )}
+
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className={`text-lg font-semibold text-[#1F1F1F] mb-1 ${isPending ? 'group-hover:text-[#E53935] transition-colors' : ''}`}>
+                      {title}
+                    </h3>
+
+                    {subtitle && (
+                      <p className="text-sm text-gray-600 mb-2">{subtitle}</p>
+                    )}
+
+                    <div className="flex items-center gap-2 text-gray-500 text-sm mt-2">
+                      {/* Date Icon */}
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3M4 11h16M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"
+                        />
+                      </svg>
+                      <span>{when}</span>
+
+                      {/* Status Chip */}
+                      <span
+                        className={`ml-2 px-3 py-0.5 rounded-full text-[10px] font-medium border ${statusStyles}`}
+                      >
+                        {status}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-base font-semibold text-[#1F1F1F]">
+                      {formatCurrency(p?.gross_amount)}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-[#E53935]">
-                    {formatCurrency(payment.gross_amount)}
-                  </p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${payment.transaction_status === 'settlement'
-                      ? 'bg-green-100 text-green-700'
-                      : payment.transaction_status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-red-100 text-red-700'
-                    }`}>
-                    {payment.transaction_status}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+              </button>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12 text-gray-500">
@@ -131,8 +217,8 @@ export function PurchaseHistorySection({
                   key={page}
                   onClick={() => pagination.goToPage(page)}
                   className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${pagination.currentPage === page
-                      ? "bg-[#E53935] text-white"
-                      : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-[#E53935] text-white"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   {page}
