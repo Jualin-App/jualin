@@ -4,6 +4,7 @@ import { AuthProvider } from "../context/AuthProvider";
 import AppChrome from "../components/ui/AppChrome.jsx";
 import { ChatProvider } from "@/context/ChatProvider";
 import { QueryProvider } from "@/context/QueryProvider";
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
           <AuthProvider>
             <ChatProvider>
               <AppChrome>{children}</AppChrome>
+              <Toaster position="top-center" richColors />
             </ChatProvider>
           </AuthProvider>
         </QueryProvider>

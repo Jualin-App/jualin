@@ -8,6 +8,8 @@ import {
     Send,
     HelpCircle
 } from "lucide-react";
+import { reportService } from "@/services/backoffice/reportService";
+import { toast } from "sonner";
 
 export default function HelpCenter() {
     const [isOpen, setIsOpen] = useState(false);
@@ -62,18 +64,31 @@ export default function HelpCenter() {
 
         setIsSubmitting(true);
 
-        // Simulate API call
-        setTimeout(() => {
+        const promise = reportService.createReport(formData);
+
+        toast.promise(promise, {
+            loading: 'Mengirim laporan...',
+            success: () => {
+                setIsOpen(false);
+                setFormData({
+                    username: "",
+                    type: "",
+                    targetUsername: "",
+                    description: "",
+                });
+                return "Laporan berhasil dikirim! Terima kasih atas masukan Anda.";
+            },
+            error: (err) => {
+                console.error(err);
+                return "Gagal mengirim laporan. Silakan coba lagi.";
+            }
+        });
+
+        try {
+            await promise;
+        } finally {
             setIsSubmitting(false);
-            setIsOpen(false);
-            setFormData({
-                username: "",
-                type: "",
-                targetUsername: "",
-                description: "",
-            });
-            alert("Laporan berhasil dikirim!");
-        }, 1500);
+        }
     };
 
     return (

@@ -27,7 +27,7 @@ export default function AppChrome({ children }) {
       {!hideNavbar && <Navbar />}
       {children}
       {!hideFooter && <Footer />}
-      <HelpCenter />
+      {!pathname.startsWith("/backoffice") && <HelpCenter />}
     </>
   );
 }
