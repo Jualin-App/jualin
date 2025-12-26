@@ -37,7 +37,7 @@ export const getProfilePictureUrl = (profilePicture, fallback = '/ProfilePhoto.p
  * @param {string} fallback - Fallback image path
  * @returns {string} Full image URL
  */
-export const getProductImageUrl = (productImage, fallback = '/colorful-sneaker-shoe-product.jpg') => {
+export const getProductImageUrl = (productImage, fallback = '/placeholder.svg') => {
   if (!productImage) return fallback;
   return getImageUrl(productImage);
 };
