@@ -122,7 +122,7 @@ function ProductsPageContent() {
                     <p className="text-gray-500 text-base mb-2 line-clamp-2 break-all text-ellipsis overflow-hidden">
                       {p.description || "Tidak ada informasi"}
                     </p>
-                    <div className="flex justify-center mb-3">
+                    <div className="flex justify-start mb-3">
                       <div className="flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
                         <User size={12} className="text-red-600" />
                         <span className="text-xs text-red-800 font-medium">
