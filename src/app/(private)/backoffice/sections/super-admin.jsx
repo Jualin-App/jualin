@@ -9,7 +9,7 @@ export default function SuperAdminDashboard() {
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
         <div>
           <h2 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">
-            Super Admin
+            Monitoring Product
           </h2>
           <p className="text-sm text-gray-500 mt-1">
             Monitoring produk terbaru dan aktivitas buyer secara realtime.
