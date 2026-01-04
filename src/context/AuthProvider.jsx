@@ -53,6 +53,17 @@ export function AuthProvider({ children }) {
       const me = await authService.me();
       setUser(me);
       localStorage.setItem("user", JSON.stringify(me));
+
+      // Sync to Firebase Auth
+      if (me.firebase_token) {
+        try {
+          await signInWithCustomToken(auth, me.firebase_token);
+          console.log("🔥 [Refetch] Firebase Custom Token Login Success");
+        } catch (fbError) {
+          console.error("❌ [Refetch] Firebase Login Failed:", fbError);
+        }
+      }
+
       syncUserToFirestore(me);
     } catch (err) {
       console.error("Error fetching user:", err);
