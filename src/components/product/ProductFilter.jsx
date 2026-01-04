@@ -3,11 +3,12 @@ import React from "react";
 
 const FILTERS = [
   { label: "Semua", value: "all" },
-  { label: "Elektronik", value: "electronics" },
-  { label: "Hoodie", value: "hoodie" },
-  { label: "Kaos", value: "tshirt" },
-  { label: "Produk Kecantikan", value: "beauty" },
-  { label: "Jam Tangan", value: "watches" },
+  { label: "Elektronik", value: "Elektronik" },
+  { label: "Fashion", value: "Fashion" },
+  { label: "Hobi & Olahraga", value: "Hobi & Olahraga" },
+  { label: "Rumah Tangga", value: "Rumah Tangga" },
+  { label: "Aksesoris", value: "Aksesoris" },
+  { label: "Otomotif", value: "Otomotif" },
 ];
 
 export default function ProductFilter({ activeFilter, setActiveFilter }) {
