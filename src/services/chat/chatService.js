@@ -11,6 +11,7 @@ import {
   updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { userService } from "@/services/user/userService";
 
@@ -34,10 +35,24 @@ export async function getOrCreateChatRoom(
   const sellerIdStr = sellerId.toString();
 
   const chatsRef = collection(db, "chats");
-  const q = query(
-    chatsRef,
-    where("participants", "array-contains", customerIdStr)
-  );
+
+  const auth = getAuth();
+  const currentUserId = auth.currentUser?.uid;
+
+  // Query chats where query user is a participant.
+  // Security Rule requires: resource.data.participants.hasAny([request.auth.uid])
+  // So the query MUST filter by request.auth.uid (current user) to be allowed.
+
+  if (!currentUserId) {
+    console.error(
+      "❌ getOrCreateChatRoom: User not authenticated via Firebase Auth"
+    );
+    // Fallback or throw, but for now let's try proceeding which might fail permissions if not logged in
+  }
+
+  const queryId = currentUserId || customerIdStr; // Prefer current user if available
+
+  const q = query(chatsRef, where("participants", "array-contains", queryId));
   const snapshot = await getDocs(q);
 
   const existingChat = snapshot.docs.find((docu) => {

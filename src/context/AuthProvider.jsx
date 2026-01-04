@@ -1,7 +1,8 @@
 "use client";
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { signInWithCustomToken, signOut } from "firebase/auth";
+import { db, auth } from "@/lib/firebase";
 import Cookies from "js-cookie";
 import { authService } from "@/services/auth/authService";
 
@@ -52,6 +53,17 @@ export function AuthProvider({ children }) {
       const me = await authService.me();
       setUser(me);
       localStorage.setItem("user", JSON.stringify(me));
+
+      // Sync to Firebase Auth
+      if (me.firebase_token) {
+        try {
+          await signInWithCustomToken(auth, me.firebase_token);
+          console.log("🔥 [Refetch] Firebase Custom Token Login Success");
+        } catch (fbError) {
+          console.error("❌ [Refetch] Firebase Login Failed:", fbError);
+        }
+      }
+
       syncUserToFirestore(me);
     } catch (err) {
       console.error("Error fetching user:", err);
@@ -67,7 +79,7 @@ export function AuthProvider({ children }) {
     refetchUser();
   }, []);
 
-  const login = (userData, token) => {
+  const login = async (userData, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
@@ -75,6 +87,16 @@ export function AuthProvider({ children }) {
       sameSite: "lax",
     });
     Cookies.set("token", token, { sameSite: "lax" });
+
+    // Login to Firebase if token is provided
+    if (userData.firebase_token) {
+      try {
+        await signInWithCustomToken(auth, userData.firebase_token);
+        console.log("🔥 Firebase Custom Token Login Success");
+      } catch (error) {
+        console.error("❌ Firebase Custom Token Login Failed:", error);
+      }
+    }
   };
 
   const logout = async () => {
